@@ -5,11 +5,12 @@
   const pauseBtn = document.getElementById('scenePause');
   const KEY = 'transport-future-profile-draft';
 
-  /* desktop: keep the Figma card (860 x 560) and scale it down only when the window is smaller */
+/* desktop: the Figma card (860 x 560), centred, at about 72% and never wider than ~44% of the
+     window, so plenty of the moving city shows around it */
   function fit(){
     if (matchMedia('(max-width: 720px)').matches){ scaleBox.style.removeProperty('--k'); return; }
-    const k = Math.min(1, (innerWidth - 48) / 860, (innerHeight - 48) / 560);
-    scaleBox.style.setProperty('--k', Math.max(.5, k).toFixed(3));
+    const k = Math.min(.72, innerWidth * .44 / 860, (innerHeight - 64) / 560);
+    scaleBox.style.setProperty('--k', Math.max(.55, k).toFixed(3));
   }
   addEventListener('resize', fit, {passive: true});
   fit();
