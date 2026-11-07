@@ -554,7 +554,11 @@ const FOCUS_TALL = [OX + 800, FULL_H / 2];
 const viewportEl = stage.parentElement;
 function frameStage(){
   const vw = viewportEl.clientWidth, vh = viewportEl.clientHeight;
-  const s = Math.max(vw / FULL_W, vh / FULL_H), w = FULL_W * s, h = FULL_H * s;
+  /* form page: on landscape screens frame the ORIGINAL picture (station, monorail, arch) as in the
+     Figma mock-up; the extended sky/road/sides only fill in where the screen is wider than it */
+  const s = vw < vh ? Math.max(vw / FULL_W, vh / FULL_H)
+                    : Math.max(vw / FULL_W, vh / FULL_H, Math.min(vw / IW, vh / IH));
+  const w = FULL_W * s, h = FULL_H * s;
   const [fx, fy] = vw < vh ? FOCUS_TALL : FOCUS_WIDE;
   dronePos = vw < vh ? DRONE_TALL : DRONE_WIDE;
   const clamp = (v, lo) => Math.min(0, Math.max(lo, v));
@@ -573,14 +577,14 @@ function resize(){
 new ResizeObserver(resize).observe(stage);
 resize();
 
-const T0 = performance.now();
+let T0 = performance.now();
 const tParam = params.get('t');
 /* still frame: reduced motion, or ?t=seconds for inspecting one moment */
 function drawStill(){ update(tParam !== null ? +tParam : 6); renderer.render(scene, camera); }
 /* the loop pauses while the scene is scrolled out of view (saves battery when used as a page background) */
-let onScreen = true, looping = false;
+let onScreen = true, looping = false, paused = false, pausedAt = 0;
 function frame(){
-  if (!onScreen){ looping = false; return; }
+  if (!onScreen || paused){ looping = false; return; }
   update((performance.now() - T0) / 1000 + 3);
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
@@ -590,3 +594,11 @@ if (animating){
   new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; if (onScreen) start(); }).observe(stage);
   start();
 } else drawStill();
+
+/* pause / resume for the page (the form's pause button): the scene freezes on the current
+   frame and carries on from the same moment, so nothing jumps */
+window.cityScene = {
+  get paused(){ return paused; },
+  pause(){ if (!paused){ paused = true; pausedAt = performance.now(); } },
+  resume(){ if (paused){ paused = false; T0 += performance.now() - pausedAt; if (animating) start(); } }
+};

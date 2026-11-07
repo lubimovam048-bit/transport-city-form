@@ -1,0 +1,141 @@
+/* Registration form over the living scene.
+   Built from Figma «Транспорт будущего» → «Профиль · Личные данные · пусто» (node 189:19454):
+   frame 1400 x 1050, card 860 x 560 centred, dim overlay over the scene, pause button top-right.
+   Every size below is the Figma value in px; on desktop the card keeps them and is scaled
+   as a whole by --k (form.js) when the window is too small; phones get a single-column layout. */
+
+:root{
+  --blue-600:#1768f2; --blue-700:#155ae8;
+  --ink-900:#17233a; --ink-800:#1b2940; --ink-700:#25334b; --ink-600:#3d4b63;
+  --ink-500:#41516a; --ink-450:#4d5b72; --ink-400:#516078; --ink-350:#5d6a7f; --ink-300:#78879d;
+  --danger:#e5484d;
+}
+
+/* Rectangle 5: the scene is dimmed and softly blurred behind the form */
+.form-dim{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.33);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);pointer-events:none}
+
+/* image 54: the pause button, top-right of the 1400-wide frame (193 x 145) */
+.scene-pause{position:fixed;z-index:30;top:0;right:0;width:clamp(104px,13.8vw,193px);aspect-ratio:193/145;
+  border:0;padding:0;background:url(assets/form/pause.webp) center/100% 100% no-repeat;cursor:pointer;
+  transition:transform .2s ease, filter .2s ease}
+.scene-pause:hover{transform:scale(1.04)}
+.scene-pause:active{transform:scale(.97)}
+.scene-pause:focus-visible{outline:3px solid #8ed8ff;outline-offset:-18px;border-radius:50%}
+.scene-pause[aria-pressed="true"]{filter:saturate(.35) brightness(1.05)}
+
+/* the card is centred and scaled as one piece (keeps every Figma proportion) */
+.form-layer{position:fixed;inset:0;z-index:20;display:grid;place-items:center;pointer-events:none}
+.form-scale{width:860px;height:560px;transform:scale(var(--k,1));transform-origin:center;pointer-events:auto}
+
+/* Профиль · WOW form · Rubik (189:19458) */
+.wow-form{position:relative;width:860px;height:560px;border-radius:34px;
+  font-family:'Rubik',system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+  box-shadow:0 8px 40px rgba(23,105,255,.25),0 0 12px rgba(65,184,255,.45);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.wow-form__aura{position:absolute;left:-8px;top:-8px;width:876px;height:576px;border-radius:42px;
+  background:rgba(31,122,255,.22);filter:blur(14px);pointer-events:none}
+.wow-form__glass{position:absolute;inset:0;z-index:1;isolation:isolate;display:flex;flex-direction:column;justify-content:space-between;
+  padding:36px 40px;border:1.5px solid rgba(142,216,255,.9);border-radius:36px;
+  box-shadow:0 0 12px rgba(54,183,255,.36),0 22px 48px rgba(10,43,112,.28)}
+.wow-form__glass::before{content:"";position:absolute;inset:0;border-radius:36px;z-index:-1;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  background:linear-gradient(101.83deg,rgba(248,252,255,.96) 0%,rgba(238,246,255,.93) 58%,rgba(221,235,255,.9) 100%)}
+.wow-form__glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.78)}
+
+/* Header */
+.wf-header{display:flex;align-items:center;justify-content:space-between;height:96px}
+.wf-copy{display:flex;flex-direction:column;gap:8px;white-space:nowrap;line-height:normal}
+.wf-eyebrow{font-weight:600;font-size:12px;letter-spacing:.6px;color:var(--blue-600)}
+.wf-title{font-weight:700;font-size:40px;letter-spacing:-.8px;color:var(--ink-900);line-height:normal}
+.wf-subtitle{font-weight:400;font-size:16px;color:var(--ink-400)}
+.wf-step{display:flex;align-items:center;justify-content:center;gap:9px;width:150px;height:78px;padding:0 16px;
+  border:1px solid rgba(168,216,255,.92);border-radius:24px;font-style:italic;
+  background:linear-gradient(90deg,rgba(234,244,255,.92),rgba(255,255,255,.56));
+  filter:drop-shadow(0 0 9px rgba(28,117,255,.22))}
+.wf-step__num{font-weight:500;font-size:38px;letter-spacing:-1.52px;color:var(--blue-700);line-height:normal}
+.wf-step__total{font-weight:600;font-size:14px;color:var(--ink-500);width:36px;line-height:normal}
+
+/* Progress / Route */
+.wf-progress{display:flex;align-items:center;justify-content:space-between;height:28px;font-weight:500;font-size:13px;line-height:normal}
+.wf-progress__start{color:var(--ink-700)}
+.wf-progress__end{color:var(--ink-350)}
+.wf-route{position:relative;width:560px;height:22px;flex:none}
+.wf-route img{position:absolute;left:0;right:0;top:-9.17px;width:560px;height:40px;display:block}
+
+/* Fields */
+.wf-fields{display:grid;grid-template-columns:382px 382px;column-gap:16px;row-gap:16px;height:174px}
+.wf-field{display:flex;flex-direction:column;gap:7px;height:79px}
+.wf-label{font-weight:500;font-size:14px;color:var(--ink-600);line-height:normal}
+.wf-input{position:relative;width:382px;height:52px}
+.wf-input input{width:100%;height:100%;padding:0 52px 0 18px;border:1px solid rgba(185,214,255,.92);border-radius:16px;
+  font:500 17px/normal 'Rubik',system-ui,sans-serif;color:var(--ink-800);outline:none;
+  background:linear-gradient(90deg,rgba(255,255,255,.76),rgba(237,245,255,.72));
+  box-shadow:0 6px 16px rgba(43,112,232,.1),inset 0 1px 1px rgba(255,255,255,.85);
+  transition:border-color .2s ease, box-shadow .2s ease}
+.wf-input input::placeholder{font-weight:400;color:var(--ink-300);opacity:1}
+.wf-input input:focus{border-color:#5aa8ff;box-shadow:0 6px 16px rgba(43,112,232,.1),0 0 0 4px rgba(51,123,255,.16),inset 0 1px 1px rgba(255,255,255,.85)}
+.wf-input .wf-icon{position:absolute;left:342px;top:14px;width:24px;height:24px;pointer-events:none}
+.wf-input .wf-icon--valid{opacity:0;transform:scale(.6);transition:opacity .2s ease, transform .25s cubic-bezier(.2,.9,.3,1.4)}
+.wf-field.is-valid .wf-icon--valid{opacity:1;transform:none}
+.wf-field.is-error input{border-color:var(--danger);box-shadow:0 6px 16px rgba(229,72,77,.12),0 0 0 4px rgba(229,72,77,.12)}
+.wf-error{display:none}
+.wf-field.is-error .wf-label{color:var(--danger)}
+
+/* Footer / Actions */
+.wf-footer{display:flex;align-items:center;justify-content:space-between;height:56px}
+.wf-autosave{display:flex;align-items:center;gap:9px;font-weight:400;font-size:13px;color:var(--ink-450);line-height:normal}
+.wf-autosave img{width:22px;height:22px;display:block}
+.wf-button{position:relative;width:230px;height:56px;border-radius:18px;border:1px solid rgba(134,201,255,.78);cursor:pointer;
+  background:linear-gradient(90deg,#337bff,#1248da);
+  box-shadow:0 10px 24px rgba(11,62,181,.35),0 0 16px rgba(0,108,255,.45);
+  font:600 17px/normal 'Rubik',system-ui,sans-serif;color:#fff;text-align:left;padding:0;
+  transition:transform .15s ease, box-shadow .2s ease, filter .2s ease}
+.wf-button::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 1px 1px rgba(255,255,255,.32)}
+.wf-button:hover{filter:brightness(1.06);box-shadow:0 12px 28px rgba(11,62,181,.4),0 0 20px rgba(0,108,255,.55)}
+.wf-button:active{transform:translateY(1px) scale(.99)}
+.wf-button:focus-visible{outline:3px solid #8ed8ff;outline-offset:3px}
+.wf-button__label{position:absolute;left:23px;top:17px}
+.wf-button__capsule{position:absolute;left:171px;top:-3px;width:60px;height:60px;display:block}
+.wf-button__arrow{position:absolute;left:189px;top:15px;width:24px;height:24px;display:block;transition:transform .2s ease}
+.wf-button:hover .wf-button__arrow{transform:translateX(2px)}
+
+/* Accents */
+.wf-beam{position:absolute;left:640.5px;top:16.5px;width:176px;height:2px;border-radius:1px;pointer-events:none;
+  background:linear-gradient(90deg,rgba(115,217,255,0) 0%,rgba(115,217,255,.8) 72%,#fff 100%);
+  box-shadow:0 0 8px rgba(92,232,255,.75)}
+.wf-point{position:absolute;left:801.5px;top:5.5px;width:24px;height:24px;pointer-events:none}
+
+/* ---------- phones: one column, the card fills the width ---------- */
+@media (max-width: 720px){
+  .form-layer{place-items:start center;overflow-y:auto;padding:max(76px, 10vh) 16px 24px;pointer-events:auto}
+  .form-scale{width:100%;max-width:520px;height:auto;transform:none}
+  .wow-form{width:100%;height:auto}
+  .wow-form__aura{left:-8px;top:-8px;width:calc(100% + 16px);height:calc(100% + 16px)}
+  .wow-form__glass{position:relative;padding:28px 20px 24px;gap:24px;justify-content:flex-start}
+  .wf-header{height:auto;align-items:flex-start;gap:12px}
+  .wf-title{font-size:28px;letter-spacing:-.56px;white-space:normal}
+  .wf-subtitle{font-size:15px;white-space:normal}
+  .wf-copy{white-space:normal;min-width:0}
+  .wf-step{width:96px;height:56px;padding:0 10px;gap:5px;border-radius:18px;flex:none}
+  .wf-step__num{font-size:26px;letter-spacing:-1px}
+  .wf-step__total{font-size:12px;width:auto}
+  .wf-progress{gap:10px}
+  .wf-route{flex:1;width:auto;min-width:0;height:22px;overflow:hidden}
+  .wf-route{overflow:visible}
+  .wf-route img{width:100%;height:auto;top:50%;transform:translateY(-50%)}   /* scale the route as a whole, circles stay round */
+  .wf-fields{grid-template-columns:1fr;height:auto}
+  .wf-input,.wf-field{width:100%}
+  .wf-input .wf-icon{left:auto;right:16px}
+  .wf-footer{flex-direction:column-reverse;align-items:stretch;gap:16px;height:auto}
+  .wf-autosave{justify-content:center}
+  .wf-button{width:100%}
+  .wf-button__capsule{left:auto;right:-1px}
+  .wf-button__arrow{left:auto;right:17px}
+  .wf-beam{left:auto;right:28px;width:120px}
+  .wf-point{left:auto;right:18px}
+}
+@media (prefers-reduced-motion: reduce){
+  .wf-input .wf-icon--valid,.wf-button,.scene-pause{transition:none}
+}

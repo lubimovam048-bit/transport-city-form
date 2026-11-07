@@ -3,8 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Город будущего · живой фон</title>
+<title>Регистрация участника · Транспорт будущего</title>
 <link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="form.css?v=3">
 <link rel="preload" as="image" href="assets/background.webp?v=20261107b">
 <link rel="modulepreload" href="vendor/three/build/three.module.min.js">
 <link rel="modulepreload" href="vendor/three/build/three.core.min.js">
@@ -60,12 +64,86 @@
   </div>
 </div>
 
+<!-- ===== Registration form over the scene (Figma 189:19454) ===== -->
+<div class="form-dim" aria-hidden="true"></div>
+<button class="scene-pause" id="scenePause" type="button" aria-pressed="false" aria-label="Остановить анимацию фона"></button>
+
+<div class="form-layer">
+  <div class="form-scale">
+    <form class="wow-form" id="profileForm" novalidate autocomplete="on">
+      <div class="wow-form__aura" aria-hidden="true"></div>
+      <div class="wow-form__glass">
+        <header class="wf-header">
+          <div class="wf-copy">
+            <p class="wf-eyebrow">РЕГИСТРАЦИЯ УЧАСТНИКА</p>
+            <h1 class="wf-title">Профиль участника</h1>
+            <p class="wf-subtitle">Заполните основные данные</p>
+          </div>
+          <div class="wf-step" aria-label="Шаг 1 из 10">
+            <span class="wf-step__num" id="stepNum">01</span>
+            <span class="wf-step__total">из 10</span>
+          </div>
+        </header>
+
+        <div class="wf-progress" aria-hidden="true">
+          <span class="wf-progress__start">Профиль</span>
+          <div class="wf-route"><img src="assets/form/route.svg" alt="" width="560" height="40"></div>
+          <span class="wf-progress__end">Готово</span>
+        </div>
+
+        <div class="wf-fields">
+          <div class="wf-field" data-required>
+            <label class="wf-label" for="f-name">Имя *</label>
+            <div class="wf-input">
+              <input id="f-name" name="name" type="text" placeholder="Иван" autocomplete="given-name" required>
+              <img class="wf-icon wf-icon--valid" src="assets/form/icon-valid.svg" alt="" width="24" height="24">
+            </div>
+          </div>
+          <div class="wf-field">
+            <label class="wf-label" for="f-patronymic">Отчество</label>
+            <div class="wf-input">
+              <input id="f-patronymic" name="patronymic" type="text" placeholder="Иванович" autocomplete="additional-name">
+            </div>
+          </div>
+          <div class="wf-field" data-required>
+            <label class="wf-label" for="f-surname">Фамилия *</label>
+            <div class="wf-input">
+              <input id="f-surname" name="surname" type="text" placeholder="Иванов" autocomplete="family-name" required>
+              <img class="wf-icon wf-icon--valid" src="assets/form/icon-valid.svg" alt="" width="24" height="24">
+            </div>
+          </div>
+          <div class="wf-field" data-required data-kind="date">
+            <label class="wf-label" for="f-birth">Дата рождения *</label>
+            <div class="wf-input">
+              <input id="f-birth" name="birth" type="text" inputmode="numeric" placeholder="ДД.ММ.ГГГГ" maxlength="10" autocomplete="bday" required>
+              <img class="wf-icon" src="assets/form/icon-calendar.svg" alt="" width="24" height="24">
+            </div>
+          </div>
+        </div>
+
+        <footer class="wf-footer">
+          <p class="wf-autosave"><img src="assets/form/icon-autosave.svg" alt="" width="22" height="22">Данные сохраняются автоматически</p>
+          <button class="wf-button" type="submit">
+            <span class="wf-button__label">Продолжить</span>
+            <img class="wf-button__capsule" src="assets/form/arrow-capsule.svg" alt="" width="60" height="60">
+            <img class="wf-button__arrow" src="assets/form/icon-arrow-right.svg" alt="" width="24" height="24">
+          </button>
+        </footer>
+
+        <div class="wf-beam" aria-hidden="true"></div>
+        <img class="wf-point" src="assets/form/light-point.svg" alt="" width="24" height="24" aria-hidden="true">
+      </div>
+    </form>
+  </div>
+</div>
+
 <script type="importmap">
 {"imports":{
   "three":"./vendor/three/build/three.module.min.js",
   "three/addons/":"./vendor/three/examples/jsm/"
 }}
 </script>
-<script type="module" src="scene.js?v=20261107f"></script>
+<script type="module" src="scene.js?v=form2"></script>
+<script src="form.js?v=1" defer></script>
 </body>
 </html>
