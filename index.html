@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Город будущего · живой фон</title>
+<link rel="icon" href="data:,">
+<link rel="preload" as="image" href="assets/background.webp?v=20261107b">
+<link rel="modulepreload" href="vendor/three/build/three.module.min.js">
+<link rel="modulepreload" href="vendor/three/build/three.core.min.js">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{overflow:hidden;background:#cfe0f7}
+
+  /* The stage keeps the picture's own aspect ratio (2800 x 1800) and covers the viewport.
+     Background, 3D layer and cut-out layers share its coordinate space exactly.
+     scene.js frames it per screen (which part of the picture stays in view);
+     the CSS below is only the centred fallback before the script runs. */
+  .viewport{position:fixed;inset:0;overflow:hidden}
+  .stage{
+    position:absolute;
+    width:max(100vw, 100dvh * 2800 / 1800);
+    aspect-ratio:2800 / 1800;
+    left:50%;top:50%;transform:translate(-50%,-50%);
+  }
+  .stage.framed{transform:none}
+  .stage > *{position:absolute;inset:0;width:100%;height:100%}
+  .bg{background:url(assets/background.webp?v=20261107b) center/100% 100% no-repeat}
+  canvas.world{display:block;pointer-events:none}
+  .stage > .layer{inset:auto;pointer-events:none;z-index:2;visibility:hidden}
+  .stage > .layer.placed{visibility:visible}   /* shown only once scene.js has put it in place */
+  .bg{z-index:0} canvas.world{z-index:1}
+  .stage > .layer.behind{z-index:0}   /* a layer the robot is currently in front of */
+  .occ{background:url(assets/background.webp?v=20261107b) center/100% 100% no-repeat;pointer-events:none}
+  .debug .occ{outline:2px solid #f0f;background-color:rgba(255,0,255,.15)}
+</style>
+</head>
+<body>
+<div class="viewport">
+  <div class="stage" id="stage">
+    <div class="bg" role="img" aria-label="Город будущего: эстакада, дорога, остановка и тоннель"></div>
+    <canvas class="world" id="world"></canvas>
+    <!-- Cut-out layers. data-x/y/w/h are in the ORIGINAL picture's pixels (1446 x 1087);
+         scene.js places them inside the extended background. -->
+    <!-- the arch (full length, with its second span), island, tree and lamp: traffic passes behind it -->
+    <img class="layer" src="assets/arch-wide.webp" alt="" decoding="async" data-x="971" data-y="411" data-w="848.59" data-h="325.46">
+    <!-- the station building: the monorail runs behind it. Cut at y 560 so the bench, bollards
+         and stop below stay in the background and buses pass in front -->
+    <img class="layer" src="assets/building.webp" alt="" decoding="async" data-x="0" data-y="68" data-w="375.25" data-h="492">
+    <!-- right sidewalk: the flower planter and, in front of it, the lamp; the robot passes behind both -->
+    <img class="layer" id="flowerLayer" src="assets/flower.webp" alt="" decoding="async" data-x="1369" data-y="726" data-w="77" data-h="168">
+    <img class="layer" src="assets/lamp.webp" alt="" decoding="async" data-x="1332" data-y="737" data-w="45.08" data-h="185.31">
+    <!-- the big tree on the right (wide background): the monorail and the flying car disappear behind it -->
+    <img class="layer" src="assets/tree.webp" alt="" decoding="async" data-x="1436" data-y="-45.5" data-w="676.34" data-h="764.38">
+    <!-- the bushes bed on the right (wide background): the robot comes in in front of it and leaves behind it -->
+    <img class="layer" id="bushLayer" src="assets/bushes.webp" alt="" decoding="async" data-x="1363" data-y="678.5" data-w="749.25" data-h="245.75">
+
+    <!-- occluders are injected here: copies of the picture clipped to things that stand in front of traffic -->
+  </div>
+</div>
+
+<script type="importmap">
+{"imports":{
+  "three":"./vendor/three/build/three.module.min.js",
+  "three/addons/":"./vendor/three/examples/jsm/"
+}}
+</script>
+<script type="module" src="scene.js?v=20261107f"></script>
+</body>
+</html>
