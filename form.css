@@ -108,34 +108,52 @@
   box-shadow:0 0 8px rgba(92,232,255,.75)}
 .wf-point{position:absolute;left:801.5px;top:5.5px;width:24px;height:24px;pointer-events:none}
 
-/* ---------- phones: one column, the card fills the width ---------- */
+/* ---------- phones: a compact card in the middle, the city stays visible above and below ---------- */
 @media (max-width: 720px){
-  .form-layer{place-items:start center;overflow-y:auto;padding:max(76px, 10vh) 16px 24px;pointer-events:auto}
-  .form-scale{width:100%;max-width:520px;height:auto;transform:none}
-  .wow-form{width:100%;height:auto}
-  .wow-form__aura{left:-8px;top:-8px;width:calc(100% + 16px);height:calc(100% + 16px)}
-  .wow-form__glass{position:relative;padding:28px 20px 24px;gap:24px;justify-content:flex-start}
-  .wf-header{height:auto;align-items:flex-start;gap:12px}
-  .wf-title{font-size:28px;letter-spacing:-.56px;white-space:normal}
-  .wf-subtitle{font-size:15px;white-space:normal}
-  .wf-copy{white-space:normal;min-width:0}
-  .wf-step{width:96px;height:56px;padding:0 10px;gap:5px;border-radius:18px;flex:none}
-  .wf-step__num{font-size:26px;letter-spacing:-1px}
-  .wf-step__total{font-size:12px;width:auto}
-  .wf-progress{gap:10px}
-  .wf-route{flex:1;width:auto;min-width:0;height:22px;overflow:hidden}
-  .wf-route{overflow:visible}
+  .form-layer{place-items:center;overflow-y:auto;padding:max(64px, 9vh) 20px 24px;pointer-events:auto}
+  .form-scale{width:100%;max-width:440px;height:auto;transform:none}
+  .wow-form{width:100%;height:auto;border-radius:24px}
+  .wow-form__aura{left:-6px;top:-6px;width:calc(100% + 12px);height:calc(100% + 12px);border-radius:30px}
+  .wow-form__glass{position:relative;padding:18px 16px 14px;gap:14px;justify-content:flex-start;border-radius:24px}
+  .wow-form__glass::before{border-radius:24px}
+  .wf-header{height:auto;align-items:center;gap:10px}
+  .wf-copy{gap:4px;white-space:normal;min-width:0}
+  .wf-eyebrow{font-size:10px;letter-spacing:.5px}
+  .wf-title{font-size:22px;letter-spacing:-.44px;white-space:nowrap}
+  .wf-subtitle{font-size:13px;white-space:normal}
+  .wf-step{width:auto;height:44px;padding:0 10px;gap:4px;white-space:nowrap;border-radius:14px;flex:none}
+  .wf-step__num{font-size:20px;letter-spacing:-.8px}
+  .wf-step__total{font-size:10px;width:auto}
+  .wf-progress{gap:8px;height:20px;font-size:11px}
+  .wf-route{flex:1;width:auto;min-width:0;height:20px;overflow:visible}
   .wf-route img{width:100%;height:auto;top:50%;transform:translateY(-50%)}   /* scale the route as a whole, circles stay round */
-  .wf-fields{grid-template-columns:1fr;height:auto}
-  .wf-input,.wf-field{width:100%}
-  .wf-input .wf-icon{left:auto;right:16px}
-  .wf-footer{flex-direction:column-reverse;align-items:stretch;gap:16px;height:auto}
-  .wf-autosave{justify-content:center}
-  .wf-button{width:100%}
-  .wf-button__capsule{left:auto;right:-1px}
-  .wf-button__arrow{left:auto;right:17px}
-  .wf-beam{left:auto;right:28px;width:120px}
-  .wf-point{left:auto;right:18px}
+  .wf-fields{grid-template-columns:1fr 1fr;column-gap:10px;row-gap:10px;height:auto}
+  .wf-field{width:100%;min-width:0;height:auto;gap:5px}
+  .wf-label{font-size:12px}
+  .wf-input{width:100%;height:44px}
+  .wf-input input{padding:0 34px 0 12px;border-radius:12px;font-size:15px}
+  .wf-input .wf-icon{left:auto;right:10px;top:12px;width:20px;height:20px}
+  .wf-footer{flex-direction:column-reverse;align-items:stretch;gap:10px;height:auto}
+  .wf-autosave{justify-content:center;font-size:11px;gap:6px}
+  .wf-autosave img{width:16px;height:16px}
+  .wf-button{width:100%;height:48px;border-radius:14px;font-size:16px}
+  .wf-button__label{left:18px;top:50%;transform:translateY(-50%)}
+  .wf-button__capsule{left:auto;right:-1px;top:-3px;width:52px;height:52px}
+  .wf-button__arrow{left:auto;right:14px;top:12px}
+  .wf-beam{left:auto;right:22px;top:12px;width:90px}
+  .wf-point{left:auto;right:12px;top:1px}
+}
+/* very narrow phones: fields go back to one column */
+@media (max-width: 339px){
+  .form-layer{padding-left:12px;padding-right:12px}
+  .wow-form__glass{padding:16px 12px 12px;gap:12px}
+  .wf-title{font-size:19px}
+  .wf-step{height:40px;padding:0 8px}
+  .wf-step__num{font-size:18px}
+  .wf-fields{grid-template-columns:1fr;row-gap:8px}
+  .wf-input{height:40px}
+  .wf-input .wf-icon{top:10px}
+  .wf-input input{font-size:14px}
 }
 @media (prefers-reduced-motion: reduce){
   .wf-input .wf-icon--valid,.wf-button,.scene-pause{transition:none}
