@@ -5,11 +5,11 @@
   const pauseBtn = document.getElementById('scenePause');
   const KEY = 'transport-future-profile-draft';
 
-/* desktop: the Figma card (860 x 560), centred, at about 72% and never wider than ~44% of the
-     window, so plenty of the moving city shows around it */
+/* desktop: the Figma card (860 x 560), centred, at about 86% and never wider than ~54% of the
+     window, so the moving city still shows around it and the text stays readable */
   function fit(){
     if (matchMedia('(max-width: 720px)').matches){ scaleBox.style.removeProperty('--k'); return; }
-    const k = Math.min(.72, innerWidth * .44 / 860, (innerHeight - 64) / 560);
+    const k = Math.min(.86, innerWidth * .54 / 860, (innerHeight - 64) / 560);
     scaleBox.style.setProperty('--k', Math.max(.55, k).toFixed(3));
   }
   addEventListener('resize', fit, {passive: true});

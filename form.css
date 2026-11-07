@@ -27,7 +27,7 @@
 /* the card is centred and scaled as one piece (every Figma proportion kept), a little smaller
    than in the mock-up so the moving traffic shows all around it */
 .form-layer{position:fixed;inset:0;z-index:20;display:grid;place-items:center;pointer-events:none}
-.form-scale{width:860px;height:560px;transform:scale(var(--k,.72));transform-origin:center;pointer-events:auto}
+.form-scale{width:860px;height:560px;transform:scale(var(--k,.86));transform-origin:center;pointer-events:auto}
 
 /* Профиль · WOW form · Rubik (189:19458) */
 .wow-form{position:relative;width:860px;height:560px;border-radius:34px;
