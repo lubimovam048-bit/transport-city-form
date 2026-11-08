@@ -197,6 +197,16 @@
     clearTimeout(autoNext);
     autoNext = setTimeout(() => { if (current === '2') form.requestSubmit(); }, 280);   /* let the card show it is picked */
   }));
+  /* 07 · picking whose phone it is: with a valid number already typed, go on; otherwise jump into the number field */
+  [...form.elements.phoneOwner].forEach(r => r.addEventListener('click', () => {
+    if (current !== '7') return;
+    clearTimeout(autoNext);
+    autoNext = setTimeout(() => {
+      if (current !== '7') return;
+      if (validPhone(form.elements.phone.value)) form.requestSubmit();
+      else form.elements.phone.focus({preventScroll: phone()});
+    }, 280);
+  }));
   form.addEventListener('focusout', e => {
     const f = e.target.closest('.wf-field');
     if (f && e.target.value && f.dataset.kind !== 'radio' && f.dataset.kind !== 'check') check(f, true);
