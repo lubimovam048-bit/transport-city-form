@@ -35,6 +35,8 @@
   const order = () => ['1', '2', form.elements.citizenship.value === 'other' ? '3b' : '3a', '5', '6', '7', '8', '9', '10'];
   const panels = Object.fromEntries([...form.querySelectorAll('.wf-panel')].map(p => [p.dataset.step, p]));
   let current = '1';
+  let maxN = 1;                          /* the furthest step reached: dots up to it can be clicked */
+  try { maxN = +localStorage.getItem(KEY + ':max') || 1; } catch(e) {}
 
   /* preload the beaver poses so swapping never flashes */
   new Set(Object.values(STEPS).map(s => s.img).filter(Boolean)).forEach(n => { const i = new Image(); i.src = `assets/form/${n}.webp`; });
@@ -58,7 +60,19 @@
     if (animate){ void panels[key].offsetWidth; panels[key].classList.add('is-entering'); }
     stepNum.textContent = String(st.n).padStart(2, '0');
     document.getElementById('stepBadge').setAttribute('aria-label', `Шаг ${st.n} из 10`);
-    stops.forEach((s, i) => s.classList.toggle('is-active', i < st.n));
+    if (key !== 'done') maxN = Math.max(maxN, st.n);
+    try { localStorage.setItem(KEY + ':max', maxN); } catch(e) {}
+    stops.forEach((s, i) => {
+      const n = i + 1, reach = key !== 'done' && n <= maxN && n !== st.n && !(n === 4 && st.n === 5);
+      s.classList.toggle('is-active', i < st.n);
+      s.classList.toggle('is-current', n === st.n && key !== 'done');
+      s.classList.toggle('is-reachable', reach);
+      s.tabIndex = reach ? 0 : -1;
+      s.setAttribute('role', 'button');
+      s.setAttribute('aria-label', `Шаг ${n}`);
+      s.setAttribute('aria-disabled', String(!reach));
+      if (n === st.n) s.setAttribute('aria-current', 'step'); else s.removeAttribute('aria-current');
+    });
     progress.style.setProperty('--done', st.n - 1);
     backBtn.hidden = key === '1' || key === '10' || key === 'done';
     nextLabel.textContent = key === '10' ? 'Все верно' : 'Далее';
@@ -326,6 +340,33 @@
     try { localStorage.setItem(KEY + ':done', new Date().toISOString()); } catch(e) {}
     show('done', true);
   });
+  /* ---------- the route: click a stop to jump to that step ---------- */
+  const keyOfN = n => n === 3 ? (E.citizenship.value === 'other' ? '3b' : '3a') : n === 4 ? '5' : String(n);  /* step 04 is not designed */
+  function jumpTo(n){
+    const seq = order(), from = seq.indexOf(current), target = keyOfN(n), to = seq.indexOf(target);
+    if (to < 0 || target === current) return;
+    editing = false;
+    if (from < 0 || to < from) return show(target, true);          /* going back is always allowed */
+    /* going forward: every step on the way must be filled; stop at the first one that is not */
+    for (let i = from; i < to; i++){
+      const fs = fieldsOf(seq[i]);
+      const ok = fs.map(f => check(f, i === from)).every(Boolean);
+      if (!ok){
+        if (i !== from) show(seq[i], true);
+        fs.forEach(f => check(f, true));
+        return;
+      }
+    }
+    save();
+    show(target, true);
+  }
+  stops.forEach((s, i) => {
+    s.addEventListener('click', () => { if (s.classList.contains('is-reachable')) jumpTo(i + 1); });
+    s.addEventListener('keydown', e => {
+      if ((e.key === 'Enter' || e.key === ' ') && s.classList.contains('is-reachable')){ e.preventDefault(); jumpTo(i + 1); }
+    });
+  });
+
   backBtn.addEventListener('click', () => {
     if (editing){ editing = false; return show('10', true); }
     const seq = order(), i = seq.indexOf(current);

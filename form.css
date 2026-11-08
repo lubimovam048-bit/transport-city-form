@@ -237,6 +237,15 @@
 .wf-combo__list li mark{background:none;color:#1d4ed8;font-weight:600}
 .wf-combo__list .is-empty{cursor:default;color:#6b7280;background:none!important}
 
+
+/* the stops are clickable: back to any step, forward up to the furthest one reached */
+.wf-stop.is-reachable{cursor:pointer}
+.wf-stop.is-reachable::after{content:"";position:absolute;inset:-10px}   /* a bigger target for fingers */
+.wf-stop.is-reachable:hover{transform:scale(1.15)}
+.wf-stop{transition:background .3s ease, border-color .3s ease, transform .15s ease}
+.wf-stop.is-current{box-shadow:0 6px 16px rgba(43,112,232,.1),0 0 0 4px rgba(51,123,255,.18)}
+.wf-stop:focus-visible{outline:3px solid #8ed8ff;outline-offset:3px}
+
 /* buttons row: Назад (secondary) + Далее (primary) */
 .wf-footer{display:flex;justify-content:flex-end;align-items:center;gap:8px;height:60px}
 .b-button{display:inline-flex;align-items:center;gap:12px;height:56px;padding:8px 12px;margin:2px;border:0;border-radius:12px;cursor:pointer;
