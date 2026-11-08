@@ -299,7 +299,7 @@
   .wf-choice--row{padding:12px;gap:8px}
   .wf-choice--row:has(input:checked){padding:11px}
   .wf-phone{gap:10px;flex-wrap:wrap}
-  .wf-phone > .wf-field.wf-field--rep{flex:1 1 100%}
+  .wf-phone > .wf-field.wf-field--rep{flex:1 1 100%;order:-1}   /* phones: the name goes above the number */
   .wf-input--code select{width:96px}
   .wf-input--code.is-ru select{padding-left:38px}
   .wf-input--code.is-ru::before{left:12px;top:13px;width:20px;height:20px}
