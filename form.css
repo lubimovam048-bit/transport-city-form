@@ -24,106 +24,26 @@
 .scene-pause:focus-visible{outline:3px solid #8ed8ff;outline-offset:-18px;border-radius:50%}
 .scene-pause[aria-pressed="true"]{filter:saturate(.35) brightness(1.05)}
 
-/* the card is centred and scaled as one piece (every Figma proportion kept), a little smaller
-   than in the mock-up so the moving traffic shows all around it */
-.form-layer{position:fixed;inset:0;z-index:20;display:grid;place-items:center;pointer-events:none}
-.form-scale{width:860px;height:560px;transform:scale(var(--k,.86));transform-origin:center;pointer-events:auto}
+/* Both screens are centred and scaled as one piece (Figma proportions kept) by --k from form.js.
+   The scale box has room on top for the beaver that stands on the card. */
+.welcome-layer,.form-layer{position:fixed;inset:0;z-index:20;display:grid;place-items:center;pointer-events:none}
+.welcome-layer[hidden],.form-layer[hidden]{display:none}
+.welcome-layer{transition:opacity .35s ease, transform .35s ease}
+.welcome-layer.is-leaving{opacity:0;transform:scale(.97)}
+.form-layer.is-entering{animation:formIn .4s ease both}
+@keyframes formIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+.welcome-scale,.form-scale{width:860px;transform:scale(var(--k,.86));transform-origin:center;pointer-events:auto}
+.welcome-scale{padding-top:231px}
+.form-scale{padding-top:226px}
 
-/* Профиль · WOW form · Rubik (189:19458) */
-.wow-form{position:relative;width:860px;height:560px;border-radius:34px;
+/* shared card surface (Figma: glass gradient, 2px light-blue stroke, radius 36, padding 40) */
+.welcome,.wow-form{position:relative;width:860px;padding:40px;border:2px solid rgba(142,216,255,.9);border-radius:36px;
   font-family:'Rubik',system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+  background:linear-gradient(101.28deg,rgba(248,252,255,.96) 0%,rgba(238,246,255,.93) 58%,rgba(221,235,255,.9) 100%);
   box-shadow:0 8px 40px rgba(23,105,255,.25),0 0 12px rgba(65,184,255,.45);
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.wow-form__aura{position:absolute;left:-8px;top:-8px;width:876px;height:576px;border-radius:42px;
-  background:rgba(31,122,255,.22);filter:blur(14px);pointer-events:none}
-.wow-form__glass{position:absolute;inset:0;z-index:1;isolation:isolate;display:flex;flex-direction:column;justify-content:space-between;
-  padding:36px 40px;border:1.5px solid rgba(142,216,255,.9);border-radius:36px;
-  box-shadow:0 0 12px rgba(54,183,255,.36),0 22px 48px rgba(10,43,112,.28)}
-.wow-form__glass::before{content:"";position:absolute;inset:0;border-radius:36px;z-index:-1;
-  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
-  background:linear-gradient(101.83deg,rgba(248,252,255,.96) 0%,rgba(238,246,255,.93) 58%,rgba(221,235,255,.9) 100%)}
-.wow-form__glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  box-shadow:inset 0 1px 2px rgba(255,255,255,.78)}
 
-/* Header */
-.wf-header{display:flex;align-items:center;justify-content:space-between;height:96px}
-.wf-copy{display:flex;flex-direction:column;gap:8px;white-space:nowrap;line-height:normal}
-.wf-eyebrow{font-weight:600;font-size:12px;letter-spacing:.6px;color:var(--blue-600)}
-.wf-title{font-weight:700;font-size:40px;letter-spacing:-.8px;color:var(--ink-900);line-height:normal}
-.wf-subtitle{font-weight:400;font-size:16px;color:var(--ink-400)}
-.wf-step{display:flex;align-items:center;justify-content:center;gap:9px;width:150px;height:78px;padding:0 16px;
-  border:1px solid rgba(168,216,255,.92);border-radius:24px;font-style:italic;
-  background:linear-gradient(90deg,rgba(234,244,255,.92),rgba(255,255,255,.56));
-  filter:drop-shadow(0 0 9px rgba(28,117,255,.22))}
-.wf-step__num{font-weight:500;font-size:38px;letter-spacing:-1.52px;color:var(--blue-700);line-height:normal}
-.wf-step__total{font-weight:600;font-size:14px;color:var(--ink-500);width:36px;line-height:normal}
-
-/* Progress / Route */
-.wf-progress{display:flex;align-items:center;justify-content:space-between;height:28px;font-weight:500;font-size:13px;line-height:normal}
-.wf-progress__start{color:var(--ink-700)}
-.wf-progress__end{color:var(--ink-350)}
-.wf-route{position:relative;width:560px;height:22px;flex:none}
-.wf-route img{position:absolute;left:0;right:0;top:-9.17px;width:560px;height:40px;display:block}
-
-/* Fields */
-.wf-fields{display:grid;grid-template-columns:382px 382px;column-gap:16px;row-gap:16px;height:174px}
-.wf-field{display:flex;flex-direction:column;gap:7px;height:79px}
-.wf-label{font-weight:500;font-size:14px;color:var(--ink-600);line-height:normal}
-.wf-input{position:relative;width:382px;height:52px}
-.wf-input input{width:100%;height:100%;padding:0 52px 0 18px;border:1px solid rgba(185,214,255,.92);border-radius:16px;
-  font:500 17px/normal 'Rubik',system-ui,sans-serif;color:var(--ink-800);outline:none;
-  background:linear-gradient(90deg,rgba(255,255,255,.76),rgba(237,245,255,.72));
-  box-shadow:0 6px 16px rgba(43,112,232,.1),inset 0 1px 1px rgba(255,255,255,.85);
-  transition:border-color .2s ease, box-shadow .2s ease}
-.wf-input input::placeholder{font-weight:400;color:var(--ink-300);opacity:1}
-.wf-input input:focus{border-color:#5aa8ff;box-shadow:0 6px 16px rgba(43,112,232,.1),0 0 0 4px rgba(51,123,255,.16),inset 0 1px 1px rgba(255,255,255,.85)}
-.wf-input .wf-icon{position:absolute;left:342px;top:14px;width:24px;height:24px;pointer-events:none}
-.wf-input .wf-icon--valid{opacity:0;transform:scale(.6);transition:opacity .2s ease, transform .25s cubic-bezier(.2,.9,.3,1.4)}
-.wf-field.is-valid .wf-icon--valid{opacity:1;transform:none}
-.wf-field.is-error input{border-color:var(--danger);box-shadow:0 6px 16px rgba(229,72,77,.12),0 0 0 4px rgba(229,72,77,.12)}
-.wf-error{display:none}
-.wf-field.is-error .wf-label{color:var(--danger)}
-
-/* Footer / Actions */
-.wf-footer{display:flex;align-items:center;justify-content:space-between;height:56px}
-.wf-autosave{display:flex;align-items:center;gap:9px;font-weight:400;font-size:13px;color:var(--ink-450);line-height:normal}
-.wf-autosave img{width:22px;height:22px;display:block}
-.wf-button{position:relative;width:230px;height:56px;border-radius:18px;border:1px solid rgba(134,201,255,.78);cursor:pointer;
-  background:linear-gradient(90deg,#337bff,#1248da);
-  box-shadow:0 10px 24px rgba(11,62,181,.35),0 0 16px rgba(0,108,255,.45);
-  font:600 17px/normal 'Rubik',system-ui,sans-serif;color:#fff;text-align:left;padding:0;
-  transition:transform .15s ease, box-shadow .2s ease, filter .2s ease}
-.wf-button::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 1px 1px rgba(255,255,255,.32)}
-.wf-button:hover{filter:brightness(1.06);box-shadow:0 12px 28px rgba(11,62,181,.4),0 0 20px rgba(0,108,255,.55)}
-.wf-button:active{transform:translateY(1px) scale(.99)}
-.wf-button:focus-visible{outline:3px solid #8ed8ff;outline-offset:3px}
-.wf-button__label{position:absolute;left:23px;top:17px}
-.wf-button__capsule{position:absolute;left:171px;top:-3px;width:60px;height:60px;display:block}
-.wf-button__arrow{position:absolute;left:189px;top:15px;width:24px;height:24px;display:block;transition:transform .2s ease}
-.wf-button:hover .wf-button__arrow{transform:translateX(2px)}
-
-/* Accents */
-.wf-beam{position:absolute;left:640.5px;top:16.5px;width:176px;height:2px;border-radius:1px;pointer-events:none;
-  background:linear-gradient(90deg,rgba(115,217,255,0) 0%,rgba(115,217,255,.8) 72%,#fff 100%);
-  box-shadow:0 0 8px rgba(92,232,255,.75)}
-.wf-point{position:absolute;left:801.5px;top:5.5px;width:24px;height:24px;pointer-events:none}
-
-
-/* ---------- Welcome screen (Figma 209:23226): card 860 x 458 with a wave on top, beaver over it ---------- */
-.welcome-layer{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding-top:120px;pointer-events:none;
-  transition:opacity .35s ease, transform .35s ease}
-.welcome-layer.is-leaving{opacity:0;transform:scale(.97)}
-.welcome-layer[hidden]{display:none}
-.welcome-scale{width:860px;transform:scale(var(--k,.86));transform-origin:center;pointer-events:auto}
-.welcome{position:relative;width:860px;min-height:458px;font-family:'Rubik',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-.welcome__card{position:absolute;inset:0;width:100%;height:100%;overflow:visible;
-  filter:drop-shadow(0 0 6px rgba(65,184,255,.45)) drop-shadow(0 8px 20px rgba(23,105,255,.25))}
-.welcome__beaver{position:absolute;left:300px;top:-197px;width:237px;height:267px;z-index:2;pointer-events:none;
-  filter:drop-shadow(0 6px 10px rgba(10,43,112,.18))}
-.welcome__body{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:40px;
-  padding:110px 40px 56px;text-align:center}
-.welcome__title{font-weight:600;font-size:40px;line-height:48px;letter-spacing:-.8px;color:#1f2937;margin:0}
-.welcome__text{font-weight:400;font-size:24px;line-height:normal;color:#6b7280;max-width:506px;margin:0}
+/* buttons: Button / Form primary */
 .w-button{display:inline-flex;align-items:center;gap:12px;height:56px;padding:8px 12px;margin:2px;border:0;border-radius:12px;cursor:pointer;
   background:linear-gradient(90deg,#337bff,#1248da);color:#fff;font:500 18px/26px 'Rubik',system-ui,sans-serif;
   box-shadow:0 10px 15px rgba(11,62,181,.25),0 0 8px rgba(0,108,255,.35),inset 0 1px 1px rgba(255,255,255,.32);
@@ -135,66 +55,109 @@
   filter:drop-shadow(0 0 5px rgba(99,200,255,.62))}
 .w-button__circle img{width:20px;height:20px;display:block;transition:transform .2s ease}
 .w-button:hover .w-button__circle img{transform:translateX(2px)}
-.form-layer[hidden]{display:none}
-.form-layer.is-entering{animation:formIn .4s ease both}
-@keyframes formIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+.w-button--big{width:176px;height:68px;justify-content:center;font-size:24px}
 
-/* ---------- phones: a compact card in the middle, the city stays visible above and below ---------- */
+/* ---------- Welcome (Figma 215:23430) ---------- */
+.welcome__beaver{position:absolute;left:244px;top:-231px;width:372px;height:248px;pointer-events:none;
+  filter:drop-shadow(0 6px 10px rgba(10,43,112,.16))}
+.welcome__body{display:flex;flex-direction:column;align-items:center;gap:36px;text-align:center}
+.welcome__title{font-weight:600;font-size:40px;line-height:48px;letter-spacing:-.8px;color:#1f2937;margin:0}
+.welcome__text{font-weight:400;font-size:24px;line-height:normal;color:#4b5563}
+.welcome__text p{margin:0}
+
+/* ---------- Profile form (Figma 215:23341) ---------- */
+.wform{position:relative}
+.wform__guide{position:absolute;left:128px;top:-226px;width:420px;height:248px;z-index:2;pointer-events:none}
+.wform__beaver{position:absolute;left:193px;top:0;width:218px;height:248px;filter:drop-shadow(0 6px 10px rgba(10,43,112,.18))}
+.wform__bubble{position:absolute;left:0;top:0;width:215px;height:107px}
+.wform__bubble img{position:absolute;left:-10.5px;top:-.5px;width:236.6px;height:100.8px;display:block}
+.wform__bubble p{position:absolute;left:10px;top:17px;width:195px;margin:0;text-align:center;
+  font:600 14px/16px 'Inter','Rubik',system-ui,sans-serif;color:#1f2937}
+.wow-form{display:flex;flex-direction:column;gap:20px}
+
+.wf-header{display:flex;align-items:flex-start;justify-content:space-between}
+.wf-copy{display:flex;flex-direction:column;gap:20px;white-space:nowrap}
+.wf-eyebrow{font-weight:500;font-size:14px;line-height:20px;color:#1768f2;margin:0}
+.wf-title{font-weight:600;font-size:40px;line-height:normal;letter-spacing:-.8px;color:#1f2937;margin:0}
+.wf-subtitle{font-weight:400;font-size:18px;line-height:normal;color:#6b7280;margin:-8px 0 0}
+.wf-step{display:flex;align-items:center;gap:12px;padding:12px 20px;border:1px solid rgba(185,214,255,.92);border-radius:999px;
+  background:linear-gradient(90deg,rgba(234,244,255,.92),rgba(255,255,255,.56));font-style:italic;flex:none}
+.wf-step__num{width:50px;text-align:right;font-weight:500;font-size:38px;line-height:49px;letter-spacing:-1.52px;color:#1d4ed8}
+.wf-step__total{width:47px;font-weight:600;font-size:18px;line-height:normal;color:#4b5563}
+
+/* the route: 10 stops on a line, the current one filled blue */
+.wf-progress{position:relative;display:flex;justify-content:space-between;list-style:none;margin:0;padding:10px 0}
+.wf-progress::before{content:"";position:absolute;left:16px;right:16px;top:50%;height:3px;margin-top:-1.5px;background:#b9d6ff}
+.wf-stop{position:relative;width:32px;height:32px;border-radius:50%;border:3px solid #b9d6ff;
+  background:linear-gradient(97deg,rgba(248,252,255,.96),rgba(238,246,255,.93) 58%,rgba(221,235,255,.9));
+  box-shadow:0 6px 16px rgba(43,112,232,.1)}
+.wf-stop.is-active{border:1px solid #b9d6ff;
+  background:radial-gradient(circle at 40% 30%,rgba(255,255,255,.5),rgba(255,255,255,0) 66%),#1768f2}
+
+.wf-fields{display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:16px;border:0;margin:0;padding:0;min-width:0}
+.wf-section{grid-column:1/-1;float:left;width:100%;padding:0;margin:0 0 0;font-weight:600;font-size:20px;line-height:28px;color:#1f2937}
+.wf-section + *{clear:both}
+.wf-field{display:flex;flex-direction:column;min-width:0}
+.wf-label{display:flex;gap:4px;font-weight:500;font-size:14px;line-height:20px;color:#4b5563}
+.wf-req{color:#dc2626}
+.wf-input{position:relative;padding:2px}
+.wf-input input{width:100%;height:52px;padding:8px 40px 8px 12px;border:1px solid rgba(185,214,255,.92);border-radius:12px;background:#fff;
+  font:500 16px/24px 'Rubik',system-ui,sans-serif;color:#1f2937;outline:none;
+  box-shadow:0 6px 8px rgba(43,112,232,.1),inset 0 1px 1px rgba(255,255,255,.85);transition:border-color .2s ease, box-shadow .2s ease}
+.wf-input input::placeholder{color:#9ca3af;opacity:1}
+.wf-input input:focus{border-color:#5aa8ff;box-shadow:0 6px 8px rgba(43,112,232,.1),0 0 0 4px rgba(51,123,255,.16)}
+.wf-icon{position:absolute;right:14px;top:18px;width:20px;height:20px;pointer-events:none}
+.wf-icon--valid{opacity:0;transform:scale(.6);transition:opacity .2s ease, transform .25s cubic-bezier(.2,.9,.3,1.4)}
+.wf-field.is-valid .wf-icon--valid{opacity:1;transform:none}
+.wf-field.is-error input{border-color:#dc2626;box-shadow:0 6px 8px rgba(220,38,38,.1),0 0 0 4px rgba(220,38,38,.12)}
+.wf-field.is-error .wf-label{color:#dc2626}
+.wf-footer{display:flex;justify-content:flex-end;align-items:center;height:60px}
+
+/* ---------- phones: the card fills the width, beaver and bubble stay on top ---------- */
 @media (max-width: 720px){
-  .form-layer{place-items:center;overflow-y:auto;padding:max(64px, 9vh) 20px 24px;pointer-events:auto}
-  .form-scale{width:100%;max-width:440px;height:auto;transform:none}
-  .wow-form{width:100%;height:auto;border-radius:24px}
-  .wow-form__aura{left:-6px;top:-6px;width:calc(100% + 12px);height:calc(100% + 12px);border-radius:30px}
-  .wow-form__glass{position:relative;padding:18px 16px 14px;gap:14px;justify-content:flex-start;border-radius:24px}
-  .wow-form__glass::before{border-radius:24px}
-  .wf-header{height:auto;align-items:center;gap:10px}
-  .wf-copy{gap:4px;white-space:normal;min-width:0}
-  .wf-eyebrow{font-size:10px;letter-spacing:.5px}
-  .wf-title{font-size:22px;letter-spacing:-.44px;white-space:nowrap}
-  .wf-subtitle{font-size:13px;white-space:normal}
-  .wf-step{width:auto;height:44px;padding:0 10px;gap:4px;white-space:nowrap;border-radius:14px;flex:none}
-  .wf-step__num{font-size:20px;letter-spacing:-.8px}
-  .wf-step__total{font-size:10px;width:auto}
-  .wf-progress{gap:8px;height:20px;font-size:11px}
-  .wf-route{flex:1;width:auto;min-width:0;height:20px;overflow:visible}
-  .wf-route img{width:100%;height:auto;top:50%;transform:translateY(-50%)}   /* scale the route as a whole, circles stay round */
-  .wf-fields{grid-template-columns:1fr 1fr;column-gap:10px;row-gap:10px;height:auto}
-  .wf-field{width:100%;min-width:0;height:auto;gap:5px}
-  .wf-label{font-size:12px}
-  .wf-input{width:100%;height:44px}
-  .wf-input input{padding:0 34px 0 12px;border-radius:12px;font-size:15px}
-  .wf-input .wf-icon{left:auto;right:10px;top:12px;width:20px;height:20px}
-  .wf-footer{flex-direction:column-reverse;align-items:stretch;gap:10px;height:auto}
-  .wf-autosave{justify-content:center;font-size:11px;gap:6px}
-  .wf-autosave img{width:16px;height:16px}
-  .wf-button{width:100%;height:48px;border-radius:14px;font-size:16px}
-  .wf-button__label{left:18px;top:50%;transform:translateY(-50%)}
-  .wf-button__capsule{left:auto;right:-1px;top:-3px;width:52px;height:52px}
-  .wf-button__arrow{left:auto;right:14px;top:12px}
-  .wf-beam{left:auto;right:22px;top:12px;width:90px}
-  .wf-point{left:auto;right:12px;top:1px}
-  /* welcome on phones: the card fills the width, the beaver stays centred on the wave */
-  .welcome-layer{padding:150px 16px 24px;overflow-y:auto}
-  .welcome-scale{width:100%;max-width:520px;transform:none}
-  .welcome{width:100%;min-height:0}
-  .welcome__beaver{left:50%;top:-138px;width:166px;height:187px;margin-left:-86px}
-  .welcome__body{gap:22px;padding:76px 20px 28px}
+  .welcome-layer,.form-layer{place-items:start center;overflow-y:auto;padding:24px 16px 24px;pointer-events:auto}
+  .welcome-layer{place-items:center}
+  .form-layer{padding-top:max(64px, calc(50vh - 360px))}
+  .welcome-scale,.form-scale{width:100%;max-width:520px;transform:none}
+  .welcome-scale{padding-top:150px}
+  .form-scale{padding-top:150px}
+  .welcome,.wow-form{width:100%;padding:24px 18px 20px;border-radius:24px}
+  .welcome__beaver{left:50%;top:-152px;width:240px;height:160px;margin-left:-120px}
+  .welcome__body{gap:20px}
   .welcome__title{font-size:24px;line-height:30px;letter-spacing:-.48px}
   .welcome__text{font-size:16px;line-height:22px}
+  .w-button--big{width:100%;max-width:240px;height:56px;font-size:20px}
+
+  .wform__guide{left:auto;right:0;top:-150px;width:100%;height:164px}
+  .wform__beaver{left:auto;right:10px;width:144px;height:164px}
+  .wform__bubble{left:0;top:6px;width:min(200px,calc(100% - 150px));height:auto}
+  .wform__bubble img{display:none}
+  .wform__bubble p{position:relative;left:auto;top:auto;width:auto;padding:10px 12px;font-size:12px;line-height:15px;
+    background:#fff;border:1px solid #d5e3f7;border-radius:12px 12px 2px 12px;box-shadow:0 3px 10px rgba(29,78,216,.08)}
+  .wow-form{gap:14px}
+  .wf-copy{gap:6px;white-space:normal;min-width:0}
+  .wf-eyebrow{font-size:11px;line-height:16px}
+  .wf-title{font-size:24px;letter-spacing:-.48px}
+  .wf-subtitle{font-size:14px;margin:0}
+  .wf-step{padding:6px 12px;gap:6px}
+  .wf-step__num{width:auto;font-size:22px;line-height:28px;letter-spacing:-.8px}
+  .wf-step__total{width:auto;font-size:12px;white-space:nowrap}
+  .wf-progress{padding:4px 0}
+  .wf-stop{width:20px;height:20px;border-width:2px}
+  .wf-progress::before{left:10px;right:10px;height:2px;margin-top:-1px}
+  .wf-section{font-size:17px;line-height:24px}
+  .wf-fields{column-gap:10px;row-gap:10px}
+  .wf-label{font-size:12px;line-height:18px}
+  .wf-input input{height:44px;padding:6px 32px 6px 10px;font-size:15px}
+  .wf-icon{right:10px;top:14px;width:18px;height:18px}
+  .wf-footer{height:auto}
+  .wf-footer .w-button{width:100%;justify-content:center}
 }
-/* very narrow phones: fields go back to one column */
 @media (max-width: 339px){
-  .form-layer{padding-left:12px;padding-right:12px}
-  .wow-form__glass{padding:16px 12px 12px;gap:12px}
-  .wf-title{font-size:19px}
-  .wf-step{height:40px;padding:0 8px}
-  .wf-step__num{font-size:18px}
-  .wf-fields{grid-template-columns:1fr;row-gap:8px}
-  .wf-input{height:40px}
-  .wf-input .wf-icon{top:10px}
-  .wf-input input{font-size:14px}
+  .welcome-layer,.form-layer{padding-left:12px;padding-right:12px}
+  .wf-fields{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion: reduce){
-  .wf-input .wf-icon--valid,.wf-button,.scene-pause,.w-button,.welcome-layer{transition:none}
+  .wf-icon--valid,.w-button,.scene-pause,.welcome-layer{transition:none}
   .form-layer.is-entering{animation:none}
 }

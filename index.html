@@ -7,8 +7,8 @@
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="form.css?v=7">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="form.css?v=9">
 <link rel="preload" as="image" href="assets/background.webp?v=20261107b">
 <link rel="modulepreload" href="vendor/three/build/three.module.min.js">
 <link rel="modulepreload" href="vendor/three/build/three.core.min.js">
@@ -69,36 +69,32 @@
 <button class="scene-pause" id="scenePause" type="button" aria-pressed="false" aria-label="Остановить анимацию фона"></button>
 
 
-<!-- ===== Welcome screen (Figma 209:23226): shown first, «Поехали!» opens the form ===== -->
+<!-- ===== Welcome screen (Figma 215:23430): shown first, «Поехали!» opens the form ===== -->
 <div class="welcome-layer" id="welcome">
   <div class="welcome-scale">
     <section class="welcome" aria-labelledby="welcomeTitle">
-      <svg class="welcome__card" viewBox="40 31 860 459" preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="wGrad" x1="-9.7" y1="226.9" x2="907.1" y2="462.2" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#F8FCFF" stop-opacity=".96"/><stop offset=".58" stop-color="#EEF6FF" stop-opacity=".93"/><stop offset="1" stop-color="#DDEBFF" stop-opacity=".9"/>
-          </linearGradient>
-        </defs>
-        <path d="M40 68.4695C40 48.8781 55.6174 32.8976 75.207 32.6297C119.982 32.0176 198.283 31.3703 255 33.2082C339.183 35.9363 385.744 47.1917 470 47.1917C554.256 47.1917 600.817 35.9363 685 33.2082C741.717 31.3703 820.018 32.0176 864.793 32.6297C884.383 32.8976 900 48.8781 900 68.4695V454C900 473.882 883.882 490 864 490H76C56.1177 490 40 473.882 40 454V68.4695Z" fill="url(#wGrad)" stroke="#8ED8FF" stroke-opacity=".9" stroke-width="2" vector-effect="non-scaling-stroke"/>
-      </svg>
-      <img class="welcome__beaver" src="assets/form/beaver.webp" alt="Бобр — маскот конкурса — держит билет" width="237" height="267">
+      <img class="welcome__beaver" src="assets/form/beaver-welcome.webp" alt="Бобр Крутя, маскот конкурса, приветствует участника" width="372" height="248">
       <div class="welcome__body">
         <h1 class="welcome__title" id="welcomeTitle">Добро пожаловать на&nbsp;конкурс «Транспорт будущего»</h1>
-        <p class="welcome__text">Прежде чем ваш проект отправится в&nbsp;путь, нужно оформить «билет»: заполнить анкету участника. Это 10&nbsp;коротких шагов, прогресс не&nbsp;потеряется.</p>
-        <button class="w-button" type="button" id="welcomeGo">
-          <span>Поехали!</span>
-          <span class="w-button__circle"><img src="assets/form/icon-arrow-blue.svg" alt="" width="20" height="20"></span>
-        </button>
+        <div class="welcome__text">
+          <p>Прежде чем ваш проект отправится в&nbsp;путь, нужно оформить «билет»: заполнить анкету участника.</p>
+          <p>Это 10&nbsp;коротких шагов, прогресс не&nbsp;потеряется.</p>
+        </div>
+        <button class="w-button w-button--big" type="button" id="welcomeGo">Поехали!</button>
       </div>
     </section>
   </div>
 </div>
 
+<!-- ===== Profile form (Figma 215:23341) ===== -->
 <div class="form-layer" id="formLayer" hidden>
   <div class="form-scale">
-    <form class="wow-form" id="profileForm" novalidate autocomplete="on">
-      <div class="wow-form__aura" aria-hidden="true"></div>
-      <div class="wow-form__glass">
+    <div class="wform">
+      <div class="wform__guide" aria-hidden="true">
+        <div class="wform__bubble"><img src="assets/form/bubble.svg" alt="" width="237" height="101"><p>Я&nbsp;– КРУТЯ, буду вашим проводником. Давайте знакомиться!</p></div>
+        <img class="wform__beaver" src="assets/form/beaver-form.webp" alt="" width="218" height="248">
+      </div>
+      <form class="wow-form" id="profileForm" novalidate autocomplete="on">
         <header class="wf-header">
           <div class="wf-copy">
             <p class="wf-eyebrow">РЕГИСТРАЦИЯ УЧАСТНИКА</p>
@@ -111,55 +107,48 @@
           </div>
         </header>
 
-        <div class="wf-progress" aria-hidden="true">
-          <span class="wf-progress__start">Профиль</span>
-          <div class="wf-route"><img src="assets/form/route.svg" alt="" width="560" height="40"></div>
-          <span class="wf-progress__end">Готово</span>
-        </div>
+        <ol class="wf-progress" aria-hidden="true"><li class="wf-stop is-active"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li></ol>
 
-        <div class="wf-fields">
+        <fieldset class="wf-fields">
+          <legend class="wf-section">Личные данные</legend>
           <div class="wf-field" data-required>
-            <label class="wf-label" for="f-name">Имя *</label>
+            <label class="wf-label" for="f-name">Имя<span class="wf-req" aria-hidden="true">*</span></label>
             <div class="wf-input">
-              <input id="f-name" name="name" type="text" placeholder="Иван" autocomplete="given-name" required>
-              <img class="wf-icon wf-icon--valid" src="assets/form/icon-valid.svg" alt="" width="24" height="24">
+              <input id="f-name" name="name" type="text" placeholder="Введите имя" data-short="Иван" autocomplete="given-name" required>
+              <img class="wf-icon wf-icon--valid" src="assets/form/icon-valid.svg" alt="" width="20" height="20">
             </div>
           </div>
           <div class="wf-field">
             <label class="wf-label" for="f-patronymic">Отчество</label>
             <div class="wf-input">
-              <input id="f-patronymic" name="patronymic" type="text" placeholder="Иванович" autocomplete="additional-name">
+              <input id="f-patronymic" name="patronymic" type="text" placeholder="Введите отчество" data-short="Иванович" autocomplete="additional-name">
+              <img class="wf-icon wf-icon--valid" src="assets/form/icon-valid.svg" alt="" width="20" height="20">
             </div>
           </div>
           <div class="wf-field" data-required>
-            <label class="wf-label" for="f-surname">Фамилия *</label>
+            <label class="wf-label" for="f-surname">Фамилия<span class="wf-req" aria-hidden="true">*</span></label>
             <div class="wf-input">
-              <input id="f-surname" name="surname" type="text" placeholder="Иванов" autocomplete="family-name" required>
-              <img class="wf-icon wf-icon--valid" src="assets/form/icon-valid.svg" alt="" width="24" height="24">
+              <input id="f-surname" name="surname" type="text" placeholder="Введите фамилию" data-short="Иванов" autocomplete="family-name" required>
+              <img class="wf-icon wf-icon--valid" src="assets/form/icon-valid.svg" alt="" width="20" height="20">
             </div>
           </div>
           <div class="wf-field" data-required data-kind="date">
-            <label class="wf-label" for="f-birth">Дата рождения *</label>
+            <label class="wf-label" for="f-birth">Дата рождения<span class="wf-req" aria-hidden="true">*</span></label>
             <div class="wf-input">
-              <input id="f-birth" name="birth" type="text" inputmode="numeric" placeholder="ДД.ММ.ГГГГ" maxlength="10" autocomplete="bday" required>
-              <img class="wf-icon" src="assets/form/icon-calendar.svg" alt="" width="24" height="24">
+              <input id="f-birth" name="birth" type="text" placeholder="ДД.ММ.ГГГГ" autocomplete="bday" required inputmode="numeric" maxlength="10">
+              <img class="wf-icon wf-icon--valid" src="assets/form/icon-valid.svg" alt="" width="20" height="20">
             </div>
           </div>
-        </div>
+        </fieldset>
 
         <footer class="wf-footer">
-          <p class="wf-autosave"><img src="assets/form/icon-autosave.svg" alt="" width="22" height="22">Данные сохраняются автоматически</p>
-          <button class="wf-button" type="submit">
-            <span class="wf-button__label">Продолжить</span>
-            <img class="wf-button__capsule" src="assets/form/arrow-capsule.svg" alt="" width="60" height="60">
-            <img class="wf-button__arrow" src="assets/form/icon-arrow-right.svg" alt="" width="24" height="24">
+          <button class="w-button" type="submit">
+            <span class="wf-button__label">Далее</span>
+            <span class="w-button__circle"><img src="assets/form/icon-arrow-blue.svg" alt="" width="20" height="20"></span>
           </button>
         </footer>
-
-        <div class="wf-beam" aria-hidden="true"></div>
-        <img class="wf-point" src="assets/form/light-point.svg" alt="" width="24" height="24" aria-hidden="true">
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -170,6 +159,6 @@
 }}
 </script>
 <script type="module" src="scene.js?v=form2"></script>
-<script src="form.js?v=4" defer></script>
+<script src="form.js?v=6" defer></script>
 </body>
 </html>

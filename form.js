@@ -8,14 +8,18 @@
 /* desktop: the Figma card (860 x 560), centred, at about 86% and never wider than ~54% of the
      window, so the moving city still shows around it and the text stays readable */
   const welcomeBox = document.querySelector('.welcome-scale');
+  /* phones: the half-width fields get short example placeholders (Иван…) instead of «Введите имя» */
+  const shortPh = [...document.querySelectorAll('input[data-short]')].map(i => [i, i.placeholder, i.dataset.short]);
   function fit(){
-    if (matchMedia('(max-width: 720px)').matches){
+    const phone = matchMedia('(max-width: 720px)').matches;
+    shortPh.forEach(([i, long, short]) => { i.placeholder = phone ? short : long; });
+    if (phone){
       scaleBox.style.removeProperty('--k'); welcomeBox.style.removeProperty('--k'); return;
     }
-    const k = Math.min(.86, innerWidth * .54 / 860, (innerHeight - 64) / 560);
+    const k = Math.min(.86, innerWidth * .54 / 860, (innerHeight - 48) / 800);
     scaleBox.style.setProperty('--k', Math.max(.55, k).toFixed(3));
     /* the welcome card is 458 high plus ~200 of beaver above it */
-    const kw = Math.min(.86, innerWidth * .54 / 860, (innerHeight - 64) / 680);
+    const kw = Math.min(.86, innerWidth * .54 / 860, (innerHeight - 48) / 620);
     welcomeBox.style.setProperty('--k', Math.max(.5, kw).toFixed(3));
   }
   addEventListener('resize', fit, {passive: true});
@@ -73,8 +77,9 @@
       save();
       /* the next steps are not designed yet: confirm the step and move the counter on */
       document.getElementById('stepNum').textContent = '02';
+      const stops = form.querySelectorAll('.wf-stop'); stops[1] && stops[1].classList.add('is-active');
       form.querySelector('.wf-button__label').textContent = 'Сохранено';
-      setTimeout(() => { form.querySelector('.wf-button__label').textContent = 'Продолжить'; }, 1800);
+      setTimeout(() => { form.querySelector('.wf-button__label').textContent = 'Далее'; }, 1800);
     } else {
       const first = fields.find((f, i) => !results[i]);
       first && first.querySelector('input').focus();
