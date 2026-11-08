@@ -189,6 +189,14 @@
 
   form.addEventListener('input', e => { const f = e.target.closest('.wf-field'); if (f) check(f, false); save(); });
   form.addEventListener('change', e => { const f = e.target.closest('.wf-field'); if (f) check(f, false); save(); });
+  /* 02 · a click on «Россия» / «Другое гражданство» goes straight to the next step
+     (click, not change: re-picking the same answer after «Назад» also moves on) */
+  let autoNext = 0;
+  [...form.elements.citizenship].forEach(r => r.addEventListener('click', () => {
+    if (current !== '2') return;
+    clearTimeout(autoNext);
+    autoNext = setTimeout(() => { if (current === '2') form.requestSubmit(); }, 280);   /* let the card show it is picked */
+  }));
   form.addEventListener('focusout', e => {
     const f = e.target.closest('.wf-field');
     if (f && e.target.value && f.dataset.kind !== 'radio' && f.dataset.kind !== 'check') check(f, true);
