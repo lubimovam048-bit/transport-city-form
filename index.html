@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="form.css?v=10">
+<link rel="stylesheet" href="form.css?v=13">
 <link rel="preload" as="image" href="assets/background.webp?v=20261107b">
 <link rel="modulepreload" href="vendor/three/build/three.module.min.js">
 <link rel="modulepreload" href="vendor/three/build/three.core.min.js">
@@ -229,6 +229,58 @@
           </div>
         </fieldset>
 
+        <!-- 08 · postal address -->
+        <fieldset class="wf-panel" data-step="8" hidden>
+          <legend class="wf-section">Почтовые отправления</legend>
+          <div class="wf-grid">
+            <div class="wf-field" data-required data-kind="name">
+              <label class="wf-label" for="f-recipient">Получатель<span class="wf-req" aria-hidden="true">*</span></label>
+              <div class="wf-input"><input id="f-recipient" name="recipient" type="text" placeholder="Введите ФИО получателя" autocomplete="name" required><img class="wf-icon wf-icon--valid" src="assets/form/icon-valid.svg" alt="" width="20" height="20"></div>
+            </div>
+            <div class="wf-field" data-required data-kind="zip">
+              <label class="wf-label" for="f-zip">Индекс<span class="wf-req" aria-hidden="true">*</span></label>
+              <div class="wf-input"><input id="f-zip" name="zip" type="text" inputmode="numeric" maxlength="7" placeholder="000-000" autocomplete="postal-code" required><img class="wf-icon wf-icon--valid" src="assets/form/icon-valid.svg" alt="" width="20" height="20"></div>
+            </div>
+            <div class="wf-field wf-field--wide" data-required>
+              <label class="wf-label" for="f-address">Адрес<span class="wf-req" aria-hidden="true">*</span></label>
+              <div class="wf-input"><input id="f-address" name="address" type="text" placeholder="Введите полный адрес" autocomplete="street-address" required><img class="wf-icon wf-icon--valid" src="assets/form/icon-valid.svg" alt="" width="20" height="20"></div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 09 · consents (texts come from the organisers) -->
+        <fieldset class="wf-panel wf-panel--consent" data-step="9" hidden>
+          <legend class="wf-section">Согласия</legend>
+          <button class="s-button" type="button" id="consentOpen">
+            <img src="assets/form/icon-draft.svg" alt="" width="24" height="24">
+            <span>Прочитать образцы</span>
+            <img src="assets/form/icon-arrow-up-right.svg" alt="" width="24" height="24">
+          </button>
+          <div class="wf-field wf-check" data-required data-kind="check">
+            <label class="wf-check__row"><input type="checkbox" name="consentRead" value="yes"><span class="wf-check__box"></span><span>Ознакомлен(а) с&nbsp;образцом согласия</span></label>
+          </div>
+        </fieldset>
+
+        <!-- 10 · review -->
+        <fieldset class="wf-panel" data-step="10" hidden>
+          <legend class="wf-section">Проверьте заполненные данные</legend>
+          <ul class="wf-review">
+            <li><button class="wf-review__item" type="button" data-goto="1" data-review="personal"><span class="wf-review__text"><span class="wf-review__label">Личные данные</span><span class="wf-review__value"></span></span><img src="assets/form/icon-chevron-right.svg" alt="" width="24" height="24"></button></li>
+            <li><button class="wf-review__item" type="button" data-goto="2" data-review="citizenship"><span class="wf-review__text"><span class="wf-review__label">Гражданство</span><span class="wf-review__value"></span></span><img src="assets/form/icon-chevron-right.svg" alt="" width="24" height="24"></button></li>
+            <li><button class="wf-review__item" type="button" data-goto="3" data-review="snils"><span class="wf-review__text"><span class="wf-review__label">СНИЛС</span><span class="wf-review__value"></span></span><img src="assets/form/icon-chevron-right.svg" alt="" width="24" height="24"></button></li>
+            <li><button class="wf-review__item" type="button" data-goto="5" data-review="study"><span class="wf-review__text"><span class="wf-review__label">Место учебы</span><span class="wf-review__value"></span></span><img src="assets/form/icon-chevron-right.svg" alt="" width="24" height="24"></button></li>
+            <li><button class="wf-review__item" type="button" data-goto="7" data-review="phone"><span class="wf-review__text"><span class="wf-review__label">Телефон</span><span class="wf-review__value"></span></span><img src="assets/form/icon-chevron-right.svg" alt="" width="24" height="24"></button></li>
+            <li><button class="wf-review__item" type="button" data-goto="8" data-review="mail"><span class="wf-review__text"><span class="wf-review__label">Почтовые отправления</span><span class="wf-review__value"></span></span><img src="assets/form/icon-chevron-right.svg" alt="" width="24" height="24"></button></li>
+            <li><button class="wf-review__item" type="button" data-goto="9" data-review="consent"><span class="wf-review__text"><span class="wf-review__label">Согласия</span><span class="wf-review__value"></span></span><img src="assets/form/icon-chevron-right.svg" alt="" width="24" height="24"></button></li>
+          </ul>
+        </fieldset>
+
+        <!-- after «Все верно» (not designed yet) -->
+        <section class="wf-panel wf-done" data-step="done" hidden>
+          <h2 class="wf-section">Профиль заполнен</h2>
+          <p class="wf-hint">Спасибо! Данные сохранены. Следующий шаг по&nbsp;ТЗ&nbsp;— подача проекта: выбор индивидуального или командного формата и&nbsp;загрузка материалов.</p>
+        </section>
+
         <footer class="wf-footer">
           <button class="b-button" type="button" id="backBtn" hidden>
             <span class="b-button__circle"><img src="assets/form/icon-arrow-left.svg" alt="" width="20" height="20"></span>
@@ -244,6 +296,13 @@
   </div>
 </div>
 
+<dialog class="consent-dlg" id="consentDlg" aria-labelledby="consentTitle">
+  <h2 id="consentTitle">Образцы согласий</h2>
+  <p>Здесь будут утверждённые тексты согласия на&nbsp;обработку персональных данных: отдельно для совершеннолетних участников и&nbsp;для законных представителей несовершеннолетних.</p>
+  <p class="consent-dlg__note">Тексты пока не&nbsp;утверждены организатором.</p>
+  <form method="dialog"><button class="w-button" type="submit"><span>Понятно</span></button></form>
+</dialog>
+
 <script type="importmap">
 {"imports":{
   "three":"./vendor/three/build/three.module.min.js",
@@ -251,6 +310,6 @@
 }}
 </script>
 <script type="module" src="scene.js?v=form2"></script>
-<script src="form.js?v=7" defer></script>
+<script src="form.js?v=10" defer></script>
 </body>
 </html>

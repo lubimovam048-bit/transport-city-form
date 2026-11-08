@@ -1,5 +1,5 @@
 /* Registration over the living scene: welcome screen, step-by-step profile form
-   (Figma 215:23340: steps 01, 02, 03, 05, 06, 07), masks, validation, autosave, pause. */
+   (Figma 215:23340: steps 01–10; 04 is not designed), masks, validation, autosave, pause. */
 (() => {
   const form = document.getElementById('profileForm');
   const wform = document.getElementById('wform');
@@ -18,7 +18,7 @@
 
   /* ---------- steps ----------
      n: number on the badge; beaver: picture and its place over the card (Figma, px from the card's top-left);
-     qx: where the speech bubble starts. Step 04 and 08–10 are not designed yet. */
+     qx: where the speech bubble starts; no img = no beaver on that step. Step 04 is not designed yet. */
   const STEPS = {
     '1':  { n: 1, img: 'beaver-form',  w: 218, h: 248, x: 321, y: -226, qx: 128, say: 'Я&nbsp;– КРУТЯ, буду вашим проводником. Давайте знакомиться!' },
     '2':  { n: 2, img: 'beaver-globe', w: 221, h: 250, x: 320, y: -232, qx: 120, say: 'Откуда вы к нам?<br>Укажите гражданство' },
@@ -26,16 +26,23 @@
     '3b': { n: 3, img: 'beaver-globe', w: 221, h: 250, x: 320, y: -232, qx: 120, say: 'Откуда вы к нам?<br>Укажите гражданство' },
     '5':  { n: 5, img: 'beaver-book',  w: 221, h: 250, x: 284, y: -231, qx: 75,  say: 'Расскажите, где вы учитесь. Мне правда интересно!' },
     '6':  { n: 6, img: 'beaver-globe', w: 221, h: 250, x: 320, y: -232, qx: 120, say: 'В какой стране вы&nbsp;учитесь?' },
-    '7':  { n: 7, img: 'beaver-phone', w: 224, h: 250, x: 318, y: -231, qx: 119, say: 'Куда звонить, когда вы&nbsp;победите?' },
+    '7':  { n: 7, img: 'beaver-phone', w: 224, h: 250, x: 318, y: -231, qx: 119, say: 'Куда звонить, чтобы с&nbsp;вами связаться?' },
+    '8':  { n: 8, img: 'beaver-mail',  w: 221, h: 250, x: 320, y: -233, qx: 129, say: 'Укажите адрес:<br>вдруг приз поедет к&nbsp;вам!' },
+    '9':  { n: 9 },
+    '10': { n: 10, img: 'beaver-loupe', w: 230, h: 250, x: 315, y: -232, qx: 131, say: 'Давайте проверим каждую букву, чтобы избежать ошибок' },
+    'done': { n: 10, img: 'beaver-welcome', w: 372, h: 248, x: 244, y: -231, qx: -999, say: '' },
   };
-  const order = () => ['1', '2', form.elements.citizenship.value === 'other' ? '3b' : '3a', '5', '6', '7'];
+  const order = () => ['1', '2', form.elements.citizenship.value === 'other' ? '3b' : '3a', '5', '6', '7', '8', '9', '10'];
   const panels = Object.fromEntries([...form.querySelectorAll('.wf-panel')].map(p => [p.dataset.step, p]));
   let current = '1';
 
   /* preload the beaver poses so swapping never flashes */
-  new Set(Object.values(STEPS).map(s => s.img)).forEach(n => { const i = new Image(); i.src = `assets/form/${n}.webp`; });
+  new Set(Object.values(STEPS).map(s => s.img).filter(Boolean)).forEach(n => { const i = new Image(); i.src = `assets/form/${n}.webp`; });
 
   function placeGuide(st){
+    wform.classList.toggle('no-guide', !st.img);
+    wform.classList.toggle('no-bubble', !st.say);
+    if (!st.img) return;
     const g = wform.style;
     g.setProperty('--bx', st.x + 'px'); g.setProperty('--by', st.y + 'px');
     g.setProperty('--bw', st.w + 'px'); g.setProperty('--bh', st.h + 'px');
@@ -53,8 +60,10 @@
     document.getElementById('stepBadge').setAttribute('aria-label', `Шаг ${st.n} из 10`);
     stops.forEach((s, i) => s.classList.toggle('is-active', i < st.n));
     progress.style.setProperty('--done', st.n - 1);
-    backBtn.hidden = key === '1';
-    nextLabel.textContent = 'Далее';
+    backBtn.hidden = key === '1' || key === '10' || key === 'done';
+    nextLabel.textContent = key === '10' ? 'Все верно' : 'Далее';
+    form.querySelector('.wf-footer').hidden = key === 'done';
+    if (key === '10') fillReview();
     if (animate && current !== key){
       wform.classList.add('is-swapping');
       setTimeout(() => { placeGuide(st); wform.classList.remove('is-swapping'); }, 180);
@@ -63,23 +72,65 @@
     try { localStorage.setItem(KEY + ':step', key); } catch(e) {}
   }
 
+  /* ---------- 10 · review: what was entered, each card leads back to its step ---------- */
+  const E = form.elements;
+  const val = n => (E[n] && E[n].value || '').trim();
+  const settlementPrefix = { 'Город': 'г. ', 'Посёлок городского типа': 'пгт ', 'Посёлок': 'пос. ', 'Село или деревня': 'с. ' };
+  function fillReview(){
+    const phoneDigits = val('phone').replace(/\D/g, '');
+    const phoneText = val('phoneCode') === '+7' && phoneDigits.length === 10
+      ? `+7 (${phoneDigits.slice(0, 3)}) ${phoneDigits.slice(3, 6)} ${phoneDigits.slice(6, 8)} ${phoneDigits.slice(8)}`
+      : `${val('phoneCode')} ${val('phone')}`;
+    const owner = E.phoneOwner.value === 'representative' ? 'телефон представителя' : 'мой телефон';
+    const zip = val('zip').replace(/\D/g, '');
+    const ru = E.citizenship.value !== 'other';
+    const values = {
+      personal: [val('surname'), val('name'), val('patronymic'), val('birth')].filter(Boolean).join(' '),
+      citizenship: ru ? 'Россия' : val('citizenshipCountry'),
+      snils: val('snils').replace(/\D/g, '').replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1 $2 $3 $4'),
+      study: [val('studyCountry'), (settlementPrefix[val('settlementType')] || '') + val('settlement'), val('school'), val('grade')].filter(Boolean).join(', '),
+      phone: `${phoneText} (${owner})`,
+      mail: `ФИО: ${val('recipient')}\n${val('address')}${zip ? ', ' + zip : ''}`,
+      consent: E.consentRead.checked ? 'Образцы прочитаны' : 'Не отмечено',
+    };
+    form.querySelectorAll('[data-review]').forEach(b => {
+      b.querySelector('.wf-review__value').textContent = values[b.dataset.review];
+      b.closest('li').hidden = b.dataset.review === 'snils' && !ru;
+    });
+  }
+  let editing = false;                   /* came from the review: «Далее» goes straight back to it */
+  form.querySelectorAll('[data-goto]').forEach(b => b.addEventListener('click', () => {
+    let key = b.dataset.goto;
+    if (key === '3') key = E.citizenship.value === 'other' ? '3b' : '3a';
+    editing = true;
+    show(key, true);
+  }));
+
   /* ---------- masks ---------- */
   const digits = (v, n) => v.replace(/\D/g, '').slice(0, n);
   const masks = {
     birth: v => { const d = digits(v, 8); return [d.slice(0, 2), d.slice(2, 4), d.slice(4)].filter(Boolean).join('.'); },
     snils: v => { const d = digits(v, 11); return [d.slice(0, 3), d.slice(3, 6), d.slice(6, 9), d.slice(9)].filter(Boolean).join('-'); },
+    zip: v => { const d = digits(v, 6); return [d.slice(0, 3), d.slice(3)].filter(Boolean).join('-'); },
     phone: v => {
       if (form.elements.phoneCode.value !== '+7') return v.replace(/[^\d\s-]/g, '').slice(0, 16);
       const d = digits(v, 10); return [d.slice(0, 3), d.slice(3, 6), d.slice(6, 8), d.slice(8)].filter(Boolean).join('-');
     },
   };
-  ['birth', 'snils', 'phone'].forEach(name => {
+  ['birth', 'snils', 'phone', 'zip'].forEach(name => {
     const el = form.elements[name];
     el.addEventListener('input', () => { el.value = masks[name](el.value); });
   });
   form.elements.phoneCode.addEventListener('change', () => {
     document.querySelector('.wf-input--code').classList.toggle('is-ru', form.elements.phoneCode.value === '+7');
     form.elements.phone.value = masks.phone(form.elements.phone.value);
+  });
+
+  /* names (ТЗ 3): capital first letter of every part, no CAPS, single spaces; hyphens kept */
+  const properCase = v => v.replace(/\s+/g, ' ').trim().toLowerCase()
+    .replace(/(^|[\s-])(\p{L})/gu, (m, sep, ch) => sep + ch.toUpperCase());
+  ['name', 'patronymic', 'surname', 'recipient'].forEach(n => {
+    E[n].addEventListener('blur', () => { if (E[n].value) { E[n].value = properCase(E[n].value); save(); } });
   });
 
   /* ---------- validation ---------- */
@@ -104,15 +155,16 @@
   function check(field, show){
     const kind = field.dataset.kind;
     let v, ok;
-    if (kind === 'radio'){ ok = !!field.querySelector('input:checked'); v = ok; }
+    if (kind === 'radio' || kind === 'check'){ ok = !!field.querySelector('input:checked'); v = ok; }
     else {
       const el = field.querySelector('input, select');
       v = el.value.trim();
       const name = el.name;
       ok = kind === 'date' ? validDate(v) : name === 'snils' ? validSnils(v) : name === 'phone' ? validPhone(v)
+         : name === 'zip' ? v.replace(/\D/g, '').length === 6
          : kind === 'select' ? !!v : v.length >= 2;
     }
-    if (kind !== 'radio' && kind !== 'select') field.classList.toggle('is-valid', !!v && ok);
+    if (kind !== 'radio' && kind !== 'select' && kind !== 'check') field.classList.toggle('is-valid', !!v && ok);
     if (show) field.classList.toggle('is-error', field.hasAttribute('data-required') && !ok);
     else if (ok) field.classList.remove('is-error');
     return ok || !field.hasAttribute('data-required');
@@ -128,6 +180,7 @@
     if (draft) for (const [k, v] of Object.entries(draft)){
       const el = form.elements[k]; if (!el) continue;
       if (el instanceof RadioNodeList) [...el].forEach(r => { r.checked = r.value === v; });
+      else if (el.type === 'checkbox') el.checked = true;      /* FormData keeps only ticked boxes */
       else el.value = v;
     }
     document.querySelector('.wf-input--code').classList.toggle('is-ru', form.elements.phoneCode.value === '+7');
@@ -138,7 +191,7 @@
   form.addEventListener('change', e => { const f = e.target.closest('.wf-field'); if (f) check(f, false); save(); });
   form.addEventListener('focusout', e => {
     const f = e.target.closest('.wf-field');
-    if (f && e.target.value && f.dataset.kind !== 'radio') check(f, true);
+    if (f && e.target.value && f.dataset.kind !== 'radio' && f.dataset.kind !== 'check') check(f, true);
   });
 
   /* ---------- navigation ---------- */
@@ -154,12 +207,15 @@
     }
     save();
     const seq = order(), i = seq.indexOf(current);
+    if (current === '2' && editing){ editing = false; return show(seq[2], true); }   /* new citizenship → its step 03 first */
+    if (editing && current !== '10'){ editing = false; return show('10', true); }
     if (i < seq.length - 1) return show(seq[i + 1], true);
-    /* step 07 is the last designed one: confirm and keep the data */
-    nextLabel.textContent = 'Сохранено';
-    setTimeout(() => { nextLabel.textContent = 'Далее'; }, 1800);
+    /* «Все верно»: the profile is complete (the next screen is not designed yet) */
+    try { localStorage.setItem(KEY + ':done', new Date().toISOString()); } catch(e) {}
+    show('done', true);
   });
   backBtn.addEventListener('click', () => {
+    if (editing){ editing = false; return show('10', true); }
     const seq = order(), i = seq.indexOf(current);
     if (i > 0) show(seq[i - 1], true);
   });
@@ -184,7 +240,13 @@
   const formLayer = document.getElementById('formLayer');
   let saved = '1';
   try { saved = localStorage.getItem(KEY + ':step') || '1'; } catch(e) {}
-  show(STEPS[saved] && order().includes(saved) ? saved : '1', false);
+  show(STEPS[saved] && (order().includes(saved) || saved === 'done') ? saved : '1', false);
+
+  /* consent samples */
+  const dlg = document.getElementById('consentDlg');
+  document.getElementById('consentOpen').addEventListener('click', () => {
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  });
 
   function openForm(animate){
     const go = () => {
