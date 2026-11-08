@@ -249,7 +249,7 @@
 
   .wform__guide{left:0;right:0}
   .wform__beaver{left:auto;right:6px;top:-148px;width:calc(var(--bw,218px) * .64);height:calc(var(--bh,248px) * .64)}
-  .wform__bubble{left:0;top:-136px;width:min(200px,calc(100% - 156px));padding:9px 10px 10px;font-size:12px;line-height:15px;
+  .wform__bubble{left:0;top:-136px;width:min(200px,calc(100% - var(--bw,218px) * .64 - 8px));padding:9px 10px 10px;font-size:12px;line-height:15px;
     border-radius:12px 12px 3px 12px}
   .wform__bubble::after{display:none}
   .wow-form{gap:14px;min-height:0}

@@ -28,7 +28,7 @@
     '6':  { n: 6, img: 'beaver-globe', w: 221, h: 250, x: 320, y: -232, qx: 120, say: 'В какой стране вы&nbsp;учитесь?' },
     '7':  { n: 7, img: 'beaver-phone', w: 224, h: 250, x: 318, y: -231, qx: 119, say: 'Куда звонить, чтобы с&nbsp;вами связаться?' },
     '8':  { n: 8, img: 'beaver-mail',  w: 221, h: 250, x: 320, y: -233, qx: 129, say: 'Укажите адрес:<br>вдруг приз поедет к&nbsp;вам!' },
-    '9':  { n: 9 },
+    '9':  { n: 9, img: 'beaver-scroll', w: 282, h: 250, x: 289, y: -230, qx: 173, qy: -260, say: 'Почитайте документы согласия, я&nbsp;вас подожду' },
     '10': { n: 10, img: 'beaver-loupe', w: 230, h: 250, x: 315, y: -232, qx: 131, say: 'Давайте проверим каждую букву, чтобы избежать ошибок' },
     'done': { n: 10, img: 'beaver-welcome', w: 372, h: 248, x: 244, y: -231, qx: -999, say: '' },
   };
@@ -46,7 +46,7 @@
     const g = wform.style;
     g.setProperty('--bx', st.x + 'px'); g.setProperty('--by', st.y + 'px');
     g.setProperty('--bw', st.w + 'px'); g.setProperty('--bh', st.h + 'px');
-    g.setProperty('--qx', st.qx + 'px'); g.setProperty('--qy', (st.y + 7) + 'px');
+    g.setProperty('--qx', st.qx + 'px'); g.setProperty('--qy', (st.qy ?? st.y + 7) + 'px');
     guideImg.src = `assets/form/${st.img}.webp`;
     guideImg.width = st.w; guideImg.height = st.h;
     guideText.innerHTML = st.say;
