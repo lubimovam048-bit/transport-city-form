@@ -67,13 +67,18 @@
 
 /* ---------- Profile form (Figma 215:23341) ---------- */
 .wform{position:relative}
-.wform__guide{position:absolute;left:128px;top:-226px;width:420px;height:248px;z-index:2;pointer-events:none}
-.wform__beaver{position:absolute;left:193px;top:0;width:218px;height:248px;filter:drop-shadow(0 6px 10px rgba(10,43,112,.18))}
-.wform__bubble{position:absolute;left:0;top:0;width:215px;height:107px}
-.wform__bubble img{position:absolute;left:-10.5px;top:-.5px;width:236.6px;height:100.8px;display:block}
-.wform__bubble p{position:absolute;left:10px;top:17px;width:195px;margin:0;text-align:center;
-  font:600 14px/16px 'Inter','Rubik',system-ui,sans-serif;color:#1f2937}
-.wow-form{display:flex;flex-direction:column;gap:20px}
+/* the beaver and his speech bubble stand on the card; form.js sets their place per step (Figma values) */
+.wform__guide{position:absolute;inset:0 0 auto 0;height:0;z-index:2;pointer-events:none}
+.wform__beaver{position:absolute;left:var(--bx,321px);top:var(--by,-226px);width:var(--bw,218px);height:var(--bh,248px);
+  filter:drop-shadow(0 6px 10px rgba(10,43,112,.18));transition:opacity .2s ease}
+.wform__bubble{position:absolute;left:var(--qx,128px);top:var(--qy,-219px);width:215px;margin:0;padding:10px 10px 12px;text-align:center;
+  font:600 14px/16px 'Inter','Rubik',system-ui,sans-serif;color:#1f2937;background:#fff;border:1px solid #d5e3f7;border-radius:12px;
+  box-shadow:0 3px 10px rgba(29,78,216,.08);transition:opacity .2s ease}
+.wform__bubble::after{content:"";position:absolute;right:-1px;bottom:-11px;width:23px;height:14px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 23 14'%3E%3Cpath d='M0.6 1.5C6.1 6.9 14.9 9.3 22.2 11.1L22.5 10.5C19.3 7.8 17 4.1 15.7 0.1' fill='white' stroke='%23D5E3F7'/%3E%3Cpath d='M1 0H16V1.6H1Z' fill='white'/%3E%3C/svg%3E") no-repeat}
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 16'%3E%3Cpath d='M1 0.5V1c0 3 1.6 5.5 4 6.8 1.3 4 3.6 7.6 6.8 10.3l-.3.7C4.2 17 .5 14.6 -2 9.5' fill='white' stroke='%23D5E3F7'/%3E%3C/svg%3E") no-repeat}
+.wform.is-swapping .wform__beaver,.wform.is-swapping .wform__bubble{opacity:0}
+.wow-form{display:flex;flex-direction:column;justify-content:center;gap:20px;min-height:588px}
 
 .wf-header{display:flex;align-items:flex-start;justify-content:space-between}
 .wf-copy{display:flex;flex-direction:column;gap:20px;white-space:nowrap}
@@ -88,15 +93,23 @@
 /* the route: 10 stops on a line, the current one filled blue */
 .wf-progress{position:relative;display:flex;justify-content:space-between;list-style:none;margin:0;padding:10px 0}
 .wf-progress::before{content:"";position:absolute;left:16px;right:16px;top:50%;height:3px;margin-top:-1.5px;background:#b9d6ff}
-.wf-stop{position:relative;width:32px;height:32px;border-radius:50%;border:3px solid #b9d6ff;
+.wf-progress::after{content:"";position:absolute;left:16px;top:50%;height:3px;margin-top:-1.5px;background:#1768f2;
+  width:calc((100% - 32px) * var(--done, 0) / 9);transition:width .4s ease}
+.wf-stop{position:relative;z-index:1;transition:background .3s ease, border-color .3s ease;width:32px;height:32px;border-radius:50%;border:3px solid #b9d6ff;
   background:linear-gradient(97deg,rgba(248,252,255,.96),rgba(238,246,255,.93) 58%,rgba(221,235,255,.9));
   box-shadow:0 6px 16px rgba(43,112,232,.1)}
 .wf-stop.is-active{border:1px solid #b9d6ff;
   background:radial-gradient(circle at 40% 30%,rgba(255,255,255,.5),rgba(255,255,255,0) 66%),#1768f2}
 
-.wf-fields{display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:16px;border:0;margin:0;padding:0;min-width:0}
-.wf-section{grid-column:1/-1;float:left;width:100%;padding:0;margin:0 0 0;font-weight:600;font-size:20px;line-height:28px;color:#1f2937}
+.wf-panel{display:flex;flex-direction:column;gap:16px;border:0;margin:0;padding:0;min-width:0}
+.wf-panel[hidden]{display:none}
+.wf-panel.is-entering{animation:panelIn .3s ease both}
+@keyframes panelIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.wf-section{float:left;width:100%;padding:0;margin:0;font-weight:600;font-size:20px;line-height:28px;color:#1f2937}
 .wf-section + *{clear:both}
+.wf-hint{margin:5px 0 8px;font-weight:400;font-size:18px;line-height:normal;color:#6b7280}
+.wf-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:16px}
+.wf-field--wide{grid-column:1/-1}
 .wf-field{display:flex;flex-direction:column;min-width:0}
 .wf-label{display:flex;gap:4px;font-weight:500;font-size:14px;line-height:20px;color:#4b5563}
 .wf-req{color:#dc2626}
@@ -105,13 +118,69 @@
   font:500 16px/24px 'Rubik',system-ui,sans-serif;color:#1f2937;outline:none;
   box-shadow:0 6px 8px rgba(43,112,232,.1),inset 0 1px 1px rgba(255,255,255,.85);transition:border-color .2s ease, box-shadow .2s ease}
 .wf-input input::placeholder{color:#9ca3af;opacity:1}
+.wf-input select{width:100%;height:52px;padding:8px 44px 8px 12px;border:1px solid rgba(185,214,255,.92);border-radius:12px;cursor:pointer;
+  font:500 16px/24px 'Rubik',system-ui,sans-serif;color:#1f2937;outline:none;-webkit-appearance:none;appearance:none;
+  background:#fff url(assets/form/icon-chevron.svg) right 12px center/24px no-repeat;
+  box-shadow:0 6px 8px rgba(43,112,232,.1),inset 0 1px 1px rgba(255,255,255,.85);transition:border-color .2s ease, box-shadow .2s ease}
+.wf-input select:invalid{color:#9ca3af}
+.wf-input select option{color:#1f2937}
+.wf-input select:focus{border-color:#5aa8ff;box-shadow:0 6px 8px rgba(43,112,232,.1),0 0 0 4px rgba(51,123,255,.16)}
 .wf-input input:focus{border-color:#5aa8ff;box-shadow:0 6px 8px rgba(43,112,232,.1),0 0 0 4px rgba(51,123,255,.16)}
 .wf-icon{position:absolute;right:14px;top:18px;width:20px;height:20px;pointer-events:none}
 .wf-icon--valid{opacity:0;transform:scale(.6);transition:opacity .2s ease, transform .25s cubic-bezier(.2,.9,.3,1.4)}
 .wf-field.is-valid .wf-icon--valid{opacity:1;transform:none}
-.wf-field.is-error input{border-color:#dc2626;box-shadow:0 6px 8px rgba(220,38,38,.1),0 0 0 4px rgba(220,38,38,.12)}
+.wf-field.is-error select,.wf-field.is-error input{border-color:#dc2626;box-shadow:0 6px 8px rgba(220,38,38,.1),0 0 0 4px rgba(220,38,38,.12)}
 .wf-field.is-error .wf-label{color:#dc2626}
-.wf-footer{display:flex;justify-content:flex-end;align-items:center;height:60px}
+
+/* choice cards: citizenship (02) and phone owner (07) */
+.wf-choices{display:grid;grid-template-columns:1fr 1fr;gap:21px}
+.wf-choice{position:relative;display:flex;flex-direction:column;align-items:flex-start;min-height:168px;padding:22px;cursor:pointer;
+  border:1px solid rgba(142,216,255,.9);border-radius:12px;background:rgba(255,255,255,.1);margin:2px;
+  box-shadow:0 8px 40px rgba(23,105,255,.25);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  transition:border-color .2s ease, background-color .2s ease, box-shadow .2s ease, transform .15s ease}
+.wf-choice:hover{background:rgba(255,255,255,.55)}
+.wf-choice:active{transform:scale(.99)}
+.wf-choice input{position:absolute;opacity:0;pointer-events:none}
+.wf-choice:has(input:checked){border:2px solid #1768f2;padding:21px;background:rgba(255,255,255,.75);
+  box-shadow:0 8px 40px rgba(23,105,255,.25),0 0 0 4px rgba(51,123,255,.12)}
+.wf-choice:has(input:focus-visible){outline:3px solid #8ed8ff;outline-offset:2px}
+.wf-choice__icon{display:block;width:41px;height:41px;margin-bottom:8px}
+.wf-choice__icon img{display:block;width:41px;height:41px}
+.wf-choice__icon--q{display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:#dbeafe;margin-bottom:5px}
+.wf-choice__icon--q img{width:24px;height:24px}
+.wf-choice__title{font-weight:600;font-size:20px;line-height:28px;color:#4b5563}
+.wf-choice__note{margin-top:auto;font-weight:300;font-size:14px;line-height:20px;color:#4b5563}
+.wf-choices--row{gap:16px}
+.wf-choice--row{flex-direction:row;align-items:center;gap:10px;min-height:72px;padding:20px}
+.wf-choice--row:has(input:checked){padding:19px}
+.wf-radio{flex:none;width:16px;height:16px;border:1.5px solid #1d4ed8;border-radius:999px;transition:box-shadow .2s ease}
+.wf-choice:has(input:checked) .wf-radio{box-shadow:inset 0 0 0 3px #fff;background:#1d4ed8}
+.wf-choice:has(input:checked) .wf-choice__title{color:#1f2937}
+.wf-choices.is-error .wf-choice{border-color:#dc2626}
+
+/* phone: country code + number */
+.wf-phone{display:flex;gap:16px;align-items:flex-start}
+.wf-phone > .wf-field:last-child{flex:1}
+.wf-field--code{flex:none}
+.wf-input--code select{width:112px;padding-left:12px;padding-right:36px;background-position:right 8px center}
+.wf-input--code.is-ru select{padding-left:46px;background:#fff url(assets/form/icon-chevron.svg) right 8px center/24px no-repeat}
+.wf-input--code.is-ru::before{content:"";position:absolute;left:14px;top:16px;width:24px;height:24px;z-index:1;pointer-events:none;
+  background:url(assets/form/flag-ru.svg) center/contain no-repeat}
+
+/* buttons row: Назад (secondary) + Далее (primary) */
+.wf-footer{display:flex;justify-content:flex-end;align-items:center;gap:8px;height:60px}
+.b-button{display:inline-flex;align-items:center;gap:12px;height:56px;padding:8px 12px;margin:2px;border:0;border-radius:12px;cursor:pointer;
+  background:linear-gradient(90deg,rgba(255,255,255,.98),rgba(234,243,255,.96));color:#1d4ed8;font:500 18px/26px 'Rubik',system-ui,sans-serif;
+  box-shadow:0 0 12px rgba(99,200,255,.18),0 8px 18px rgba(29,78,216,.14),inset 0 1px 1px rgba(255,255,255,.92);
+  transition:transform .15s ease, box-shadow .2s ease}
+.b-button[hidden]{display:none}
+.b-button:hover{box-shadow:0 0 14px rgba(99,200,255,.3),0 10px 20px rgba(29,78,216,.18),inset 0 1px 1px rgba(255,255,255,.92)}
+.b-button:active{transform:translateY(1px) scale(.99)}
+.b-button:focus-visible{outline:3px solid #8ed8ff;outline-offset:3px}
+.b-button__circle{display:grid;place-items:center;width:28px;height:28px;border-radius:999px;background:#fff;border:1px solid #b9d6ff;
+  filter:drop-shadow(0 0 4px rgba(99,200,255,.28))}
+.b-button__circle img{width:20px;height:20px;display:block;transition:transform .2s ease}
+.b-button:hover .b-button__circle img{transform:translateX(-2px)}
 
 /* ---------- phones: the card fills the width, beaver and bubble stay on top ---------- */
 @media (max-width: 720px){
@@ -128,13 +197,12 @@
   .welcome__text{font-size:16px;line-height:22px}
   .w-button--big{width:100%;max-width:240px;height:56px;font-size:20px}
 
-  .wform__guide{left:auto;right:0;top:-150px;width:100%;height:164px}
-  .wform__beaver{left:auto;right:10px;width:144px;height:164px}
-  .wform__bubble{left:0;top:6px;width:min(200px,calc(100% - 150px));height:auto}
-  .wform__bubble img{display:none}
-  .wform__bubble p{position:relative;left:auto;top:auto;width:auto;padding:10px 12px;font-size:12px;line-height:15px;
-    background:#fff;border:1px solid #d5e3f7;border-radius:12px 12px 2px 12px;box-shadow:0 3px 10px rgba(29,78,216,.08)}
-  .wow-form{gap:14px}
+  .wform__guide{left:0;right:0}
+  .wform__beaver{left:auto;right:6px;top:-148px;width:calc(var(--bw,218px) * .64);height:calc(var(--bh,248px) * .64)}
+  .wform__bubble{left:0;top:-136px;width:min(200px,calc(100% - 156px));padding:9px 10px 10px;font-size:12px;line-height:15px;
+    border-radius:12px 12px 3px 12px}
+  .wform__bubble::after{display:none}
+  .wow-form{gap:14px;min-height:0}
   .wf-copy{gap:6px;white-space:normal;min-width:0}
   .wf-eyebrow{font-size:11px;line-height:16px}
   .wf-title{font-size:24px;letter-spacing:-.48px}
@@ -146,18 +214,38 @@
   .wf-stop{width:20px;height:20px;border-width:2px}
   .wf-progress::before{left:10px;right:10px;height:2px;margin-top:-1px}
   .wf-section{font-size:17px;line-height:24px}
-  .wf-fields{column-gap:10px;row-gap:10px}
+  .wf-grid{column-gap:10px;row-gap:10px}
+  .wf-panel{gap:10px}
+  .wf-hint{font-size:14px;margin:0}
+  .wf-input select{height:44px;padding:6px 34px 6px 10px;font-size:15px;background-position:right 8px center;background-size:20px}
+  .wf-choices{gap:10px}
+  .wf-choice{min-height:0;padding:14px 12px}
+  .wf-choice:has(input:checked){padding:13px 11px}
+  .wf-choice__icon,.wf-choice__icon img{width:30px;height:30px}
+  .wf-choice__icon--q{width:32px;height:32px}
+  .wf-choice__icon--q img{width:20px;height:20px}
+  .wf-choice__title{font-size:15px;line-height:20px}
+  .wf-choice__note{margin-top:6px;font-size:12px;line-height:16px}
+  .wf-choice--row{padding:12px;gap:8px}
+  .wf-choice--row:has(input:checked){padding:11px}
+  .wf-phone{gap:10px}
+  .wf-input--code select{width:96px}
+  .wf-input--code.is-ru select{padding-left:38px}
+  .wf-input--code.is-ru::before{left:12px;top:13px;width:20px;height:20px}
+  .wf-footer{gap:8px}
+  .b-button{height:48px;font-size:16px;padding:8px 10px;gap:8px}
   .wf-label{font-size:12px;line-height:18px}
   .wf-input input{height:44px;padding:6px 32px 6px 10px;font-size:15px}
   .wf-icon{right:10px;top:14px;width:18px;height:18px}
   .wf-footer{height:auto}
-  .wf-footer .w-button{width:100%;justify-content:center}
+  .wf-footer .w-button{flex:1;height:48px;justify-content:center;font-size:16px}
 }
 @media (max-width: 339px){
   .welcome-layer,.form-layer{padding-left:12px;padding-right:12px}
-  .wf-fields{grid-template-columns:1fr}
+  .wf-grid{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion: reduce){
-  .wf-icon--valid,.w-button,.scene-pause,.welcome-layer{transition:none}
+  .wf-icon--valid,.w-button,.b-button,.scene-pause,.welcome-layer,.wf-progress::after{transition:none}
+  .wf-panel.is-entering{animation:none}
   .form-layer.is-entering{animation:none}
 }

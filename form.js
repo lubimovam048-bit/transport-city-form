@@ -1,105 +1,202 @@
-/* Registration form over the living scene: scaling, validation, date mask, autosave, pause. */
+/* Registration over the living scene: welcome screen, step-by-step profile form
+   (Figma 215:23340: steps 01, 02, 03, 05, 06, 07), masks, validation, autosave, pause. */
 (() => {
   const form = document.getElementById('profileForm');
+  const wform = document.getElementById('wform');
   const scaleBox = document.querySelector('.form-scale');
-  const pauseBtn = document.getElementById('scenePause');
-  const KEY = 'transport-future-profile-draft';
-
-/* desktop: the Figma card (860 x 560), centred, at about 86% and never wider than ~54% of the
-     window, so the moving city still shows around it and the text stays readable */
   const welcomeBox = document.querySelector('.welcome-scale');
-  /* phones: the half-width fields get short example placeholders (Иван…) instead of «Введите имя» */
-  const shortPh = [...document.querySelectorAll('input[data-short]')].map(i => [i, i.placeholder, i.dataset.short]);
-  function fit(){
-    const phone = matchMedia('(max-width: 720px)').matches;
-    shortPh.forEach(([i, long, short]) => { i.placeholder = phone ? short : long; });
-    if (phone){
-      scaleBox.style.removeProperty('--k'); welcomeBox.style.removeProperty('--k'); return;
+  const pauseBtn = document.getElementById('scenePause');
+  const backBtn = document.getElementById('backBtn');
+  const nextLabel = form.querySelector('.wf-button__label');
+  const stepNum = document.getElementById('stepNum');
+  const progress = document.getElementById('progress');
+  const stops = [...progress.children];
+  const guideImg = document.getElementById('guideImg');
+  const guideText = document.getElementById('guideText');
+  const KEY = 'transport-future-profile-draft';
+  const phone = () => matchMedia('(max-width: 720px)').matches;
+
+  /* ---------- steps ----------
+     n: number on the badge; beaver: picture and its place over the card (Figma, px from the card's top-left);
+     qx: where the speech bubble starts. Step 04 and 08–10 are not designed yet. */
+  const STEPS = {
+    '1':  { n: 1, img: 'beaver-form',  w: 218, h: 248, x: 321, y: -226, qx: 128, say: 'Я&nbsp;– КРУТЯ, буду вашим проводником. Давайте знакомиться!' },
+    '2':  { n: 2, img: 'beaver-globe', w: 221, h: 250, x: 320, y: -232, qx: 120, say: 'Откуда вы к нам?<br>Укажите гражданство' },
+    '3a': { n: 3, img: 'beaver-snils', w: 221, h: 250, x: 320, y: -232, qx: 127, say: 'Ищем 11 цифр на зелёной карточке или в Госуслугах' },
+    '3b': { n: 3, img: 'beaver-globe', w: 221, h: 250, x: 320, y: -232, qx: 120, say: 'Откуда вы к нам?<br>Укажите гражданство' },
+    '5':  { n: 5, img: 'beaver-book',  w: 221, h: 250, x: 284, y: -231, qx: 75,  say: 'Расскажите, где вы учитесь. Мне правда интересно!' },
+    '6':  { n: 6, img: 'beaver-globe', w: 221, h: 250, x: 320, y: -232, qx: 120, say: 'В какой стране вы&nbsp;учитесь?' },
+    '7':  { n: 7, img: 'beaver-phone', w: 224, h: 250, x: 318, y: -231, qx: 119, say: 'Куда звонить, когда вы&nbsp;победите?' },
+  };
+  const order = () => ['1', '2', form.elements.citizenship.value === 'other' ? '3b' : '3a', '5', '6', '7'];
+  const panels = Object.fromEntries([...form.querySelectorAll('.wf-panel')].map(p => [p.dataset.step, p]));
+  let current = '1';
+
+  /* preload the beaver poses so swapping never flashes */
+  new Set(Object.values(STEPS).map(s => s.img)).forEach(n => { const i = new Image(); i.src = `assets/form/${n}.webp`; });
+
+  function placeGuide(st){
+    const g = wform.style;
+    g.setProperty('--bx', st.x + 'px'); g.setProperty('--by', st.y + 'px');
+    g.setProperty('--bw', st.w + 'px'); g.setProperty('--bh', st.h + 'px');
+    g.setProperty('--qx', st.qx + 'px'); g.setProperty('--qy', (st.y + 7) + 'px');
+    guideImg.src = `assets/form/${st.img}.webp`;
+    guideImg.width = st.w; guideImg.height = st.h;
+    guideText.innerHTML = st.say;
+  }
+
+  function show(key, animate){
+    const st = STEPS[key];
+    Object.entries(panels).forEach(([k, p]) => { p.hidden = k !== key; p.classList.remove('is-entering'); });
+    if (animate){ void panels[key].offsetWidth; panels[key].classList.add('is-entering'); }
+    stepNum.textContent = String(st.n).padStart(2, '0');
+    document.getElementById('stepBadge').setAttribute('aria-label', `Шаг ${st.n} из 10`);
+    stops.forEach((s, i) => s.classList.toggle('is-active', i < st.n));
+    progress.style.setProperty('--done', st.n - 1);
+    backBtn.hidden = key === '1';
+    nextLabel.textContent = 'Далее';
+    if (animate && current !== key){
+      wform.classList.add('is-swapping');
+      setTimeout(() => { placeGuide(st); wform.classList.remove('is-swapping'); }, 180);
+    } else placeGuide(st);
+    current = key;
+    try { localStorage.setItem(KEY + ':step', key); } catch(e) {}
+  }
+
+  /* ---------- masks ---------- */
+  const digits = (v, n) => v.replace(/\D/g, '').slice(0, n);
+  const masks = {
+    birth: v => { const d = digits(v, 8); return [d.slice(0, 2), d.slice(2, 4), d.slice(4)].filter(Boolean).join('.'); },
+    snils: v => { const d = digits(v, 11); return [d.slice(0, 3), d.slice(3, 6), d.slice(6, 9), d.slice(9)].filter(Boolean).join('-'); },
+    phone: v => {
+      if (form.elements.phoneCode.value !== '+7') return v.replace(/[^\d\s-]/g, '').slice(0, 16);
+      const d = digits(v, 10); return [d.slice(0, 3), d.slice(3, 6), d.slice(6, 8), d.slice(8)].filter(Boolean).join('-');
+    },
+  };
+  ['birth', 'snils', 'phone'].forEach(name => {
+    const el = form.elements[name];
+    el.addEventListener('input', () => { el.value = masks[name](el.value); });
+  });
+  form.elements.phoneCode.addEventListener('change', () => {
+    document.querySelector('.wf-input--code').classList.toggle('is-ru', form.elements.phoneCode.value === '+7');
+    form.elements.phone.value = masks.phone(form.elements.phone.value);
+  });
+
+  /* ---------- validation ---------- */
+  function validDate(v){
+    const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(v); if (!m) return false;
+    const [d, mo, y] = [+m[1], +m[2], +m[3]];
+    const dt = new Date(y, mo - 1, d);
+    return dt.getFullYear() === y && dt.getMonth() === mo - 1 && dt.getDate() === d && y >= 1900 && dt <= new Date();
+  }
+  function validSnils(v){
+    const d = v.replace(/\D/g, ''); if (d.length !== 11) return false;
+    const num = d.slice(0, 9), ctrl = +d.slice(9);
+    if (+num <= 1001998) return true;                       /* old numbers have no checksum */
+    let sum = 0; for (let i = 0; i < 9; i++) sum += +num[i] * (9 - i);
+    let c = sum % 101; if (c === 100) c = 0;
+    return c === ctrl;
+  }
+  function validPhone(v){
+    const n = v.replace(/\D/g, '').length;
+    return form.elements.phoneCode.value === '+7' ? n === 10 : n >= 6 && n <= 12;
+  }
+  function check(field, show){
+    const kind = field.dataset.kind;
+    let v, ok;
+    if (kind === 'radio'){ ok = !!field.querySelector('input:checked'); v = ok; }
+    else {
+      const el = field.querySelector('input, select');
+      v = el.value.trim();
+      const name = el.name;
+      ok = kind === 'date' ? validDate(v) : name === 'snils' ? validSnils(v) : name === 'phone' ? validPhone(v)
+         : kind === 'select' ? !!v : v.length >= 2;
     }
-    const k = Math.min(.86, innerWidth * .54 / 860, (innerHeight - 48) / 800);
-    scaleBox.style.setProperty('--k', Math.max(.55, k).toFixed(3));
-    /* the welcome card is 458 high plus ~200 of beaver above it */
+    if (kind !== 'radio' && kind !== 'select') field.classList.toggle('is-valid', !!v && ok);
+    if (show) field.classList.toggle('is-error', field.hasAttribute('data-required') && !ok);
+    else if (ok) field.classList.remove('is-error');
+    return ok || !field.hasAttribute('data-required');
+  }
+  const fieldsOf = key => [...panels[key].querySelectorAll('.wf-field')];
+
+  /* ---------- autosave (this browser only; no server in this prototype) ---------- */
+  function save(){
+    try { localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(new FormData(form)))); } catch(e) {}
+  }
+  try {
+    const draft = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (draft) for (const [k, v] of Object.entries(draft)){
+      const el = form.elements[k]; if (!el) continue;
+      if (el instanceof RadioNodeList) [...el].forEach(r => { r.checked = r.value === v; });
+      else el.value = v;
+    }
+    document.querySelector('.wf-input--code').classList.toggle('is-ru', form.elements.phoneCode.value === '+7');
+  } catch(e) {}
+  Object.keys(panels).forEach(k => fieldsOf(k).forEach(f => check(f, false)));
+
+  form.addEventListener('input', e => { const f = e.target.closest('.wf-field'); if (f) check(f, false); save(); });
+  form.addEventListener('change', e => { const f = e.target.closest('.wf-field'); if (f) check(f, false); save(); });
+  form.addEventListener('focusout', e => {
+    const f = e.target.closest('.wf-field');
+    if (f && e.target.value && f.dataset.kind !== 'radio') check(f, true);
+  });
+
+  /* ---------- navigation ---------- */
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const fs = fieldsOf(current);
+    const results = fs.map(f => check(f, true));
+    if (!results.every(Boolean)){
+      const bad = fs[results.indexOf(false)];
+      const el = bad && bad.querySelector('input, select');
+      el && el.focus({preventScroll: phone()});
+      return;
+    }
+    save();
+    const seq = order(), i = seq.indexOf(current);
+    if (i < seq.length - 1) return show(seq[i + 1], true);
+    /* step 07 is the last designed one: confirm and keep the data */
+    nextLabel.textContent = 'Сохранено';
+    setTimeout(() => { nextLabel.textContent = 'Далее'; }, 1800);
+  });
+  backBtn.addEventListener('click', () => {
+    const seq = order(), i = seq.indexOf(current);
+    if (i > 0) show(seq[i - 1], true);
+  });
+
+  /* ---------- scaling ---------- */
+  const shortPh = [...form.querySelectorAll('[data-short] input')].map(i => [i, i.placeholder, i.closest('[data-short]').dataset.short]);
+  function fit(){
+    const p = phone();
+    shortPh.forEach(([i, long, short]) => { i.placeholder = p ? short : long; });
+    if (p){ scaleBox.style.removeProperty('--k'); welcomeBox.style.removeProperty('--k'); return; }
+    /* the tallest step: card 618 + beaver 232 above it */
+    const k = Math.min(.86, innerWidth * .54 / 860, (innerHeight - 48) / 860);
+    scaleBox.style.setProperty('--k', Math.max(.5, k).toFixed(3));
     const kw = Math.min(.86, innerWidth * .54 / 860, (innerHeight - 48) / 620);
     welcomeBox.style.setProperty('--k', Math.max(.5, kw).toFixed(3));
   }
   addEventListener('resize', fit, {passive: true});
   fit();
 
-  /* date: digits only, dots added as you type → ДД.ММ.ГГГГ */
-  const birth = form.elements.birth;
-  birth.addEventListener('input', () => {
-    const d = birth.value.replace(/\D/g, '').slice(0, 8);
-    birth.value = [d.slice(0, 2), d.slice(2, 4), d.slice(4)].filter(Boolean).join('.');
-  });
-  function validDate(v){
-    const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(v); if (!m) return false;
-    const [d, mo, y] = [+m[1], +m[2], +m[3]];
-    const dt = new Date(y, mo - 1, d);
-    const now = new Date();
-    return dt.getFullYear() === y && dt.getMonth() === mo - 1 && dt.getDate() === d && y >= 1900 && dt <= now;
-  }
-
-  function check(field, show){
-    const input = field.querySelector('input');
-    const v = input.value.trim();
-    const ok = field.dataset.kind === 'date' ? validDate(v) : v.length >= 2;
-    field.classList.toggle('is-valid', !!v && ok);   /* the tick shows only on filled, correct fields */
-    if (show) field.classList.toggle('is-error', field.hasAttribute('data-required') && !ok);
-    else if (ok) field.classList.remove('is-error');
-    return ok || !field.hasAttribute('data-required');
-  }
-  const fields = [...form.querySelectorAll('.wf-field')];
-
-  /* autosave: the draft lives in this browser only (no server in this prototype) */
-  function save(){
-    try { localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(new FormData(form)))); } catch(e) {}
-  }
-  try {
-    const draft = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (draft) for (const [k, v] of Object.entries(draft)) if (form.elements[k]) form.elements[k].value = v;
-  } catch(e) {}
-  fields.forEach(f => check(f, false));
-
-  form.addEventListener('input', e => {
-    const field = e.target.closest('.wf-field');
-    if (field) check(field, false);
-    save();
-  });
-  form.addEventListener('focusout', e => {
-    const field = e.target.closest('.wf-field');
-    if (field && e.target.value) check(field, true);
-  });
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const results = fields.map(f => check(f, true));
-    if (results.every(Boolean)){
-      save();
-      /* the next steps are not designed yet: confirm the step and move the counter on */
-      document.getElementById('stepNum').textContent = '02';
-      const stops = form.querySelectorAll('.wf-stop'); stops[1] && stops[1].classList.add('is-active');
-      form.querySelector('.wf-button__label').textContent = 'Сохранено';
-      setTimeout(() => { form.querySelector('.wf-button__label').textContent = 'Далее'; }, 1800);
-    } else {
-      const first = fields.find((f, i) => !results[i]);
-      first && first.querySelector('input').focus();
-    }
-  });
-
-  /* welcome screen → form */
+  /* ---------- welcome screen → form ---------- */
   const welcome = document.getElementById('welcome');
   const formLayer = document.getElementById('formLayer');
+  let saved = '1';
+  try { saved = localStorage.getItem(KEY + ':step') || '1'; } catch(e) {}
+  show(STEPS[saved] && order().includes(saved) ? saved : '1', false);
+
   function openForm(animate){
-    const show = () => {
+    const go = () => {
       welcome.hidden = true;
       formLayer.hidden = false;
       if (animate) formLayer.classList.add('is-entering');
-      const first = form.querySelector('input');
-      if (animate && first && !matchMedia('(max-width: 720px)').matches) first.focus({preventScroll:true});
+      const first = panels[current].querySelector('input:not([type=radio]), select');
+      if (animate && first && !phone()) first.focus({preventScroll: true});
     };
-    if (!animate) return show();
+    if (!animate) return go();
     welcome.classList.add('is-leaving');
-    setTimeout(show, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 320);
+    setTimeout(go, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 320);
   }
   document.getElementById('welcomeGo').addEventListener('click', () => {
     try { sessionStorage.setItem('transport-future-welcomed', '1'); } catch(e) {}
@@ -107,7 +204,7 @@
   });
   try { if (sessionStorage.getItem('transport-future-welcomed')) openForm(false); } catch(e) {}
 
-  /* pause / resume the scene animation */
+  /* ---------- pause / resume the scene animation ---------- */
   pauseBtn.addEventListener('click', () => {
     const scene = window.cityScene;
     if (!scene) return;
