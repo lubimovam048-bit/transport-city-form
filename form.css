@@ -53,9 +53,12 @@
 .w-button:hover{filter:brightness(1.06);box-shadow:0 12px 20px rgba(11,62,181,.32),0 0 14px rgba(0,108,255,.5),inset 0 1px 1px rgba(255,255,255,.32)}
 .w-button:active{transform:translateY(1px) scale(.99)}
 /* «Далее» waits until the step is filled */
-.w-button:disabled{cursor:not-allowed;filter:grayscale(.55) brightness(1.08);opacity:.55;
-  box-shadow:0 4px 10px rgba(11,62,181,.12),inset 0 1px 1px rgba(255,255,255,.32);transform:none}
+/* «Далее» waits until the step is filled: Figma «Button / Form · State=disabled» (204:20363) */
+.w-button:disabled{cursor:not-allowed;background:#e5e7eb;color:#9ca3af;box-shadow:none;filter:none;transform:none}
+.w-button:disabled .w-button__circle{background:#d1d5db}
 .w-button:disabled .w-button__circle img{transform:none}
+.w-button .w-arrow-off,.w-button:disabled .w-arrow-on{display:none}
+.w-button:disabled .w-arrow-off{display:block}
 .w-button:focus-visible{outline:3px solid #8ed8ff;outline-offset:3px}
 .w-button__circle{display:grid;place-items:center;width:28px;height:28px;border-radius:999px;background:rgba(255,255,255,.96);
   filter:drop-shadow(0 0 5px rgba(99,200,255,.62))}
