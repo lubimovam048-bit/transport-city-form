@@ -55,7 +55,7 @@
 /* «Далее» waits until the step is filled */
 /* «Далее» waits until the step is filled: Figma «Button / Form · State=disabled» (204:20363) */
 .w-button:disabled{cursor:not-allowed;background:#e5e7eb;color:#9ca3af;box-shadow:none;filter:none;transform:none}
-.w-button:disabled .w-button__circle{background:#d1d5db}
+.w-button:disabled .w-button__circle{background:#d1d5db;filter:none}
 .w-button:disabled .w-button__circle img{transform:none}
 .w-button .w-arrow-off,.w-button:disabled .w-arrow-on{display:none}
 .w-button:disabled .w-arrow-off{display:block}
