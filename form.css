@@ -108,6 +108,37 @@
   box-shadow:0 0 8px rgba(92,232,255,.75)}
 .wf-point{position:absolute;left:801.5px;top:5.5px;width:24px;height:24px;pointer-events:none}
 
+
+/* ---------- Welcome screen (Figma 209:23226): card 860 x 458 with a wave on top, beaver over it ---------- */
+.welcome-layer{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding-top:120px;pointer-events:none;
+  transition:opacity .35s ease, transform .35s ease}
+.welcome-layer.is-leaving{opacity:0;transform:scale(.97)}
+.welcome-layer[hidden]{display:none}
+.welcome-scale{width:860px;transform:scale(var(--k,.86));transform-origin:center;pointer-events:auto}
+.welcome{position:relative;width:860px;min-height:458px;font-family:'Rubik',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.welcome__card{position:absolute;inset:0;width:100%;height:100%;overflow:visible;
+  filter:drop-shadow(0 0 6px rgba(65,184,255,.45)) drop-shadow(0 8px 20px rgba(23,105,255,.25))}
+.welcome__beaver{position:absolute;left:300px;top:-197px;width:237px;height:267px;z-index:2;pointer-events:none;
+  filter:drop-shadow(0 6px 10px rgba(10,43,112,.18))}
+.welcome__body{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:40px;
+  padding:110px 40px 56px;text-align:center}
+.welcome__title{font-weight:600;font-size:40px;line-height:48px;letter-spacing:-.8px;color:#1f2937;margin:0}
+.welcome__text{font-weight:400;font-size:24px;line-height:normal;color:#6b7280;max-width:506px;margin:0}
+.w-button{display:inline-flex;align-items:center;gap:12px;height:56px;padding:8px 12px;margin:2px;border:0;border-radius:12px;cursor:pointer;
+  background:linear-gradient(90deg,#337bff,#1248da);color:#fff;font:500 18px/26px 'Rubik',system-ui,sans-serif;
+  box-shadow:0 10px 15px rgba(11,62,181,.25),0 0 8px rgba(0,108,255,.35),inset 0 1px 1px rgba(255,255,255,.32);
+  transition:transform .15s ease, filter .2s ease, box-shadow .2s ease}
+.w-button:hover{filter:brightness(1.06);box-shadow:0 12px 20px rgba(11,62,181,.32),0 0 14px rgba(0,108,255,.5),inset 0 1px 1px rgba(255,255,255,.32)}
+.w-button:active{transform:translateY(1px) scale(.99)}
+.w-button:focus-visible{outline:3px solid #8ed8ff;outline-offset:3px}
+.w-button__circle{display:grid;place-items:center;width:28px;height:28px;border-radius:999px;background:rgba(255,255,255,.96);
+  filter:drop-shadow(0 0 5px rgba(99,200,255,.62))}
+.w-button__circle img{width:20px;height:20px;display:block;transition:transform .2s ease}
+.w-button:hover .w-button__circle img{transform:translateX(2px)}
+.form-layer[hidden]{display:none}
+.form-layer.is-entering{animation:formIn .4s ease both}
+@keyframes formIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+
 /* ---------- phones: a compact card in the middle, the city stays visible above and below ---------- */
 @media (max-width: 720px){
   .form-layer{place-items:center;overflow-y:auto;padding:max(64px, 9vh) 20px 24px;pointer-events:auto}
@@ -142,6 +173,14 @@
   .wf-button__arrow{left:auto;right:14px;top:12px}
   .wf-beam{left:auto;right:22px;top:12px;width:90px}
   .wf-point{left:auto;right:12px;top:1px}
+  /* welcome on phones: the card fills the width, the beaver stays centred on the wave */
+  .welcome-layer{padding:150px 16px 24px;overflow-y:auto}
+  .welcome-scale{width:100%;max-width:520px;transform:none}
+  .welcome{width:100%;min-height:0}
+  .welcome__beaver{left:50%;top:-138px;width:166px;height:187px;margin-left:-86px}
+  .welcome__body{gap:22px;padding:76px 20px 28px}
+  .welcome__title{font-size:24px;line-height:30px;letter-spacing:-.48px}
+  .welcome__text{font-size:16px;line-height:22px}
 }
 /* very narrow phones: fields go back to one column */
 @media (max-width: 339px){
@@ -156,5 +195,6 @@
   .wf-input input{font-size:14px}
 }
 @media (prefers-reduced-motion: reduce){
-  .wf-input .wf-icon--valid,.wf-button,.scene-pause{transition:none}
+  .wf-input .wf-icon--valid,.wf-button,.scene-pause,.w-button,.welcome-layer{transition:none}
+  .form-layer.is-entering{animation:none}
 }

@@ -7,10 +7,16 @@
 
 /* desktop: the Figma card (860 x 560), centred, at about 86% and never wider than ~54% of the
      window, so the moving city still shows around it and the text stays readable */
+  const welcomeBox = document.querySelector('.welcome-scale');
   function fit(){
-    if (matchMedia('(max-width: 720px)').matches){ scaleBox.style.removeProperty('--k'); return; }
+    if (matchMedia('(max-width: 720px)').matches){
+      scaleBox.style.removeProperty('--k'); welcomeBox.style.removeProperty('--k'); return;
+    }
     const k = Math.min(.86, innerWidth * .54 / 860, (innerHeight - 64) / 560);
     scaleBox.style.setProperty('--k', Math.max(.55, k).toFixed(3));
+    /* the welcome card is 458 high plus ~200 of beaver above it */
+    const kw = Math.min(.86, innerWidth * .54 / 860, (innerHeight - 64) / 680);
+    welcomeBox.style.setProperty('--k', Math.max(.5, kw).toFixed(3));
   }
   addEventListener('resize', fit, {passive: true});
   fit();
@@ -74,6 +80,27 @@
       first && first.querySelector('input').focus();
     }
   });
+
+  /* welcome screen → form */
+  const welcome = document.getElementById('welcome');
+  const formLayer = document.getElementById('formLayer');
+  function openForm(animate){
+    const show = () => {
+      welcome.hidden = true;
+      formLayer.hidden = false;
+      if (animate) formLayer.classList.add('is-entering');
+      const first = form.querySelector('input');
+      if (animate && first && !matchMedia('(max-width: 720px)').matches) first.focus({preventScroll:true});
+    };
+    if (!animate) return show();
+    welcome.classList.add('is-leaving');
+    setTimeout(show, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 320);
+  }
+  document.getElementById('welcomeGo').addEventListener('click', () => {
+    try { sessionStorage.setItem('transport-future-welcomed', '1'); } catch(e) {}
+    openForm(true);
+  });
+  try { if (sessionStorage.getItem('transport-future-welcomed')) openForm(false); } catch(e) {}
 
   /* pause / resume the scene animation */
   pauseBtn.addEventListener('click', () => {

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="form.css?v=6">
+<link rel="stylesheet" href="form.css?v=7">
 <link rel="preload" as="image" href="assets/background.webp?v=20261107b">
 <link rel="modulepreload" href="vendor/three/build/three.module.min.js">
 <link rel="modulepreload" href="vendor/three/build/three.core.min.js">
@@ -68,7 +68,33 @@
 <div class="form-dim" aria-hidden="true"></div>
 <button class="scene-pause" id="scenePause" type="button" aria-pressed="false" aria-label="Остановить анимацию фона"></button>
 
-<div class="form-layer">
+
+<!-- ===== Welcome screen (Figma 209:23226): shown first, «Поехали!» opens the form ===== -->
+<div class="welcome-layer" id="welcome">
+  <div class="welcome-scale">
+    <section class="welcome" aria-labelledby="welcomeTitle">
+      <svg class="welcome__card" viewBox="40 31 860 459" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="wGrad" x1="-9.7" y1="226.9" x2="907.1" y2="462.2" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#F8FCFF" stop-opacity=".96"/><stop offset=".58" stop-color="#EEF6FF" stop-opacity=".93"/><stop offset="1" stop-color="#DDEBFF" stop-opacity=".9"/>
+          </linearGradient>
+        </defs>
+        <path d="M40 68.4695C40 48.8781 55.6174 32.8976 75.207 32.6297C119.982 32.0176 198.283 31.3703 255 33.2082C339.183 35.9363 385.744 47.1917 470 47.1917C554.256 47.1917 600.817 35.9363 685 33.2082C741.717 31.3703 820.018 32.0176 864.793 32.6297C884.383 32.8976 900 48.8781 900 68.4695V454C900 473.882 883.882 490 864 490H76C56.1177 490 40 473.882 40 454V68.4695Z" fill="url(#wGrad)" stroke="#8ED8FF" stroke-opacity=".9" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      </svg>
+      <img class="welcome__beaver" src="assets/form/beaver.webp" alt="Бобр — маскот конкурса — держит билет" width="237" height="267">
+      <div class="welcome__body">
+        <h1 class="welcome__title" id="welcomeTitle">Добро пожаловать на&nbsp;конкурс «Транспорт будущего»</h1>
+        <p class="welcome__text">Прежде чем ваш проект отправится в&nbsp;путь, нужно оформить «билет»: заполнить анкету участника. Это 10&nbsp;коротких шагов, прогресс не&nbsp;потеряется.</p>
+        <button class="w-button" type="button" id="welcomeGo">
+          <span>Поехали!</span>
+          <span class="w-button__circle"><img src="assets/form/icon-arrow-blue.svg" alt="" width="20" height="20"></span>
+        </button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="form-layer" id="formLayer" hidden>
   <div class="form-scale">
     <form class="wow-form" id="profileForm" novalidate autocomplete="on">
       <div class="wow-form__aura" aria-hidden="true"></div>
@@ -144,6 +170,6 @@
 }}
 </script>
 <script type="module" src="scene.js?v=form2"></script>
-<script src="form.js?v=3" defer></script>
+<script src="form.js?v=4" defer></script>
 </body>
 </html>
