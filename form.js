@@ -81,7 +81,8 @@
     const phoneText = val('phoneCode') === '+7' && phoneDigits.length === 10
       ? `+7 (${phoneDigits.slice(0, 3)}) ${phoneDigits.slice(3, 6)} ${phoneDigits.slice(6, 8)} ${phoneDigits.slice(8)}`
       : `${val('phoneCode')} ${val('phone')}`;
-    const owner = E.phoneOwner.value === 'representative' ? 'телефон представителя' : 'мой телефон';
+    const owner = E.phoneOwner.value === 'representative'
+      ? 'телефон представителя' + (val('repName') ? ': ' + val('repName') : '') : 'мой телефон';
     const zip = val('zip').replace(/\D/g, '');
     const ru = E.citizenship.value !== 'other';
     const values = {
@@ -133,6 +134,88 @@
     E[n].addEventListener('blur', () => { if (E[n].value) { E[n].value = properCase(E[n].value); save(); } });
   });
 
+
+  /* ---------- 03 · country of citizenship: searchable drop-down (Figma: field with a chevron) ---------- */
+  const COUNTRIES = ['Абхазия', 'Австралия', 'Австрия', 'Азербайджан', 'Албания', 'Алжир', 'Ангола', 'Андорра', 'Антигуа и Барбуда', 'Аргентина', 'Армения', 'Афганистан', 'Багамские Острова', 'Бангладеш', 'Барбадос', 'Бахрейн', 'Беларусь', 'Белиз', 'Бельгия', 'Бенин', 'Болгария', 'Боливия', 'Босния и Герцеговина', 'Ботсвана', 'Бразилия', 'Бруней', 'Буркина-Фасо', 'Бурунди', 'Бутан', 'Вануату', 'Ватикан', 'Великобритания', 'Венгрия', 'Венесуэла', 'Восточный Тимор', 'Вьетнам', 'Габон', 'Гаити', 'Гайана', 'Гамбия', 'Гана', 'Гватемала', 'Гвинея', 'Гвинея-Бисау', 'Германия', 'Гондурас', 'Гренада', 'Греция', 'Грузия', 'Дания', 'Джибути', 'Доминика', 'Доминиканская Республика', 'Египет', 'Замбия', 'Зимбабве', 'Израиль', 'Индия', 'Индонезия', 'Иордания', 'Ирак', 'Иран', 'Ирландия', 'Исландия', 'Испания', 'Италия', 'Йемен', 'Кабо-Верде', 'Казахстан', 'Камбоджа', 'Камерун', 'Канада', 'Катар', 'Кения', 'Кипр', 'Киргизия', 'Кирибати', 'Китай', 'КНДР', 'Колумбия', 'Коморские Острова', 'Конго', 'Демократическая Республика Конго', 'Коста-Рика', 'Кот-д’Ивуар', 'Куба', 'Кувейт', 'Лаос', 'Латвия', 'Лесото', 'Либерия', 'Ливан', 'Ливия', 'Литва', 'Лихтенштейн', 'Люксембург', 'Маврикий', 'Мавритания', 'Мадагаскар', 'Малави', 'Малайзия', 'Мали', 'Мальдивы', 'Мальта', 'Марокко', 'Маршалловы Острова', 'Мексика', 'Микронезия', 'Мозамбик', 'Молдова', 'Монако', 'Монголия', 'Мьянма', 'Намибия', 'Науру', 'Непал', 'Нигер', 'Нигерия', 'Нидерланды', 'Никарагуа', 'Новая Зеландия', 'Норвегия', 'ОАЭ', 'Оман', 'Пакистан', 'Палау', 'Палестина', 'Панама', 'Папуа — Новая Гвинея', 'Парагвай', 'Перу', 'Польша', 'Португалия', 'Республика Корея', 'Руанда', 'Румыния', 'Сальвадор', 'Самоа', 'Сан-Марино', 'Сан-Томе и Принсипи', 'Саудовская Аравия', 'Северная Македония', 'Сейшельские Острова', 'Сенегал', 'Сент-Винсент и Гренадины', 'Сент-Китс и Невис', 'Сент-Люсия', 'Сербия', 'Сингапур', 'Сирия', 'Словакия', 'Словения', 'Соломоновы Острова', 'Сомали', 'Судан', 'Суринам', 'США', 'Сьерра-Леоне', 'Таджикистан', 'Таиланд', 'Танзания', 'Того', 'Тонга', 'Тринидад и Тобаго', 'Тувалу', 'Тунис', 'Туркменистан', 'Турция', 'Уганда', 'Узбекистан', 'Украина', 'Уругвай', 'Фиджи', 'Филиппины', 'Финляндия', 'Франция', 'Хорватия', 'ЦАР', 'Чад', 'Черногория', 'Чехия', 'Чили', 'Швейцария', 'Швеция', 'Шри-Ланка', 'Эквадор', 'Экваториальная Гвинея', 'Эритрея', 'Эсватини', 'Эстония', 'Эфиопия', 'ЮАР', 'Южная Осетия', 'Южный Судан', 'Ямайка', 'Япония', 'Лицо без гражданства'];
+  /* the most frequent ones for the contest first, then the rest A–Я */
+  const TOP = ['Беларусь', 'Казахстан', 'Узбекистан', 'Киргизия', 'Таджикистан', 'Армения', 'Азербайджан', 'Туркменистан', 'Молдова', 'Абхазия', 'Южная Осетия'];
+  const ORDERED = [...TOP, ...COUNTRIES.filter(c => !TOP.includes(c))];
+  const norm = v => v.toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ').trim();
+  const findCountry = v => COUNTRIES.find(c => norm(c) === norm(v));
+  const combo = document.querySelector('.wf-combo');
+  const cInput = form.elements.citizenshipCountry;
+  const cList = document.getElementById('countryOptions');
+  let cItems = [], cActive = -1;
+  const esc = t => t.replace(/[&<>]/g, ch => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[ch]));
+  function renderCountries(all){
+    const q = all ? '' : norm(cInput.value);
+    cItems = !q ? ORDERED : [
+      ...COUNTRIES.filter(c => norm(c).startsWith(q)),
+      ...COUNTRIES.filter(c => !norm(c).startsWith(q) && norm(c).includes(q)),
+    ];
+    cActive = -1;
+    cList.innerHTML = cItems.length
+      ? cItems.map((c, i) => {
+          const k = q ? norm(c).indexOf(q) : -1;
+          const label = k < 0 ? esc(c) : esc(c.slice(0, k)) + '<mark>' + esc(c.slice(k, k + q.length)) + '</mark>' + esc(c.slice(k + q.length));
+          return `<li role="option" id="country-${i}" aria-selected="false" data-i="${i}">${label}</li>`;
+        }).join('')
+      : '<li class="is-empty" role="option" aria-disabled="true">Ничего не нашлось</li>';
+  }
+  function markCountry(i, scroll){
+    cList.querySelectorAll('[aria-selected="true"]').forEach(li => li.setAttribute('aria-selected', 'false'));
+    cActive = i;
+    const li = cList.querySelector(`[data-i="${i}"]`);
+    if (!li) return;
+    li.setAttribute('aria-selected', 'true');
+    cInput.setAttribute('aria-activedescendant', li.id);
+    if (scroll) li.scrollIntoView({block: 'nearest'});
+  }
+  function openCountries(all){
+    renderCountries(all);
+    cList.hidden = false; combo.classList.add('is-open'); cInput.setAttribute('aria-expanded', 'true');
+    const cur = cItems.indexOf(findCountry(cInput.value) || '');
+    if (cur >= 0) markCountry(cur, true);
+  }
+  function closeCountries(){
+    cList.hidden = true; combo.classList.remove('is-open'); cInput.setAttribute('aria-expanded', 'false');
+    cInput.removeAttribute('aria-activedescendant');
+  }
+  function pickCountry(i){
+    cInput.value = cItems[i];
+    closeCountries();
+    check(cInput.closest('.wf-field'), true);
+    save();
+  }
+  cInput.addEventListener('input', () => openCountries(false));
+  cInput.addEventListener('focus', () => openCountries(!!findCountry(cInput.value)));
+  cInput.addEventListener('click', () => { if (cList.hidden) openCountries(true); });
+  cInput.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+      e.preventDefault();
+      if (cList.hidden) openCountries(true);
+      if (!cItems.length) return;
+      const n = e.key === 'ArrowDown' ? Math.min(cItems.length - 1, cActive + 1) : Math.max(0, cActive - 1);
+      markCountry(n, true);
+    } else if (e.key === 'Enter' && !cList.hidden && cItems.length){
+      e.preventDefault();                                   /* Enter picks, it does not submit the step */
+      pickCountry(cActive >= 0 ? cActive : 0);
+    } else if (e.key === 'Escape') closeCountries();
+  });
+  cList.addEventListener('mousedown', e => {
+    const li = e.target.closest('[data-i]'); if (!li) return;
+    e.preventDefault(); pickCountry(+li.dataset.i);
+  });
+  combo.querySelector('.wf-combo__toggle').addEventListener('mousedown', e => {
+    e.preventDefault();
+    if (cList.hidden){ cInput.focus(); openCountries(true); } else closeCountries();
+  });
+  cInput.addEventListener('blur', () => {
+    closeCountries();
+    const hit = findCountry(cInput.value);              /* «казахстан» → «Казахстан» */
+    if (hit && hit !== cInput.value){ cInput.value = hit; save(); }
+  });
+
   /* ---------- validation ---------- */
   function validDate(v){
     const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(v); if (!m) return false;
@@ -162,6 +245,7 @@
       const name = el.name;
       ok = kind === 'date' ? validDate(v) : name === 'snils' ? validSnils(v) : name === 'phone' ? validPhone(v)
          : name === 'zip' ? v.replace(/\D/g, '').length === 6
+         : name === 'citizenshipCountry' ? !!findCountry(v)
          : kind === 'select' ? !!v : v.length >= 2;
     }
     if (kind !== 'radio' && kind !== 'select' && kind !== 'check') field.classList.toggle('is-valid', !!v && ok);
@@ -169,7 +253,7 @@
     else if (ok) field.classList.remove('is-error');
     return ok || !field.hasAttribute('data-required');
   }
-  const fieldsOf = key => [...panels[key].querySelectorAll('.wf-field')];
+  const fieldsOf = key => [...panels[key].querySelectorAll('.wf-field')].filter(f => !f.hidden);
 
   /* ---------- autosave (this browser only; no server in this prototype) ---------- */
   function save(){
@@ -197,14 +281,24 @@
     clearTimeout(autoNext);
     autoNext = setTimeout(() => { if (current === '2') form.requestSubmit(); }, 280);   /* let the card show it is picked */
   }));
-  /* 07 · picking whose phone it is: with a valid number already typed, go on; otherwise jump into the number field */
+  /* 07 · «Телефон представителя» adds the representative's full name next to the number */
+  const repField = form.querySelector('[data-rep]');
+  const syncRep = () => { repField.hidden = form.elements.phoneOwner.value !== 'representative'; };
+  form.elements.phoneOwner.forEach(r => r.addEventListener('change', syncRep));
+  syncRep();
+  ['repName'].forEach(n => form.elements[n].addEventListener('blur', () => { const el = form.elements[n]; if (el.value){ el.value = properCase(el.value); save(); } }));
+
+  /* 07 · picking whose phone it is: the cursor jumps to the first empty field (the step moves on only with «Далее») */
   [...form.elements.phoneOwner].forEach(r => r.addEventListener('click', () => {
     if (current !== '7') return;
     clearTimeout(autoNext);
     autoNext = setTimeout(() => {
       if (current !== '7') return;
-      if (validPhone(form.elements.phone.value)) form.requestSubmit();
-      else form.elements.phone.focus({preventScroll: phone()});
+      const E2 = form.elements, needRep = E2.phoneOwner.value === 'representative';
+      const repOk = !needRep || E2.repName.value.trim().length >= 2;
+      /* no auto-advance on this step: only «Далее» moves on; the cursor goes to the first empty field */
+      if (!validPhone(E2.phone.value)) E2.phone.focus({preventScroll: phone()});
+      else if (!repOk) E2.repName.focus({preventScroll: phone()});
     }, 280);
   }));
   form.addEventListener('focusout', e => {

@@ -164,8 +164,12 @@
 
 /* phone: country code + number */
 .wf-phone{display:flex;gap:16px;align-items:flex-start}
-.wf-phone > .wf-field:last-child{flex:1}
+.wf-phone > .wf-field:not(.wf-field--code){flex:1;min-width:0}
 .wf-field--code{flex:none}
+.wf-phone > .wf-field[hidden]{display:none}
+.wf-phone > .wf-field--rep{flex:1.25;min-width:0}
+.wf-phone > .wf-field--rep:not([hidden]){animation:repIn .25s ease both}
+@keyframes repIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
 .wf-input--code select{width:112px;padding-left:12px;padding-right:36px;background-position:right 8px center}
 .wf-input--code.is-ru select{padding-left:46px;background:#fff url(assets/form/icon-chevron.svg) right 8px center/24px no-repeat}
 .wf-input--code.is-ru::before{content:"";position:absolute;left:14px;top:16px;width:24px;height:24px;z-index:1;pointer-events:none;
@@ -216,6 +220,22 @@
 .consent-dlg p{margin:0 0 12px;font-size:16px;line-height:24px;color:#4b5563}
 .consent-dlg__note{color:#6b7280;font-size:14px!important}
 .consent-dlg form{display:flex;justify-content:flex-end;margin:8px 0 0}
+
+
+/* 03 · country of citizenship: a searchable drop-down list */
+.wf-combo input{padding-right:44px}
+.wf-combo__toggle{position:absolute;right:14px;top:16px;width:24px;height:24px;border:0;padding:0;cursor:pointer;
+  background:url(assets/form/icon-chevron.svg) center/24px no-repeat;transition:transform .2s ease}
+.wf-combo.is-open .wf-combo__toggle{transform:rotate(180deg)}
+.wf-combo .wf-icon--valid{display:none}
+.wf-combo__list{position:absolute;left:2px;right:2px;top:calc(100% + 4px);z-index:5;max-height:264px;overflow-y:auto;margin:0;padding:6px;list-style:none;
+  background:#fff;border:1px solid rgba(185,214,255,.92);border-radius:12px;box-shadow:0 12px 32px rgba(23,105,255,.18);
+  overscroll-behavior:contain}
+.wf-combo__list[hidden]{display:none}
+.wf-combo__list li{padding:10px 12px;border-radius:8px;cursor:pointer;font:500 16px/24px 'Rubik',system-ui,sans-serif;color:#1f2937}
+.wf-combo__list li[aria-selected="true"],.wf-combo__list li:hover{background:#eaf3ff;color:#1d4ed8}
+.wf-combo__list li mark{background:none;color:#1d4ed8;font-weight:600}
+.wf-combo__list .is-empty{cursor:default;color:#6b7280;background:none!important}
 
 /* buttons row: Назад (secondary) + Далее (primary) */
 .wf-footer{display:flex;justify-content:flex-end;align-items:center;gap:8px;height:60px}
@@ -278,7 +298,8 @@
   .wf-choice__note{margin-top:6px;font-size:12px;line-height:16px}
   .wf-choice--row{padding:12px;gap:8px}
   .wf-choice--row:has(input:checked){padding:11px}
-  .wf-phone{gap:10px}
+  .wf-phone{gap:10px;flex-wrap:wrap}
+  .wf-phone > .wf-field.wf-field--rep{flex:1 1 100%}
   .wf-input--code select{width:96px}
   .wf-input--code.is-ru select{padding-left:38px}
   .wf-input--code.is-ru::before{left:12px;top:13px;width:20px;height:20px}
@@ -289,6 +310,9 @@
   .wf-icon{right:10px;top:14px;width:18px;height:18px}
   .wf-footer{height:auto}
   .wf-footer .w-button{flex:1;height:48px;justify-content:center;font-size:16px}
+  .wf-combo__toggle{right:10px;top:12px;width:20px;height:20px;background-size:20px}
+  .wf-combo__list{max-height:220px}
+  .wf-combo__list li{font-size:15px;padding:9px 10px}
   .form-layer{padding-bottom:24px}
   .form-scale{zoom:1}
   .wf-panel--consent{gap:14px}
