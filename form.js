@@ -84,6 +84,7 @@
     } else placeGuide(st);
     current = key;
     try { localStorage.setItem(KEY + ':step', key); } catch(e) {}
+    if (typeof updateNext === 'function') updateNext();
   }
 
   /* ---------- 10 · review: what was entered, each card leads back to its step ---------- */
@@ -249,6 +250,16 @@
     const n = v.replace(/\D/g, '').length;
     return form.elements.phoneCode.value === '+7' ? n === 10 : n >= 6 && n <= 12;
   }
+  function fieldOk(field){                 /* is this field filled correctly? (no visual changes) */
+    const kind = field.dataset.kind;
+    if (kind === 'radio' || kind === 'check') return !!field.querySelector('input:checked') || !field.hasAttribute('data-required');
+    const el = field.querySelector('input, select'), v = el.value.trim(), name = el.name;
+    const ok = kind === 'date' ? validDate(v) : name === 'snils' ? validSnils(v) : name === 'phone' ? validPhone(v)
+       : name === 'zip' ? v.replace(/\D/g, '').length === 6
+       : name === 'citizenshipCountry' ? !!findCountry(v)
+       : kind === 'select' ? !!v : v.length >= 2;
+    return ok || !field.hasAttribute('data-required');
+  }
   function check(field, show){
     const kind = field.dataset.kind;
     let v, ok;
@@ -270,8 +281,16 @@
   const fieldsOf = key => [...panels[key].querySelectorAll('.wf-field')].filter(f => !f.hidden);
 
   /* ---------- autosave (this browser only; no server in this prototype) ---------- */
+  const nextBtn = form.querySelector('.wf-footer .w-button');
+  function updateNext(){
+    if (!panels[current]) return;
+    const ready = fieldsOf(current).every(fieldOk);
+    nextBtn.disabled = !ready;
+    nextBtn.title = ready ? '' : 'Заполните обязательные поля, отмеченные *';
+  }
   function save(){
     try { localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(new FormData(form)))); } catch(e) {}
+    updateNext();
   }
   try {
     const draft = JSON.parse(localStorage.getItem(KEY) || 'null');
@@ -286,6 +305,7 @@
   Object.keys(panels).forEach(k => fieldsOf(k).forEach(f => check(f, false)));
 
   form.addEventListener('input', e => { const f = e.target.closest('.wf-field'); if (f) check(f, false); save(); });
+  form.addEventListener('focusout', () => setTimeout(updateNext));    /* names, countries are tidied on blur */
   form.addEventListener('change', e => { const f = e.target.closest('.wf-field'); if (f) check(f, false); save(); });
   /* 02 · a click on «Россия» / «Другое гражданство» goes straight to the next step
      (click, not change: re-picking the same answer after «Назад» also moves on) */
