@@ -306,7 +306,7 @@
   .wform__beaver{left:auto;right:6px;top:-148px;width:calc(var(--bw,218px) * .64);height:calc(var(--bh,248px) * .64)}
   /* «Создайте проект»: Figma proportions (beaver 236 px above the card at full size → ×0.64) */
   .wform.is-project .wform__beaver{top:-151px}
-  .wform.is-project .wform__bubble{top:-138px;width:min(210px,calc(100% - 132px))}   /* wider: it may reach over the tail, up to the head */
+  .wform.is-project .wform__bubble{top:-138px;width:min(200px,calc(100% - 152px))}   /* wider, ends ~8 px left of the beaver's head */
   .wform__bubble{left:0;top:-136px;width:min(200px,calc(100% - var(--bw,218px) * .64 - 8px));padding:9px 10px 10px;font-size:12px;line-height:15px;
     border-radius:12px 12px 3px 12px}
   .wform__bubble::after{display:none}
