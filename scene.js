@@ -50,10 +50,10 @@ for (const el of document.querySelectorAll('.layer[data-x]')){
     width: w / FULL_W * 100 + '%', height: h / FULL_H * 100 + '%'});
   el.classList.add('placed');
 }
-/* a picture pixel → point on the ground (y = h) */
-function ground(px, py, h = 0){
+/* a picture pixel → point on the ground (y = 0) */
+function ground(px, py){
   const r = rayAt(px, py);
-  const t = (h - r.origin.y) / r.direction.y;
+  const t = -r.origin.y / r.direction.y;
   return r.origin.clone().addScaledVector(r.direction, t);
 }
 /* a picture pixel → point at distance d along the view ray (for things in the air) */
@@ -148,7 +148,7 @@ scene.add(shuttleA, shuttleB, robot, drone, flyer, flyerB, trainBody);
 
 /* ---------- models ---------- */
 const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);   /* models are meshopt-compressed */
-function swapIn(holder, url, length, {shadow = true, centerY = false, onReady} = {}){
+function loadModel(holders, url, length, {shadow = true, centerY = false, onReady} = {}){
   loader.load(url, gltf => {
     const model = gltf.scene;
     const box = new THREE.Box3().setFromObject(model);
@@ -157,17 +157,17 @@ function swapIn(holder, url, length, {shadow = true, centerY = false, onReady} =
     if (centerY) model.position.y = -size.y * length / size.z / 2;   /* hang from its middle, not stand on its base */
     model.traverse(o => { if (o.isMesh) o.material.envMapIntensity = .8; });
     const sh = shadow && blob(size.x / size.z * length * 1.5, length * 1.3);
-    for (const h of holder){
-      h.add(h === holder[0] ? model : model.clone());
+    for (const h of holders){
+      h.add(h === holders[0] ? model : model.clone());
       if (sh) h.add(sh.clone());
     }
     if (onReady) onReady(model);
     if (!animating) drawStill();
   });
 }
-swapIn([shuttleA, shuttleB], 'assets/bus.glb', 4.2);
+loadModel([shuttleA, shuttleB], 'assets/bus.glb', 4.2);
 /* quadcopter: about 2.4 m across the rotors (the model is 1.36× wider than it is deep) */
-swapIn([drone], 'assets/drone.glb', 2.4 / 1.36, {shadow: false, centerY: true, onReady(model){
+loadModel([drone], 'assets/drone.glb', 2.4 / 1.36, {shadow: false, centerY: true, onReady(model){
   /* see-through spinning blades over the four rotor discs (centres measured in the model, its own units) */
   const R = .175, Y = .44;
   const bladeMat = new THREE.MeshBasicMaterial({color: 0x2a3140, transparent: true, opacity: .22, depthWrite: false, side: THREE.DoubleSide});
@@ -183,12 +183,12 @@ swapIn([drone], 'assets/drone.glb', 2.4 / 1.36, {shadow: false, centerY: true, o
   drone.userData.rotors = rotors;
 }});
 /* delivery robot: about 1.6 m long, stands on the sidewalk with a soft contact shadow */
-swapIn([robot], 'assets/robot.glb', 1.6);
+loadModel([robot], 'assets/robot.glb', 1.6);
 /* flying cars: about 5 m long, hanging from their middle */
-swapIn([flyer, flyerB], 'assets/flyer.glb', 5, {shadow: false, centerY: true});
+loadModel([flyer, flyerB], 'assets/flyer.glb', 5, {shadow: false, centerY: true});
 const TRAIN_LENGTH = 16;
 let trainReady = false;
-swapIn([trainBody], 'assets/train.glb', TRAIN_LENGTH, {shadow: false, onReady(){ trainReady = true; }});
+loadModel([trainBody], 'assets/train.glb', TRAIN_LENGTH, {shadow: false, onReady(){ trainReady = true; }});
 
 /* the drone's hover spot: over the station on wide screens; on tall screens (phones) up in the
    extended sky, clear of the big tree, so it hangs higher in the frame */
@@ -286,7 +286,7 @@ function update(t){
   /* drone hovers and drifts */
   drone.position.copy(dronePos).add(tmp.set(Math.sin(t * .5) * 1.2, Math.sin(t * 1.3) * .25, Math.cos(t * .4) * .6));
   drone.rotation.set(Math.sin(t * .5) * .06, t * .15, Math.cos(t * .5) * .06);
-  for (const r of drone.userData.rotors) r.rotation.y = t * 21 * (r.userData.dir || 1);
+  for (const r of drone.userData.rotors) r.rotation.y = t * 21 * r.userData.dir;
 
   placeFlyers(t);
 
@@ -369,23 +369,20 @@ function stepSteam(sys, dt){
   }
 }
 
-/* ---------- occluders: pieces of the picture that stand in front of traffic ---------- */
-const occluders = {
-  /* the arch, building, lamp, flowers, tree and bushes are hand-cut layers placed in index.html */
-  /* the flower planter bottom-left, now continuing down into the extended foreground */
-  planter:  [[0,850],[70,862],[140,948],[250,962],[330,984],[396,1014],[425,1060],[432,1150],[420,1212],[0,1218]]
-};
-for (const [name, pts] of Object.entries(occluders)){
+/* ---------- occluder: the flower planter bottom-left stands in front of the bus ----------
+   (the arch, building, lamp, flowers, tree and bushes are hand-cut layers placed in index.html).
+   A copy of the picture clipped to the planter's outline, continuing into the extended foreground. */
+{
+  const PLANTER = [[0,850],[70,862],[140,948],[250,962],[330,984],[396,1014],[425,1060],[432,1150],[420,1212],[0,1218]];
   const d = document.createElement('div');
-  d.className = 'occ'; d.dataset.name = name;
-  d.style.clipPath = `polygon(${pts.map(([x, y]) => `${((x + OX) / FULL_W * 100).toFixed(3)}% ${((y + OY) / FULL_H * 100).toFixed(3)}%`).join(',')})`;
+  d.className = 'occ';
+  d.style.clipPath = `polygon(${PLANTER.map(([x, y]) => `${((x + OX) / FULL_W * 100).toFixed(3)}% ${((y + OY) / FULL_H * 100).toFixed(3)}%`).join(',')})`;
   stage.appendChild(d);
 }
 
 /* ---------- debug: draw the routes on top ---------- */
-let dbg;
 if (DEBUG){
-  dbg = document.createElement('canvas');
+  const dbg = document.createElement('canvas');
   dbg.width = FULL_W; dbg.height = FULL_H;
   dbg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5';
   stage.appendChild(dbg);
