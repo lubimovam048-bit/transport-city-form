@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="form.css?v=25">
+<link rel="stylesheet" href="form.css?v=26">
 <link rel="preload" as="image" href="assets/background.webp?v=20261107b">
 <link rel="modulepreload" href="vendor/three/build/three.module.min.js">
 <link rel="modulepreload" href="vendor/three/build/three.core.min.js">
@@ -280,14 +280,14 @@
 
         <!-- after «Все верно»: the project draft (Figma 220:24869) -->
         <section class="wf-panel wf-project" data-step="done" hidden aria-labelledby="projectTitle">
-          <p class="wf-project__status"><span class="wf-project__dot" aria-hidden="true"></span>Черновик проекта</p>
+          <button class="wf-project__back" type="button" id="projectBack"><img src="assets/form/icon-arrow-left.svg" alt="" width="20" height="20">Назад к анкете</button>
           <div class="wf-project__row">
             <div class="wf-project__copy">
-              <h2 class="wf-project__title" id="projectTitle">Новый проект</h2>
+              <h2 class="wf-project__title" id="projectTitle">Создайте проект</h2>
               <p class="wf-project__lead">4&nbsp;шага до готовой заявки. Не&nbsp;обязательно заполнять всё сразу: начните с&nbsp;формата и&nbsp;темы, а&nbsp;остальное добавите позже.</p>
               <p class="wf-project__note">Прогресс сохраняется автоматически.</p>
             </div>
-            <button class="w-button w-button--big wf-project__go" type="button" id="projectStart">Начать заполнение</button>
+            <button class="w-button wf-project__go" type="button" id="projectStart"><span>Начать</span><span class="w-button__circle"><img src="assets/form/icon-arrow-blue.svg" alt="" width="20" height="20"></span></button>
           </div>
         </section>
 
@@ -320,6 +320,6 @@
 }}
 </script>
 <script type="module" src="scene.js?v=form2"></script>
-<script src="form.js?v=18" defer></script>
+<script src="form.js?v=19" defer></script>
 </body>
 </html>

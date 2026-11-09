@@ -421,6 +421,9 @@
     guideText.innerHTML = 'Подача проекта скоро откроется. Ваш профиль уже сохранён!';
   });
 
+  /* «Назад к анкете»: back to the review */
+  document.getElementById('projectBack').addEventListener('click', () => show('10', true));
+
   /* consent samples */
   const dlg = document.getElementById('consentDlg');
   document.getElementById('consentOpen').addEventListener('click', () => {
