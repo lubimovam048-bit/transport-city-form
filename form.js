@@ -30,8 +30,13 @@
     '8':  { n: 8, img: 'beaver-mail',  w: 221, h: 250, x: 320, y: -233, qx: 129, say: 'Укажите адрес:<br>вдруг приз поедет к&nbsp;вам!' },
     '9':  { n: 9, img: 'beaver-scroll', w: 282, h: 250, x: 289, y: -230, qx: 173, qy: -260, say: 'Почитайте документы согласия, я&nbsp;вас подожду' },
     '10': { n: 10, img: 'beaver-loupe', w: 230, h: 250, x: 315, y: -232, qx: 131, say: 'Давайте проверим каждую букву, чтобы избежать ошибок' },
+    'auth':    { n: 0, img: 'beaver-form',  w: 218, h: 248, x: 321, y: -226, qx: 128, say: 'Заведём вам кабинет: если прервётесь, всё сохранится' },
+    'verify':  { n: 0, img: 'beaver-mail',  w: 221, h: 250, x: 320, y: -233, qx: 129, say: 'Письмо уже летит к&nbsp;вам! Ищите код из&nbsp;6&nbsp;цифр' },
+    'forgot':  { n: 0, img: 'beaver-loupe', w: 230, h: 250, x: 315, y: -232, qx: 131, say: 'Сейчас найдём ваш кабинет' },
+    'newpass': { n: 0, img: 'beaver-form',  w: 218, h: 248, x: 321, y: -226, qx: 128, say: 'Придумайте новый пароль, и&nbsp;продолжим' },
     'done': { n: 10, img: 'beaver-project', w: 310, h: 350, x: 520, y: -236, qx: 380, qy: -215, say: 'Мне не&nbsp;терпится узнать про ваш проект!' },
   };
+  const AUTH = ['auth', 'verify', 'forgot', 'newpass'];   /* account screens before the profile */
   const order = () => ['1', '2', form.elements.citizenship.value === 'other' ? '3b' : '3a', '5', '6', '7', '8', '9', '10'];
   const panels = Object.fromEntries([...form.querySelectorAll('.wf-panel')].map(p => [p.dataset.step, p]));
   let current = '1';
@@ -79,6 +84,7 @@
     nextLabel.textContent = key === '10' ? 'Все верно' : 'Далее';
     form.querySelector('.wf-footer').hidden = key === 'done';
     form.classList.toggle('is-project', key === 'done');
+    form.classList.toggle('is-auth', AUTH.includes(key));
     if (key === '10') fillReview();
     if (animate && current !== key){
       wform.classList.add('is-swapping');
@@ -366,6 +372,7 @@
   /* ---------- navigation ---------- */
   form.addEventListener('submit', e => {
     e.preventDefault();
+    if (AUTH.includes(current)){ const b = panels[current].querySelector('.au-go:not(:disabled)'); if (b) b.click(); return; }
     const fs = fieldsOf(current);
     const results = fs.map(f => check(f, true));
     if (!results.every(Boolean)){
@@ -436,7 +443,170 @@
   const formLayer = document.getElementById('formLayer');
   let saved = '1';
   try { saved = localStorage.getItem(KEY + ':step') || '1'; } catch(e) {}
-  show(STEPS[saved] && (order().includes(saved) || saved === 'done') ? saved : '1', false);
+  let account = null;                /* {email, verified} — the password is never stored */
+  try { account = JSON.parse(localStorage.getItem(KEY + ':account') || 'null'); } catch(e) {}
+  const profileStart = () => (STEPS[saved] && (order().includes(saved) || saved === 'done')) ? saved : '1';
+  if (account && account.verified) show(profileStart(), false);
+  else show(account && account.email ? 'verify' : 'auth', false);
+
+
+  /* ---------- account screens: sign up / sign in → email code → profile; forgot password ---------- */
+  const $ = id => document.getElementById(id);
+  const DEMO_CODE = '123456', RESEND_S = 60, TRIES = 3;
+  let mode = 'signup', purpose = 'signup', tries = TRIES, timer = 0, timerLeft = 0;
+  const saveAccount = () => { try { localStorage.setItem(KEY + ':account', JSON.stringify(account)); } catch(e) {} };
+  const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+  const passRules = v => ({len: v.length >= 8, mix: /\p{L}/u.test(v) && /\d/.test(v)});
+  /* a likely typo in the mail domain → suggest the right one */
+  const DOMAINS = ['gmail.com', 'mail.ru', 'yandex.ru', 'ya.ru', 'bk.ru', 'list.ru', 'inbox.ru', 'rambler.ru', 'icloud.com', 'outlook.com', 'hotmail.com', 'yahoo.com'];
+  function lev(a, b){ const d = Array.from({length: a.length + 1}, (_, i) => [i]); for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+    return d[a.length][b.length]; }
+  function typo(v){
+    const m = /^([^@\s]+)@([^@\s]+)$/.exec(v.trim().toLowerCase()); if (!m || DOMAINS.includes(m[2])) return '';
+    const best = DOMAINS.map(d => [d, lev(m[2], d)]).sort((a, b) => a[1] - b[1])[0];
+    return best && best[1] <= 2 ? `${m[1]}@${best[0]}` : '';
+  }
+  function wireEmail(input, onChange){
+    const field = input.closest('.au-field'), hint = field.querySelector('[data-typo]'), fix = hint.querySelector('[data-fix]');
+    const upd = () => { const t = typo(input.value); hint.hidden = !t; fix.textContent = t; onChange(); };
+    input.addEventListener('input', upd);
+    fix.addEventListener('click', () => { input.value = fix.textContent; upd(); input.focus(); });
+  }
+  function wireEye(root){
+    root.querySelectorAll('.au-eye').forEach(b => b.addEventListener('click', () => {
+      const i = b.parentElement.querySelector('input'), show = i.type === 'password';
+      i.type = show ? 'text' : 'password';
+      b.setAttribute('aria-pressed', String(show)); b.setAttribute('aria-label', show ? 'Скрыть пароль' : 'Показать пароль');
+    }));
+  }
+  function paintRules(ul, v){ const r = passRules(v); ul.querySelectorAll('[data-rule]').forEach(li => li.classList.toggle('is-ok', r[li.dataset.rule])); return r.len && r.mix; }
+
+  /* sign up / sign in */
+  const auEmail = $('au-email'), auPass = $('au-pass'), auGo = $('auGo'), auRules = panels.auth.querySelector('.au-rules');
+  function updateAuth(){
+    const passOk = mode === 'signup' ? paintRules(auRules, auPass.value) : auPass.value.length >= 8;
+    auGo.disabled = !(emailOk(auEmail.value) && passOk);
+  }
+  function setMode(m){
+    mode = m;
+    panels.auth.querySelectorAll('.au-tabs button').forEach(b => { const on = b.dataset.mode === m; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+    $('auTitle').textContent = m === 'signup' ? 'Создайте кабинет' : 'Вход в кабинет';
+    $('auGoText').textContent = m === 'signup' ? 'Создать кабинет' : 'Войти';
+    auRules.hidden = m !== 'signup';
+    $('auForgot').hidden = m === 'signup';
+    auPass.autocomplete = m === 'signup' ? 'new-password' : 'current-password';
+    STEPS.auth.say = m === 'signup' ? 'Заведём вам кабинет: если прервётесь, всё сохранится' : 'С возвращением! Продолжим с&nbsp;того места, где остановились';
+    if (current === 'auth') guideText.innerHTML = STEPS.auth.say;
+    updateAuth();
+  }
+  panels.auth.querySelectorAll('.au-tabs button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  wireEmail(auEmail, updateAuth); wireEye(panels.auth);
+  auPass.addEventListener('input', updateAuth);
+  auGo.addEventListener('click', () => {
+    const email = auEmail.value.trim().toLowerCase();
+    auPass.value = ''; updateAuth();                       /* the password never stays on the page */
+    if (mode === 'login' && account && account.email === email && account.verified) return goProfile();
+    account = {email, verified: false}; saveAccount();
+    startVerify(mode === 'signup' ? 'signup' : 'login');
+  });
+  $('auForgot').addEventListener('click', () => { $('fg-email').value = auEmail.value; updateForgot(); show('forgot', true); });
+
+  /* email code */
+  const cells = [...$('vrCode').querySelectorAll('input')], vrStatus = $('vrStatus'), codeBox = $('vrCode');
+  function status(text, kind){ vrStatus.textContent = text; vrStatus.className = 'au-status' + (kind ? ' is-' + kind : ''); }
+  function tick(){
+    clearInterval(timer); timerLeft = RESEND_S; paintTimer();
+    timer = setInterval(() => { timerLeft--; paintTimer(); if (timerLeft <= 0) clearInterval(timer); }, 1000);
+  }
+  function paintTimer(){
+    const wait = timerLeft > 0 && tries > 0;
+    $('vrTimer').textContent = wait ? `Отправить код ещё раз через 0:${String(timerLeft).padStart(2, '0')}` : '';
+    $('vrResend').hidden = wait;
+  }
+  function resetCells(){ cells.forEach(c => { c.value = ''; c.disabled = false; }); codeBox.className = 'au-code'; }
+  function startVerify(why){
+    purpose = why; tries = TRIES;
+    $('vrEmail').textContent = account.email;
+    $('vrEyebrow').textContent = why === 'reset' ? 'ВОССТАНОВЛЕНИЕ ДОСТУПА' : 'ПОДТВЕРЖДЕНИЕ ПОЧТЫ';
+    resetCells(); status(''); tick();
+    show('verify', true);
+    setTimeout(() => !phone() && cells[0].focus({preventScroll: true}), 350);
+  }
+  function fill(from, digits){
+    digits.split('').forEach((d, k) => { if (cells[from + k]) cells[from + k].value = d; });
+    const next = cells.findIndex(c => !c.value);
+    (cells[next] || cells[5]).focus();
+    if (cells.every(c => c.value)) checkCode();
+  }
+  cells.forEach((c, i) => {
+    c.addEventListener('input', () => {
+      const d = c.value.replace(/\D/g, '');
+      if (codeBox.classList.contains('is-err')){ codeBox.classList.remove('is-err'); status(''); }
+      if (d.length > 1){ c.value = ''; return fill(i, d.slice(0, 6 - i)); }   /* pasted or auto-filled from SMS */
+      c.value = d;
+      if (d) fill(i, d);
+    });
+    c.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !c.value && i > 0){ cells[i - 1].value = ''; cells[i - 1].focus(); e.preventDefault(); }
+      if (e.key === 'ArrowLeft' && i > 0) cells[i - 1].focus();
+      if (e.key === 'ArrowRight' && i < 5) cells[i + 1].focus();
+    });
+    c.addEventListener('focus', () => c.select());
+  });
+  function checkCode(){
+    const code = cells.map(c => c.value).join('');
+    if (code === DEMO_CODE){
+      codeBox.className = 'au-code is-ok'; cells.forEach(c => c.disabled = true); clearInterval(timer);
+      status(purpose === 'reset' ? '✓ Код верный' : '✓ Почта подтверждена. Открываем анкету…', 'ok');
+      guideText.innerHTML = purpose === 'reset' ? 'Нашли! Осталось придумать новый пароль' : 'Отлично, почта ваша! Поехали дальше';
+      setTimeout(() => {
+        if (purpose === 'reset') return show('newpass', true);
+        account.verified = true; saveAccount(); goProfile();
+      }, 1100);
+      return;
+    }
+    tries--;
+    void codeBox.offsetWidth; codeBox.className = 'au-code is-err';
+    guideText.innerHTML = 'Кажется, цифры перепутались. Сверьтесь с&nbsp;письмом';
+    if (tries > 0){
+      status(`Неверный код. ${tries === 1 ? 'Осталась 1 попытка' : 'Осталось ' + tries + ' попытки'}`, 'err');
+      setTimeout(() => { resetCells(); codeBox.classList.add('is-err'); cells[0].focus(); setTimeout(() => codeBox.classList.remove('is-err'), 400); }, 700);
+    } else {
+      status('Попытки закончились. Запросите новый код', 'err');
+      cells.forEach(c => c.disabled = true); clearInterval(timer); timerLeft = 0; paintTimer();
+    }
+  }
+  $('vrResend').addEventListener('click', () => {
+    tries = TRIES; resetCells(); tick(); status('Новый код отправлен', 'ok');
+    guideText.innerHTML = STEPS.verify.say; cells[0].focus();
+  });
+  $('vrChange').addEventListener('click', () => {
+    clearInterval(timer);
+    auEmail.value = account ? account.email : ''; account = null;
+    try { localStorage.removeItem(KEY + ':account'); } catch(e) {}
+    setMode(purpose === 'login' ? 'login' : 'signup'); show('auth', true); auEmail.focus();
+  });
+
+  /* forgot password → code → new password */
+  const fgEmail = $('fg-email'), fgGo = $('fgGo');
+  const updateForgot = () => { fgGo.disabled = !emailOk(fgEmail.value); };
+  wireEmail(fgEmail, updateForgot);
+  fgGo.addEventListener('click', () => { account = {email: fgEmail.value.trim().toLowerCase(), verified: false}; saveAccount(); startVerify('reset'); });
+  $('fgBack').addEventListener('click', () => { setMode('login'); show('auth', true); });
+  const npPass = $('np-pass'), npGo = $('npGo'), npRules = panels.newpass.querySelector('.au-rules');
+  wireEye(panels.newpass);
+  npPass.addEventListener('input', () => { npGo.disabled = !paintRules(npRules, npPass.value); });
+  npGo.addEventListener('click', () => {
+    npPass.value = ''; npGo.disabled = true; paintRules(npRules, '');
+    account.verified = true; saveAccount();
+    guideText.innerHTML = 'Пароль обновлён, входим!';
+    setTimeout(goProfile, 700);
+  });
+
+  function goProfile(){ clearInterval(timer); show(profileStart(), true); }
+  setMode('signup');
+  if (current === 'verify' && account){ purpose = 'signup'; $('vrEmail').textContent = account.email; tick(); }
 
   /* «Начать заполнение»: the project form is not designed yet */
   document.getElementById('projectStart').addEventListener('click', () => {

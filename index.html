@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="form.css?v=40">
+<link rel="stylesheet" href="form.css?v=41">
 <link rel="preload" as="image" href="assets/form/btn-play.webp">
 <link rel="preload" as="image" href="assets/background.webp?v=20261107b">
 <link rel="modulepreload" href="vendor/three/build/three.module.min.js">
@@ -109,6 +109,69 @@
         </header>
 
         <ol class="wf-progress" id="progress" aria-label="Шаги анкеты"><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li><li class="wf-stop"></li></ol>
+
+        <!-- ===== account: sign up or sign in (before the profile) ===== -->
+        <section class="wf-panel au-panel" data-step="auth" hidden aria-labelledby="auTitle">
+          <p class="wf-eyebrow">КАБИНЕТ УЧАСТНИКА</p>
+          <h2 class="au-title" id="auTitle">Создайте кабинет</h2>
+          <div class="au-tabs" role="tablist">
+            <button type="button" role="tab" class="is-on" data-mode="signup" aria-selected="true">Я здесь впервые</button>
+            <button type="button" role="tab" data-mode="login" aria-selected="false">У меня есть кабинет</button>
+          </div>
+          <div class="au-grid">
+            <div class="au-field">
+              <label class="wf-label" for="au-email">Электронная почта</label>
+              <div class="wf-input"><input id="au-email" type="email" inputmode="email" autocomplete="email" placeholder="name@mail.ru"></div>
+              <p class="au-hint" data-typo hidden>Возможно, вы имели в виду <button type="button" class="au-link" data-fix></button>?</p>
+            </div>
+            <div class="au-field">
+              <label class="wf-label" for="au-pass">Пароль</label>
+              <div class="wf-input au-pass"><input id="au-pass" type="password" autocomplete="new-password" placeholder="Не менее 8 символов"><button class="au-eye" type="button" aria-label="Показать пароль" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+              <div class="au-under"><ul class="au-rules" aria-live="polite"><li data-rule="len">8 символов</li><li data-rule="mix">буквы и цифры</li></ul><button type="button" class="au-link" id="auForgot" hidden>Забыли пароль?</button></div>
+            </div>
+          </div>
+          <button class="w-button au-go" type="button" id="auGo" disabled><span id="auGoText">Создать кабинет</span><span class="w-button__circle"><img class="w-arrow-on" src="assets/form/icon-arrow-blue.svg" alt="" width="20" height="20"><img class="w-arrow-off" src="assets/form/icon-arrow-disabled.svg" alt="" width="20" height="20"></span></button>
+          <p class="au-note">Демоверсия: письма не отправляются, пароль нигде не сохраняется.</p>
+        </section>
+
+        <!-- ===== email confirmation: 6-digit code ===== -->
+        <section class="wf-panel au-panel" data-step="verify" hidden aria-labelledby="vrTitle">
+          <p class="wf-eyebrow" id="vrEyebrow">ПОДТВЕРЖДЕНИЕ ПОЧТЫ</p>
+          <h2 class="au-title" id="vrTitle">Проверьте почту</h2>
+          <p class="au-sub">Мы отправили код на <b id="vrEmail"></b> · <button type="button" class="au-link" id="vrChange">изменить</button></p>
+          <div class="au-code" id="vrCode" role="group" aria-label="Код из письма, 6 цифр">
+            <input inputmode="numeric" autocomplete="one-time-code" maxlength="6" aria-label="Цифра 1"><input inputmode="numeric" maxlength="1" aria-label="Цифра 2"><input inputmode="numeric" maxlength="1" aria-label="Цифра 3"><input inputmode="numeric" maxlength="1" aria-label="Цифра 4"><input inputmode="numeric" maxlength="1" aria-label="Цифра 5"><input inputmode="numeric" maxlength="1" aria-label="Цифра 6">
+          </div>
+          <p class="au-status" id="vrStatus" aria-live="polite"></p>
+          <p class="au-note au-resend"><span id="vrTimer"></span><button type="button" class="au-link" id="vrResend" hidden>Отправить код ещё раз</button><br>Нет письма? Загляните в&nbsp;«Спам».</p>
+          <p class="au-note">Демоверсия: письма не отправляются, введите код <b>123456</b>.</p>
+        </section>
+
+        <!-- ===== forgot password ===== -->
+        <section class="wf-panel au-panel" data-step="forgot" hidden aria-labelledby="fgTitle">
+          <p class="wf-eyebrow">ВОССТАНОВЛЕНИЕ ДОСТУПА</p>
+          <h2 class="au-title" id="fgTitle">Забыли пароль?</h2>
+          <p class="au-sub">Укажите почту кабинета: пришлём код, и вы зададите новый пароль.</p>
+          <div class="au-field">
+            <label class="wf-label" for="fg-email">Электронная почта</label>
+            <div class="wf-input"><input id="fg-email" type="email" inputmode="email" autocomplete="email" placeholder="name@mail.ru"></div>
+            <p class="au-hint" data-typo hidden>Возможно, вы имели в виду <button type="button" class="au-link" data-fix></button>?</p>
+          </div>
+          <button class="w-button au-go" type="button" id="fgGo" disabled><span>Отправить код</span><span class="w-button__circle"><img class="w-arrow-on" src="assets/form/icon-arrow-blue.svg" alt="" width="20" height="20"><img class="w-arrow-off" src="assets/form/icon-arrow-disabled.svg" alt="" width="20" height="20"></span></button>
+          <button type="button" class="au-link au-back" id="fgBack">← Вернуться ко входу</button>
+        </section>
+
+        <!-- ===== new password after the code ===== -->
+        <section class="wf-panel au-panel" data-step="newpass" hidden aria-labelledby="npTitle">
+          <p class="wf-eyebrow">ВОССТАНОВЛЕНИЕ ДОСТУПА</p>
+          <h2 class="au-title" id="npTitle">Новый пароль</h2>
+          <div class="au-field">
+            <label class="wf-label" for="np-pass">Пароль</label>
+            <div class="wf-input au-pass"><input id="np-pass" type="password" autocomplete="new-password" placeholder="Не менее 8 символов"><button class="au-eye" type="button" aria-label="Показать пароль" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+            <div class="au-under"><ul class="au-rules" aria-live="polite"><li data-rule="len">8 символов</li><li data-rule="mix">буквы и цифры</li></ul></div>
+          </div>
+          <button class="w-button au-go" type="button" id="npGo" disabled><span>Сохранить и продолжить</span><span class="w-button__circle"><img class="w-arrow-on" src="assets/form/icon-arrow-blue.svg" alt="" width="20" height="20"><img class="w-arrow-off" src="assets/form/icon-arrow-disabled.svg" alt="" width="20" height="20"></span></button>
+        </section>
 
         <!-- 01 · personal data -->
         <fieldset class="wf-panel" data-step="1">
@@ -321,6 +384,6 @@
 }}
 </script>
 <script type="module" src="scene.js?v=form4"></script>
-<script src="form.js?v=24" defer></script>
+<script src="form.js?v=25" defer></script>
 </body>
 </html>

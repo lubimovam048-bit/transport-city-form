@@ -272,6 +272,55 @@
 .wf-project__note{margin:0;max-width:512px;font-weight:400;font-size:16px;line-height:normal;color:#6b7280}
 .wf-project__go{flex:none}
 
+
+/* ---------- account: sign up / sign in, email code, password recovery (before the profile) ---------- */
+.wow-form.is-auth{min-height:0}
+.wow-form.is-auth > .wf-header,.wow-form.is-auth > .wf-progress,.wow-form.is-auth > .wf-footer{display:none}
+.au-panel{gap:18px}
+.au-title{margin:0;font-weight:600;font-size:36px;line-height:44px;letter-spacing:-.72px;color:#1f2937}
+.au-sub{margin:0;font-weight:400;font-size:18px;line-height:1.35;color:#6b7280}
+.au-sub b{font-weight:500;color:#1f2937}
+.au-tabs{display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:14px;background:rgba(219,234,254,.7);border:1px solid rgba(185,214,255,.92)}
+.au-tabs button{border:0;border-radius:10px;padding:11px 10px;background:transparent;cursor:pointer;font:500 16px/20px 'Rubik',system-ui,sans-serif;color:#4b5563;transition:background-color .2s ease,color .2s ease}
+.au-tabs button.is-on{background:#fff;color:#1d4ed8;box-shadow:0 4px 10px rgba(43,112,232,.12)}
+.au-tabs button:focus-visible{outline:3px solid #8ed8ff;outline-offset:2px}
+.au-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.au-field{display:flex;flex-direction:column;min-width:0}
+.au-pass input{padding-right:48px}
+.au-eye{position:absolute;right:12px;top:15px;width:26px;height:26px;padding:2px;border:0;background:none;color:#6b7280;cursor:pointer;border-radius:6px}
+.au-eye svg{width:22px;height:22px;display:block}
+.au-eye[aria-pressed="true"]{color:#1d4ed8}
+.au-eye:focus-visible{outline:3px solid #8ed8ff}
+.au-under{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:6px;min-height:20px}
+.au-rules{display:flex;gap:14px;list-style:none;margin:0;padding:0;font:400 13px/18px 'Rubik',system-ui,sans-serif;color:#6b7280}
+.au-rules li::before{content:"○ "}
+.au-rules li.is-ok{color:#16a34a}.au-rules li.is-ok::before{content:"✓ "}
+.au-rules[hidden]{display:none}
+.au-hint{margin:6px 0 0;font:400 13px/18px 'Rubik',system-ui,sans-serif;color:#6b7280}
+.au-hint[hidden]{display:none}
+.au-link{padding:0;border:0;background:none;cursor:pointer;font:500 inherit 'Rubik',system-ui,sans-serif;font-size:inherit;color:#1d4ed8;text-decoration:none}
+.au-link:hover{text-decoration:underline;text-underline-offset:3px}
+.au-link:focus-visible{outline:3px solid #8ed8ff;outline-offset:2px;border-radius:4px}
+.au-link[hidden]{display:none}
+.au-under .au-link{font-size:15px}
+.au-go{width:100%;justify-content:center;margin:2px 0 0}
+.au-back{align-self:center;font-size:15px}
+.au-note{margin:0;text-align:center;font:400 13px/1.45 'Rubik',system-ui,sans-serif;color:#6b7280}
+.au-note b{font-weight:600;color:#1f2937}
+.au-resend .au-link{font-size:13px}
+.au-code{display:grid;grid-template-columns:repeat(6,minmax(0,64px));justify-content:center;gap:12px}
+.au-code input{width:100%;height:68px;padding:0;text-align:center;border:1px solid rgba(185,214,255,.92);border-radius:14px;background:#fff;outline:none;
+  font:600 30px 'Rubik',system-ui,sans-serif;color:#1d4ed8;box-shadow:0 6px 8px rgba(43,112,232,.1);transition:border-color .15s ease,box-shadow .15s ease,color .15s ease}
+.au-code input:focus{border:2px solid #5aa8ff;box-shadow:0 6px 8px rgba(43,112,232,.1),0 0 0 4px rgba(51,123,255,.16)}
+.au-code.is-err input{border-color:#dc2626;color:#dc2626;box-shadow:0 0 0 3px rgba(220,38,38,.1)}
+.au-code.is-err{animation:auShake .35s ease}
+.au-code.is-ok input{border-color:#16a34a;color:#16a34a}
+.au-code input:disabled{background:#f3f4f6;color:#9ca3af}
+@keyframes auShake{0%,100%{transform:none}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.au-status{margin:0;min-height:20px;text-align:center;font:500 15px/20px 'Rubik',system-ui,sans-serif}
+.au-status.is-err{color:#dc2626}.au-status.is-ok{color:#16a34a}
+@media (prefers-reduced-motion: reduce){ .au-code.is-err{animation:none} }
+
 /* buttons row: Назад (secondary) + Далее (primary) */
 .wf-footer{display:flex;justify-content:flex-end;align-items:center;gap:8px;height:60px}
 .b-button{display:inline-flex;align-items:center;gap:12px;height:56px;padding:8px 12px;margin:2px;border:0;border-radius:12px;cursor:pointer;
@@ -427,6 +476,18 @@
     background:linear-gradient(101deg,rgba(248,252,255,.97),rgba(238,246,255,.96) 58%,rgba(221,235,255,.95));
     border-top:2px solid rgba(142,216,255,.9);border-radius:22px 22px 0 0;
     box-shadow:0 -6px 24px rgba(23,105,255,.18),0 0 10px rgba(65,184,255,.35)}
+}
+
+@media (max-width: 720px){
+  .au-panel{gap:14px}
+  .au-title{font-size:26px;line-height:32px;letter-spacing:-.52px}
+  .au-sub{font-size:15px}
+  .au-tabs button{font-size:14px;padding:10px 6px}
+  .au-grid{grid-template-columns:1fr;gap:12px}
+  .au-eye{top:11px}
+  .au-code{gap:6px;grid-template-columns:repeat(6,minmax(0,1fr))}
+  .au-code input{height:54px;font-size:24px;border-radius:12px}
+  .au-go{height:48px;font-size:16px}
 }
 @media (max-width: 339px){
   .welcome-layer,.form-layer{padding-left:12px;padding-right:12px}
