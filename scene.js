@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
@@ -80,20 +79,6 @@ const sun = new THREE.DirectionalLight(0xfff3e2, 2.0);
 sun.position.set(-30, 40, 10);
 scene.add(sun);
 
-/* ---------- materials ---------- */
-const M = {
-  white: new THREE.MeshPhysicalMaterial({color: 0xf4f7fb, roughness: .32, clearcoat: .7, clearcoatRoughness: .25}),
-  blue:  new THREE.MeshPhysicalMaterial({color: 0x2f5fd8, roughness: .35, clearcoat: .6}),
-  glass: new THREE.MeshPhysicalMaterial({color: 0x1b2a4a, roughness: .08, metalness: .2, clearcoat: 1}),
-  tyre:  new THREE.MeshStandardMaterial({color: 0x23262d, roughness: .8}),
-  hub:   new THREE.MeshStandardMaterial({color: 0xdfe5ee, roughness: .4, metalness: .3}),
-  grey:  new THREE.MeshStandardMaterial({color: 0x9aa6b8, roughness: .5}),
-  card:  new THREE.MeshStandardMaterial({color: 0xd9a35e, roughness: .85}),
-  amber: new THREE.MeshStandardMaterial({color: 0xffc46b, emissive: 0xffa53a, emissiveIntensity: 2.2}),
-  cyan:  new THREE.MeshStandardMaterial({color: 0x9fd8ff, emissive: 0x4aa8ff, emissiveIntensity: 2.4}),
-  rotor: new THREE.MeshBasicMaterial({color: 0xcfd8e6, transparent: true, opacity: .35, depthWrite: false})
-};
-
 /* soft contact shadow under ground vehicles */
 const blobTex = (() => {
   const c = document.createElement('canvas'); c.width = c.height = 128;
@@ -109,106 +94,11 @@ function blob(w, l){
   return m;
 }
 
-const rbox = (w, h, d, r, mat, x = 0, y = 0, z = 0, seg = 3) => {
-  const m = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, seg, r), mat);
-  m.position.set(x, y, z); return m;
-};
-function wheel(r, w, x, y, z){
-  const g = new THREE.Group();
-  const t = new THREE.Mesh(new THREE.CylinderGeometry(r, r, w, 20), M.tyre);
-  const h = new THREE.Mesh(new THREE.CylinderGeometry(r * .5, r * .5, w + .02, 16), M.hub);
-  t.rotation.z = h.rotation.z = Math.PI / 2;
-  g.add(t, h); g.position.set(x, y, z); return g;
-}
-
-/* ---------- placeholder models (all face +Z) ---------- */
-function makeShuttle(){
-  const g = new THREE.Group();
-  g.add(rbox(2.1, .9, 4.6, .3, M.blue, 0, .78, 0));
-  g.add(rbox(2.06, 1.5, 4.5, .45, M.white, 0, 1.75, 0, 4));
-  g.add(rbox(2.12, .78, 3.3, .2, M.glass, 0, 1.9, -.25));
-  g.add(rbox(1.75, .95, .12, .06, M.glass, 0, 1.85, 2.22));
-  g.add(rbox(1.3, .22, 2.2, .1, M.white, 0, 2.58, -.2));
-  g.add(rbox(1.5, .08, .06, .03, M.amber, 0, 1.18, 2.3));
-  for (const s of [-1, 1]) g.add(rbox(.04, .06, 3.6, .02, M.cyan, s * 1.06, 1.3, -.1));
-  for (const x of [-.95, .95]) for (const z of [-1.5, 1.5]) g.add(wheel(.42, .3, x, .42, z));
-  g.add(blob(3.4, 6));
-  g.scale.setScalar(.85);
-  return g;
-}
-
-function makeTrainCar(lead){
-  const g = new THREE.Group();
-  g.add(rbox(2.6, 2.7, 7, .6, M.white, 0, 1.65, 0, 4));
-  g.add(rbox(2.64, .45, 6.9, .2, M.blue, 0, .55, 0));
-  g.add(rbox(2.66, .85, 6, .25, M.glass, 0, 2.05, 0));
-  for (const s of [-1, 1]) g.add(rbox(.04, .07, 6.4, .03, M.cyan, s * 1.32, 1.1, 0));
-  if (lead){
-    const nose = new THREE.Mesh(new THREE.SphereGeometry(1.3, 24, 16), M.white);
-    nose.scale.set(1, 1.04, 1.5); nose.position.set(0, 1.65, 3.4); g.add(nose);
-    const wind = new THREE.Mesh(new THREE.SphereGeometry(1.0, 24, 16), M.glass);
-    wind.scale.set(1.05, .55, 1.25); wind.position.set(0, 2.1, 3.9); g.add(wind);
-    g.add(rbox(1.2, .1, .1, .04, M.amber, 0, 1.15, 5.25));
-  }
-  return g;
-}
-
-function makeRobot(){
-  const g = new THREE.Group();
-  g.add(rbox(1.05, .75, 1.35, .22, M.white, 0, .7, 0));
-  g.add(rbox(1.08, .25, 1.38, .1, M.blue, 0, .42, 0));
-  g.add(rbox(.8, .38, .06, .08, M.glass, 0, .78, .68));
-  for (const x of [-.18, .18]) g.add(rbox(.12, .08, .04, .03, M.cyan, x, .8, .72));
-  g.add(rbox(.75, .48, .65, .05, M.card, 0, 1.3, -.1));
-  for (const x of [-.48, .48]) for (const z of [-.45, .45]) g.add(wheel(.2, .14, x, .2, z));
-  g.add(blob(1.6, 2));
-  return g;
-}
-
-function makeDrone(){
-  const g = new THREE.Group();
-  g.add(rbox(.7, .22, .7, .1, M.tyre, 0, 0, 0));
-  const rotors = [];
-  for (const [x, z] of [[-.75, -.75], [.75, -.75], [-.75, .75], [.75, .75]]){
-    const arm = rbox(1.0, .06, .1, .03, M.grey, x / 2, .02, z / 2);
-    arm.rotation.y = Math.atan2(-z, x); g.add(arm);
-    g.add(rbox(.14, .12, .14, .04, M.amber, x, .08, z));
-    const rot = new THREE.Mesh(new THREE.CylinderGeometry(.45, .45, .01, 24), M.rotor);
-    rot.position.set(x, .16, z); g.add(rot); rotors.push(rot);
-  }
-  const line = new THREE.Mesh(new THREE.CylinderGeometry(.01, .01, .5, 4), M.grey);
-  line.position.y = -.35; g.add(line);
-  g.add(rbox(.55, .42, .5, .04, M.card, 0, -.8, 0));
-  g.userData.rotors = rotors;
-  return g;
-}
-
-function makeFlyer(){
-  const g = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 20), M.white);
-  body.scale.set(1.15, .5, 2.5); g.add(body);
-  const cab = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 20), M.glass);
-  cab.scale.set(.82, .42, 1.25); cab.position.set(0, .32, .3); g.add(cab);
-  for (const s of [-1, 1]) g.add(rbox(.05, .07, 3.2, .03, M.cyan, s * 1.1, -.12, 0));
-  g.add(rbox(1.4, .07, .2, .03, M.amber, 0, .02, 2.42));
-  g.add(rbox(1.6, .08, .5, .04, M.white, 0, .25, -2.2));
-  /* light trails */
-  const trailMat = new THREE.MeshBasicMaterial({color: 0xbfe0ff, transparent: true, opacity: .45, depthWrite: false, blending: THREE.AdditiveBlending});
-  for (const s of [-1, 1]){
-    const tr = new THREE.Mesh(new THREE.PlaneGeometry(.12, 7), trailMat);
-    tr.rotation.x = -Math.PI / 2; tr.position.set(s * .9, -.1, -5.8); g.add(tr);
-  }
-  return g;
-}
-
 /* ---------- routes, in picture pixels ---------- */
 const routes = {
   /* the bus: from behind the arch, along the far lane to the left edge,
      a U-turn there, back along the near lane and out toward the viewer */
   shuttleA: curve([[1262,678],[1230,668],[1123,650],[963,660],[763,672],[433,705],[133,745],[13,785],[-32,825],[13,865],[213,905],[613,975],[903,1035],[1088,1105],[1342,1160],[1600,1205],[1826,1240],[2112,1285],[2500,1340]].map(([x,y]) => ground(x, y))),   /* along the near lane, traced from the lane markings, out past the right edge */
-  /* far lane: out of the tunnel, away to the left */
-  shuttleB: curve([[1420,694],[1250,690],[1060,676],[820,670],[560,682],[300,708],[80,740],[-300,790]].map(([x,y]) => ground(x, y))),
-  /* the monorail deck, right → left, disappearing behind the building */
   /* traced from the red line on the deck: left → right, out from behind the building.
      The deck recedes to the left, so points there are farther away (third number). */
   train: curve([[150,388,133],[200,374,125],[279,354,113],[359,336,101],[439,322,93],[519,312,88],[639,306,81],[758,305,76],[878,307,73],[998,308,70],[1118,306,68],[1237,306,66],[1357,309,64],[1437,312,62],[1850,318,52],[2350,326,46],[3200,340,40]].map(([x,y,d]) => air(x, y, d))),
@@ -222,7 +112,6 @@ const routes = {
     [1240,833],[1256,830],[1296,824],[1336,818],[1376,812],[1400,809],[1448,800],[1530,782],
     [1800,745],[2350,690]                                                 /* away behind the bushes */
   ].map(([x,y]) => ground(x, y))),
-  /* flying car: appears far over the city and sweeps past toward the viewer */
   /* flying car, traced from the red line: from behind the curved tower (far away, tiny),
      past the spire, rising and coming closer, out of frame top-right (close and big).
      Third number = distance; the towers' depth cut-out sits at 140, so the start is hidden.
@@ -231,12 +120,11 @@ const routes = {
 };
 
 /* ---------- actors ---------- */
-const shuttleA = makeShuttle(), shuttleB = makeShuttle(), robot = makeRobot(), drone = makeDrone(), flyer = makeFlyer(), flyerB = makeFlyer();
-const train = [makeTrainCar(true), makeTrainCar(false), makeTrainCar(false)];
-const trainBody = new THREE.Group();   /* the real articulated train, one rigid model */
+/* each actor starts as an empty group; its model drops in when the .glb has loaded */
+const [shuttleA, shuttleB, robot, drone, flyer, flyerB, trainBody] = Array.from({length: 7}, () => new THREE.Group());
+drone.userData.rotors = [];
 trainBody.visible = false;
-flyer.name = 'flyerA'; flyerB.name = 'flyerB';
-scene.add(shuttleA, shuttleB, robot, drone, flyer, flyerB, ...train, trainBody);
+scene.add(shuttleA, shuttleB, robot, drone, flyer, flyerB, trainBody);
 
 /* the skyscrapers as an invisible depth wall: the background already shows them, this only
    hides whatever flies behind them. Placed by pixels (x 482, y 119, 370 x 190) at depth 140,
@@ -258,7 +146,7 @@ scene.add(shuttleA, shuttleB, robot, drone, flyer, flyerB, ...train, trainBody);
   scene.add(wall);
 }
 
-/* ---------- real models replace placeholders as they arrive ---------- */
+/* ---------- models ---------- */
 const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);   /* models are meshopt-compressed */
 function swapIn(holder, url, length, {shadow = true, centerY = false, onReady} = {}){
   loader.load(url, gltf => {
@@ -270,8 +158,6 @@ function swapIn(holder, url, length, {shadow = true, centerY = false, onReady} =
     model.traverse(o => { if (o.isMesh) o.material.envMapIntensity = .8; });
     const sh = shadow && blob(size.x / size.z * length * 1.5, length * 1.3);
     for (const h of holder){
-      h.clear();
-      h.scale.setScalar(1);
       h.add(h === holder[0] ? model : model.clone());
       if (sh) h.add(sh.clone());
     }
@@ -302,10 +188,7 @@ swapIn([robot], 'assets/robot.glb', 1.6);
 swapIn([flyer, flyerB], 'assets/flyer.glb', 5, {shadow: false, centerY: true});
 const TRAIN_LENGTH = 16;
 let trainReady = false;
-swapIn([trainBody], 'assets/train.glb', TRAIN_LENGTH, {shadow: false, onReady(){
-  trainReady = true;
-  train.forEach(c => scene.remove(c));
-}});
+swapIn([trainBody], 'assets/train.glb', TRAIN_LENGTH, {shadow: false, onReady(){ trainReady = true; }});
 
 /* the drone's hover spot: over the station on wide screens; on tall screens (phones) up in the
    extended sky, clear of the big tree, so it hangs higher in the frame */
@@ -325,31 +208,14 @@ const robotTurnU = (() => {
 })();
 
 const camFwd = camera.getWorldDirection(new THREE.Vector3());
-function follow(obj, c, u, {pitch = 0, level = false, reverse = false, byPoints = false, sideOn = 1, smooth = 0} = {}){
+function follow(obj, c, u, {level = false} = {}){
   u = THREE.MathUtils.clamp(u, 0, 1);
-  /* byPoints: equal time between the traced points (steady across the screen) instead of steady in 3D */
-  const at = byPoints ? v => c.getPoint(v) : v => c.getPointAt(v);
-  const p = at(u);
-  let q;
-  if (smooth){
-    /* steady heading: aim along the chord over a long stretch of the path, so small wiggles
-       in the traced line move the car but do not swing its nose */
-    const a = at(THREE.MathUtils.clamp(u - smooth, 0, 1)), b = at(THREE.MathUtils.clamp(u + smooth, 0, 1));
-    q = p.clone().add(reverse ? a.sub(b) : b.sub(a));
-  } else {
-    const s = reverse ? -.002 : .002;        /* reverse: travel toward the start of the curve */
-    q = at(THREE.MathUtils.clamp(u + s, 0, 1));
-    if (q.distanceToSquared(p) < 1e-10) q.copy(p).add(p.clone().sub(at(THREE.MathUtils.clamp(u - s, 0, 1))));
-  }
+  const p = c.getPointAt(u);
+  const q = c.getPointAt(Math.min(1, u + .002));
+  if (q.distanceToSquared(p) < 1e-10) q.copy(p).add(p.clone().sub(c.getPointAt(Math.max(0, u - .002))));   /* at the very end: keep the last heading */
   if (level) q.y = p.y;              /* turn only left/right: no nose-up / nose-down tilt */
-  if (sideOn < 1){                   /* keep only part of the toward/away-from-camera heading, so it shows its side */
-    const dir = q.clone().sub(p);
-    dir.addScaledVector(camFwd, -dir.dot(camFwd) * (1 - sideOn));
-    q.copy(p).add(dir);
-  }
   obj.position.copy(p);
   obj.lookAt(q);
-  if (pitch) obj.rotateX(pitch);
 }
 
 const trainLen = routes.train.getLength();
@@ -383,7 +249,6 @@ function evenOnScreen(c, n = 600){
   };
 }
 const flyerAt = evenOnScreen(routes.flyer);
-const ease = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
 
 function update(t){
   /* shuttles */
@@ -393,7 +258,6 @@ function update(t){
   /* monorail: a steady 6.45 m/s along the whole deck. Both bogies stay on the line from the
      moment the rear leaves the start (hidden behind the station) until the front reaches the far
      end (well past the right edge), so the train never slows or blinks out while in view. */
-  const head = ((t / 20) % 1) * 1.15;         /* used by the placeholder cars only */
   if (trainReady){
     const H = TRAIN_LENGTH * .45;              /* bogie offset from the middle, metres */
     const runTime = (trainLen - 2 * H) / TRAIN_V;
@@ -406,11 +270,7 @@ function update(t){
       trainBody.position.copy(rear).add(front).multiplyScalar(.5);
       trainBody.lookAt(front);
     }
-  } else train.forEach((car, i) => {
-    const u = head - i * 7.6 / trainLen;
-    car.visible = u >= 0 && u <= 1;
-    if (car.visible) follow(car, routes.train, u, {pitch: -.08});
-  });
+  }
 
   /* robot: in along the sidewalk in front of the planting, U-turn at the curb, out behind it */
   const ru = (t / 26) % 1;
@@ -444,24 +304,22 @@ function update(t){
    then, after a short pause, another comes in from the right and flies back into the towers */
 const FLY_CYCLE = 30, FLY_TIME = 14, FLY_B_START = 15;
 function placeFlyers(t){
-  {
-    const s = t % FLY_CYCLE;
-    flyer.visible = s < FLY_TIME;
-    /* position follows the traced line; the nose keeps one steady course (no yawing about) */
-    if (flyer.visible){
-      flyer.position.copy(flyerAt(s / FLY_TIME));
-      flyer.lookAt(tmp.copy(flyer.position).add(flyHeading));
-    }
-    flyerB.visible = s >= FLY_B_START && s < FLY_B_START + FLY_TIME;
-    if (flyerB.visible){
-      flyerB.position.copy(flyerAt(1 - (s - FLY_B_START) / FLY_TIME));
-      flyerB.lookAt(tmp.copy(flyerB.position).sub(flyHeading));
-    }
-    /* a slow, slight hover bob, so they float rather than slide */
-    flyer.position.y += Math.sin(t * 1.2) * .08;
-    flyerB.position.y += Math.sin(t * 1.2 + 1) * .08;
-    flyer.updateMatrixWorld(); flyerB.updateMatrixWorld();
+  const s = t % FLY_CYCLE;
+  flyer.visible = s < FLY_TIME;
+  /* position follows the traced line; the nose keeps one steady course (no yawing about) */
+  if (flyer.visible){
+    flyer.position.copy(flyerAt(s / FLY_TIME));
+    flyer.lookAt(tmp.copy(flyer.position).add(flyHeading));
   }
+  flyerB.visible = s >= FLY_B_START && s < FLY_B_START + FLY_TIME;
+  if (flyerB.visible){
+    flyerB.position.copy(flyerAt(1 - (s - FLY_B_START) / FLY_TIME));
+    flyerB.lookAt(tmp.copy(flyerB.position).sub(flyHeading));
+  }
+  /* a slow, slight hover bob, so they float rather than slide */
+  flyer.position.y += Math.sin(t * 1.2) * .08;
+  flyerB.position.y += Math.sin(t * 1.2 + 1) * .08;
+  flyer.updateMatrixWorld(); flyerB.updateMatrixWorld();
 }
 
 /* ---------- steam: soft puffs from under the four hover discs ---------- */
@@ -513,8 +371,7 @@ function stepSteam(sys, dt){
 
 /* ---------- occluders: pieces of the picture that stand in front of traffic ---------- */
 const occluders = {
-  /* the arch (assets/arch.webp) and the station building (assets/building.webp)
-     are hand-cut layers placed in index.html */
+  /* the arch, building, lamp, flowers, tree and bushes are hand-cut layers placed in index.html */
   /* the flower planter bottom-left, now continuing down into the extended foreground */
   planter:  [[0,850],[70,862],[140,948],[250,962],[330,984],[396,1014],[425,1060],[432,1150],[420,1212],[0,1218]]
 };
@@ -534,11 +391,10 @@ if (DEBUG){
   stage.appendChild(dbg);
   const g = dbg.getContext('2d');
   g.translate(OX, OY);                /* draw in original-picture pixels */
-  const proj = toPx;
-  const colors = {shuttleA: '#f0f', shuttleB: '#0ff', train: '#ff0', robot: '#0f0', flyer: '#f80'};
+  const colors = {shuttleA: '#f0f', train: '#ff0', robot: '#0f0', flyer: '#f80'};
   for (const [k, c] of Object.entries(routes)){
     g.strokeStyle = colors[k]; g.lineWidth = 2; g.beginPath();
-    c.getSpacedPoints(80).forEach((v, i) => { const [x, y] = proj(v); i ? g.lineTo(x, y) : g.moveTo(x, y); });
+    c.getSpacedPoints(80).forEach((v, i) => { const [x, y] = toPx(v); i ? g.lineTo(x, y) : g.moveTo(x, y); });
     g.stroke();
   }
   g.strokeStyle = '#000'; g.setLineDash([6, 6]); g.beginPath(); g.moveTo(0, CAM.horizonY); g.lineTo(IW, CAM.horizonY); g.stroke();
