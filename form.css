@@ -34,7 +34,7 @@
 .form-layer.is-entering{animation:formIn .4s ease both}
 @keyframes formIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
 .welcome-scale,.form-scale{width:860px;transform:scale(var(--k,.86));transform-origin:center;pointer-events:auto}
-.welcome-scale{padding-top:231px}
+.welcome-scale{padding-top:231px;position:relative}
 /* the form uses zoom (it changes layout), so a tall step such as 10 scrolls inside the layer */
 .form-layer{overflow-y:auto;place-items:safe center;padding:24px 0;pointer-events:auto}
 .form-scale{padding-top:226px;transform:none;zoom:var(--k,.86)}
@@ -68,7 +68,7 @@
 .w-button--big{width:176px;height:68px;justify-content:center;font-size:24px}
 
 /* ---------- Welcome (Figma 215:23430) ---------- */
-.welcome__beaver{position:absolute;left:244px;top:-231px;width:372px;height:248px;pointer-events:none;
+.welcome__beaver{position:absolute;left:244px;top:0;z-index:1;width:372px;height:248px;pointer-events:none;
   filter:drop-shadow(0 6px 10px rgba(10,43,112,.16))}
 .welcome__body{display:flex;flex-direction:column;align-items:center;gap:36px;text-align:center}
 .welcome__title{font-weight:600;font-size:40px;line-height:48px;letter-spacing:-.8px;color:#1f2937;margin:0}
@@ -393,6 +393,29 @@
   .wf-review__item{padding:12px;font-size:14px;line-height:20px;box-shadow:0 6px 20px rgba(23,105,255,.16)}
   .wf-review__text{gap:4px}
   .wf-choice--row .wf-choice__title{font-size:14px;line-height:20px}
+}
+
+/* ---------- phones: the form comes first and always starts at the same height; Krutya and his
+   line sit below it, centred: right after a long form, or pressed to the bottom of the screen
+   when the form is short. «Создайте проект» keeps the beaver on top of the card. ---------- */
+@media (max-width: 720px){
+  .form-layer:not(:has(.wform.is-project)),.welcome-layer{display:block;padding:76px 16px 0}
+  .form-layer:not(:has(.wform.is-project)) .form-scale,.welcome-scale{padding-top:0;margin:0 auto;min-height:calc(100dvh - 76px);
+    display:flex;flex-direction:column}
+  .form-layer:not(:has(.wform.is-project)) .wform{flex:1;display:flex;flex-direction:column}
+  .wform:not(.is-project) .wow-form{order:1}
+  .wform:not(.is-project) .wform__guide{order:2;position:relative;inset:auto;height:auto;margin-top:auto;padding-top:28px;
+    display:flex;flex-direction:column;align-items:center}
+  .wform:not(.is-project) .wform__bubble{position:relative;left:auto;top:auto;width:auto;max-width:min(290px,100%);
+    padding:9px 14px 10px;font-size:13px;line-height:16px;border-radius:12px}
+  .wform:not(.is-project) .wform__bubble::after{display:block;content:"";left:50%;right:auto;bottom:-7px;width:12px;height:12px;
+    background:#fff;border:solid #d5e3f7;border-width:0 1px 1px 0;transform:translateX(-50%) rotate(45deg)}
+  .wform:not(.is-project) .wform__beaver{position:relative;left:auto;right:auto;top:auto;margin-top:12px;display:block;
+    width:calc(var(--bw,218px) * .72);height:calc(var(--bh,248px) * .72)}
+  /* welcome: the card on top, the beaver with open arms pressed to the bottom */
+  .welcome-layer .welcome{order:1}
+  .welcome-layer .welcome__beaver{order:2;position:relative;left:auto;top:auto;margin:auto auto 0;padding-top:28px;
+    width:300px;height:auto;box-sizing:content-box;max-width:100%}
 }
 @media (max-width: 339px){
   .welcome-layer,.form-layer{padding-left:12px;padding-right:12px}
