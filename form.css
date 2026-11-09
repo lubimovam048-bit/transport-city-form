@@ -337,6 +337,7 @@
   .wf-phone > .wf-field.wf-field--rep{flex:1 1 100%;order:-1}   /* phones: the name goes above the number */
   .wf-panel[data-step="1"] .wf-grid,
   .wf-panel[data-step="5"] .wf-grid,
+  .wf-panel[data-step="6"] .wf-grid,
   .wf-panel[data-step="8"] .wf-grid{grid-template-columns:1fr}   /* phones: recipient, zip and address one under another */
   .wf-input--code select{width:96px}
   .wf-input--code.is-ru select{padding-left:38px}
@@ -348,6 +349,13 @@
   .wf-icon{right:10px;top:14px;width:18px;height:18px}
   .wf-footer{height:auto}
   .wf-footer .w-button{flex:1;height:48px;justify-content:center;font-size:16px}
+  /* header: eyebrow and title next to the step badge, «Заполните основные данные» across the full width */
+  .wf-header{display:grid;grid-template-columns:1fr auto;column-gap:10px;row-gap:6px;align-items:start}
+  .wf-copy{display:contents}
+  .wf-eyebrow{grid-column:1;grid-row:1}
+  .wf-title{grid-column:1;grid-row:2}
+  .wf-step{grid-column:2;grid-row:1 / span 2;align-self:start}
+  .wf-subtitle{grid-column:1 / -1;grid-row:3;white-space:nowrap}
   /* «Назад» and «Далее» share the row equally */
   .wf-footer .b-button,.wf-footer .w-button{flex:1 1 0;min-width:0;justify-content:center;padding:8px 12px}
   /* 02 · citizenship cards one under another: icon on the left, title and note on the right */
