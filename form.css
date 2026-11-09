@@ -134,6 +134,7 @@
   background:#fff url(assets/form/icon-chevron.svg) right 12px center/24px no-repeat;
   box-shadow:0 6px 8px rgba(43,112,232,.1),inset 0 1px 1px rgba(255,255,255,.85);transition:border-color .2s ease, box-shadow .2s ease}
 .wf-input select:invalid{color:#9ca3af}
+.wf-input select:disabled{cursor:not-allowed;background-color:#f3f4f6;opacity:.8}
 .wf-input select option{color:#1f2937}
 .wf-input select:focus{border-color:#5aa8ff;box-shadow:0 6px 8px rgba(43,112,232,.1),0 0 0 4px rgba(51,123,255,.16)}
 .wf-input input:focus{border-color:#5aa8ff;box-shadow:0 6px 8px rgba(43,112,232,.1),0 0 0 4px rgba(51,123,255,.16)}
@@ -335,6 +336,7 @@
   .wf-phone{gap:10px;flex-wrap:wrap}
   .wf-phone > .wf-field.wf-field--rep{flex:1 1 100%;order:-1}   /* phones: the name goes above the number */
   .wf-panel[data-step="1"] .wf-grid,
+  .wf-panel[data-step="5"] .wf-grid,
   .wf-panel[data-step="8"] .wf-grid{grid-template-columns:1fr}   /* phones: recipient, zip and address one under another */
   .wf-input--code select{width:96px}
   .wf-input--code.is-ru select{padding-left:38px}

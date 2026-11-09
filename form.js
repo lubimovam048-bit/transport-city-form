@@ -232,6 +232,26 @@
     if (hit && hit !== cInput.value){ cInput.value = hit; save(); }
   });
 
+
+  /* ---------- 05 · class or course depends on the type of organisation ---------- */
+  const GRADES = {
+    'Школа': { label: 'Класс', items: Array.from({length: 11}, (_, i) => `${i + 1} класс`) },
+    'Колледж или техникум': { label: 'Курс', items: Array.from({length: 4}, (_, i) => `${i + 1} курс`) },
+    'Вуз': { label: 'Курс', items: [...Array.from({length: 6}, (_, i) => `${i + 1} курс`), 'Магистратура', 'Аспирантура'] },
+    'Другое': { label: 'Класс или курс', items: [...Array.from({length: 11}, (_, i) => `${i + 1} класс`), ...Array.from({length: 6}, (_, i) => `${i + 1} курс`)] },
+  };
+  const gradeSel = form.elements.grade, orgSel = form.elements.orgType;
+  function buildGrades(){
+    const cfg = GRADES[orgSel.value];
+    const keep = gradeSel.value;
+    document.getElementById('gradeLabel').textContent = cfg ? cfg.label : 'Класс или курс';
+    gradeSel.innerHTML = '<option value="" disabled selected hidden>' + (cfg ? 'Не выбрано' : 'Сначала выберите тип') + '</option>'
+      + (cfg ? cfg.items.map(t => `<option>${t}</option>`).join('') : '');
+    gradeSel.disabled = !cfg;
+    if (cfg && cfg.items.includes(keep)) gradeSel.value = keep;   /* a school class does not survive a switch to «Вуз» */
+  }
+  orgSel.addEventListener('change', () => { buildGrades(); check(gradeSel.closest('.wf-field'), false); save(); });
+
   /* ---------- validation ---------- */
   function validDate(v){
     const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(v); if (!m) return false;
@@ -303,6 +323,7 @@
     }
     document.querySelector('.wf-input--code').classList.toggle('is-ru', form.elements.phoneCode.value === '+7');
   } catch(e) {}
+  buildGrades();
   Object.keys(panels).forEach(k => fieldsOf(k).forEach(f => check(f, false)));
 
   form.addEventListener('input', e => { const f = e.target.closest('.wf-field'); if (f) check(f, false); save(); });
