@@ -346,6 +346,18 @@
   .wf-icon{right:10px;top:14px;width:18px;height:18px}
   .wf-footer{height:auto}
   .wf-footer .w-button{flex:1;height:48px;justify-content:center;font-size:16px}
+  /* «Назад» and «Далее» share the row equally */
+  .wf-footer .b-button,.wf-footer .w-button{flex:1 1 0;min-width:0;justify-content:center;padding:8px 12px}
+  /* 02 · citizenship cards one under another: icon on the left, title and note on the right */
+  .wf-panel[data-step="2"] .wf-choices{grid-template-columns:1fr}
+  .wf-panel[data-step="2"] .wf-choice{display:grid;grid-template-columns:auto 1fr;column-gap:14px;row-gap:2px;align-items:center;padding:14px 16px}
+  .wf-panel[data-step="2"] .wf-choice:has(input:checked){padding:13px 15px}
+  .wf-panel[data-step="2"] .wf-choice__icon{grid-row:1 / span 2;margin:0;width:36px;height:36px}
+  .wf-panel[data-step="2"] .wf-choice__icon img{width:36px;height:36px}
+  .wf-panel[data-step="2"] .wf-choice__icon--q{width:36px;height:36px}
+  .wf-panel[data-step="2"] .wf-choice__icon--q img{width:20px;height:20px}
+  .wf-panel[data-step="2"] .wf-choice__title{font-size:17px;line-height:22px;align-self:end}
+  .wf-panel[data-step="2"] .wf-choice__note{margin:0;align-self:start}
   .scene-pause{top:12px;right:12px;width:56px;height:56px}
   .wf-project{gap:14px}
   .wf-project__row{flex-direction:column;align-items:stretch;gap:18px}
