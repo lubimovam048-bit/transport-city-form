@@ -16,13 +16,14 @@
   -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);pointer-events:none}
 
 /* image 54: the pause button, top-right of the 1400-wide frame (193 x 145) */
-.scene-pause{position:fixed;z-index:30;top:0;right:0;width:clamp(104px,13.8vw,193px);aspect-ratio:193/145;
-  border:0;padding:0;background:url(assets/form/pause.webp) center/100% 100% no-repeat;cursor:pointer;
-  transition:transform .2s ease, filter .2s ease}
-.scene-pause:hover{transform:scale(1.04)}
-.scene-pause:active{transform:scale(.97)}
-.scene-pause:focus-visible{outline:3px solid #8ed8ff;outline-offset:-18px;border-radius:50%}
-.scene-pause[aria-pressed="true"]{filter:saturate(.35) brightness(1.05)}
+.scene-pause{position:fixed;z-index:30;top:24px;right:24px;width:80px;height:80px;
+  border:0;padding:0;border-radius:50%;background:url(assets/form/btn-pause.webp) center/100% 100% no-repeat;cursor:pointer;
+  transition:transform .2s ease}
+.scene-pause:hover{transform:scale(1.05)}
+.scene-pause:active{transform:scale(.96)}
+.scene-pause:focus-visible{outline:3px solid #8ed8ff;outline-offset:3px}
+/* Figma «Button play/pause» (204:19863): pause while the city moves, play once it is stopped */
+.scene-pause[aria-pressed="true"]{background-image:url(assets/form/btn-play.webp)}
 
 /* Both screens are centred and scaled as one piece (Figma proportions kept) by --k from form.js.
    The scale box has room on top for the beaver that stands on the card. */
@@ -344,6 +345,7 @@
   .wf-icon{right:10px;top:14px;width:18px;height:18px}
   .wf-footer{height:auto}
   .wf-footer .w-button{flex:1;height:48px;justify-content:center;font-size:16px}
+  .scene-pause{top:12px;right:12px;width:56px;height:56px}
   .wf-project{gap:14px}
   .wf-project__row{flex-direction:column;align-items:stretch;gap:18px}
   .wf-project__copy{gap:12px;padding-right:0}
