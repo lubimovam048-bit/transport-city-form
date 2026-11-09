@@ -30,7 +30,7 @@
     '8':  { n: 8, img: 'beaver-mail',  w: 221, h: 250, x: 320, y: -233, qx: 129, say: 'Укажите адрес:<br>вдруг приз поедет к&nbsp;вам!' },
     '9':  { n: 9, img: 'beaver-scroll', w: 282, h: 250, x: 289, y: -230, qx: 173, qy: -260, say: 'Почитайте документы согласия, я&nbsp;вас подожду' },
     '10': { n: 10, img: 'beaver-loupe', w: 230, h: 250, x: 315, y: -232, qx: 131, say: 'Давайте проверим каждую букву, чтобы избежать ошибок' },
-    'done': { n: 10, img: 'beaver-project', w: 310, h: 350, x: 520, y: -236, qx: 380, qy: -219, say: 'Мне не&nbsp;терпится узнать про ваш проект!' },
+    'done': { n: 10, img: 'beaver-project', w: 310, h: 350, x: 520, y: -262, qx: 380, qy: -245, say: 'Мне не&nbsp;терпится узнать про ваш проект!' },
   };
   const order = () => ['1', '2', form.elements.citizenship.value === 'other' ? '3b' : '3a', '5', '6', '7', '8', '9', '10'];
   const panels = Object.fromEntries([...form.querySelectorAll('.wf-panel')].map(p => [p.dataset.step, p]));
@@ -43,6 +43,7 @@
 
   function placeGuide(st){
     wform.classList.toggle('no-guide', !st.img);
+    wform.classList.toggle('is-project', st === STEPS.done);
     wform.classList.toggle('no-bubble', !st.say);
     if (!st.img) return;
     const g = wform.style;
