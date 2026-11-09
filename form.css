@@ -215,7 +215,6 @@
 .wf-review__label{color:#6b7280}
 .wf-review__value{color:#1f2937;white-space:pre-line;overflow-wrap:anywhere}
 .wf-review li[hidden]{display:none}
-.wf-done .wf-hint{margin:0}
 
 /* consent samples */
 .consent-dlg{max-width:520px;width:calc(100% - 32px);padding:28px;border:2px solid rgba(142,216,255,.9);border-radius:24px;
@@ -252,6 +251,20 @@
 .wf-stop{transition:background .3s ease, border-color .3s ease, transform .15s ease}
 .wf-stop.is-current{box-shadow:0 6px 16px rgba(43,112,232,.1),0 0 0 4px rgba(51,123,255,.18)}
 .wf-stop:focus-visible{outline:3px solid #8ed8ff;outline-offset:3px}
+
+
+/* after «Все верно»: «Новый проект» (Figma 220:24869) — the profile header, route and buttons step aside */
+.wow-form.is-project{min-height:0}
+.wow-form.is-project > .wf-header,.wow-form.is-project > .wf-progress{display:none}
+.wf-project{gap:20px}
+.wf-project__status{display:flex;align-items:center;gap:12px;margin:0;font-weight:400;font-size:16px;line-height:normal;color:#4b5563}
+.wf-project__dot{width:16px;height:16px;border-radius:50%;background:#9ca3af;flex:none}
+.wf-project__row{display:flex;align-items:flex-end;gap:20px}
+.wf-project__copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:20px}
+.wf-project__title{margin:0 0 -8px;font-weight:600;font-size:40px;line-height:48px;letter-spacing:-.8px;color:#1f2937}
+.wf-project__lead{margin:0;font-weight:400;font-size:20px;line-height:normal;color:#4b5563}
+.wf-project__note{margin:0;max-width:512px;font-weight:400;font-size:16px;line-height:normal;color:#6b7280}
+.wf-project__go{width:auto;height:68px;padding:8px 12px;flex:none}
 
 /* buttons row: Назад (secondary) + Далее (primary) */
 .wf-footer{display:flex;justify-content:flex-end;align-items:center;gap:8px;height:60px}
@@ -327,6 +340,13 @@
   .wf-icon{right:10px;top:14px;width:18px;height:18px}
   .wf-footer{height:auto}
   .wf-footer .w-button{flex:1;height:48px;justify-content:center;font-size:16px}
+  .wf-project{gap:14px}
+  .wf-project__row{flex-direction:column;align-items:stretch;gap:18px}
+  .wf-project__copy{gap:12px;padding-right:0}
+  .wf-project__title{font-size:26px;line-height:32px;letter-spacing:-.52px;margin:0}
+  .wf-project__lead{font-size:16px;line-height:22px}
+  .wf-project__note{font-size:14px}
+  .wf-project__go{width:100%;max-width:none;height:56px;font-size:20px;justify-content:center}
   .wf-combo__toggle{right:10px;top:12px;width:20px;height:20px;background-size:20px}
   .wf-combo__list{max-height:220px}
   .wf-combo__list li{font-size:15px;padding:9px 10px}

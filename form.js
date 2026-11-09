@@ -30,7 +30,7 @@
     '8':  { n: 8, img: 'beaver-mail',  w: 221, h: 250, x: 320, y: -233, qx: 129, say: 'Укажите адрес:<br>вдруг приз поедет к&nbsp;вам!' },
     '9':  { n: 9, img: 'beaver-scroll', w: 282, h: 250, x: 289, y: -230, qx: 173, qy: -260, say: 'Почитайте документы согласия, я&nbsp;вас подожду' },
     '10': { n: 10, img: 'beaver-loupe', w: 230, h: 250, x: 315, y: -232, qx: 131, say: 'Давайте проверим каждую букву, чтобы избежать ошибок' },
-    'done': { n: 10, img: 'beaver-welcome', w: 372, h: 248, x: 244, y: -231, qx: -999, say: '' },
+    'done': { n: 10, img: 'beaver-project', w: 310, h: 350, x: 520, y: -236, qx: 380, qy: -219, say: 'Мне не&nbsp;терпится узнать про ваш проект!' },
   };
   const order = () => ['1', '2', form.elements.citizenship.value === 'other' ? '3b' : '3a', '5', '6', '7', '8', '9', '10'];
   const panels = Object.fromEntries([...form.querySelectorAll('.wf-panel')].map(p => [p.dataset.step, p]));
@@ -77,6 +77,7 @@
     backBtn.hidden = key === '1' || key === '10' || key === 'done';
     nextLabel.textContent = key === '10' ? 'Все верно' : 'Далее';
     form.querySelector('.wf-footer').hidden = key === 'done';
+    form.classList.toggle('is-project', key === 'done');
     if (key === '10') fillReview();
     if (animate && current !== key){
       wform.classList.add('is-swapping');
@@ -414,6 +415,11 @@
   let saved = '1';
   try { saved = localStorage.getItem(KEY + ':step') || '1'; } catch(e) {}
   show(STEPS[saved] && (order().includes(saved) || saved === 'done') ? saved : '1', false);
+
+  /* «Начать заполнение»: the project form is not designed yet */
+  document.getElementById('projectStart').addEventListener('click', () => {
+    guideText.innerHTML = 'Подача проекта скоро откроется. Ваш профиль уже сохранён!';
+  });
 
   /* consent samples */
   const dlg = document.getElementById('consentDlg');
