@@ -92,6 +92,11 @@
 .wow-form{display:flex;flex-direction:column;justify-content:center;gap:20px;min-height:588px}
 
 .wf-header{display:flex;align-items:flex-start;justify-content:space-between}
+.wf-header__side{display:flex;flex-direction:column;align-items:center;gap:6px;flex:none}
+.wf-logout{min-height:32px;padding:4px 8px;border:0;border-radius:6px;background:transparent;cursor:pointer;
+  font:500 14px/20px 'Rubik',system-ui,sans-serif;color:#1d4ed8}
+.wf-logout:hover{text-decoration:underline;text-underline-offset:3px}
+.wf-logout:focus-visible{outline:3px solid #8ed8ff;outline-offset:2px}
 .wf-copy{display:flex;flex-direction:column;gap:20px;white-space:nowrap}
 .wf-eyebrow{font-weight:500;font-size:14px;line-height:20px;color:#1768f2;margin:0}
 .wf-title{font-weight:600;font-size:40px;line-height:normal;letter-spacing:-.8px;color:#1f2937;margin:0}
@@ -406,7 +411,8 @@
   .wf-copy{display:contents}
   .wf-eyebrow{grid-column:1;grid-row:1}
   .wf-title{grid-column:1;grid-row:2}
-  .wf-step{grid-column:2;grid-row:1 / span 2;align-self:start}
+  .wf-header__side{grid-column:2;grid-row:1 / span 2;align-self:start;gap:2px}
+  .wf-logout{min-height:26px;padding:2px 6px;font-size:12px;line-height:18px}
   .wf-subtitle{grid-column:1 / -1;grid-row:3;white-space:nowrap}
   /* «Назад» and «Далее» share the row equally */
   .wf-footer .b-button,.wf-footer .w-button{flex:1 1 0;min-width:0;justify-content:center;padding:8px 12px}

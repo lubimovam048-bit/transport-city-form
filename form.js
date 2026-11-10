@@ -91,7 +91,10 @@
       setTimeout(() => { placeGuide(st); wform.classList.remove('is-swapping'); }, 180);
     } else placeGuide(st);
     current = key;
-    try { localStorage.setItem(KEY + ':step', key); } catch(e) {}
+    if (!AUTH.includes(key)){
+      saved = key;
+      try { localStorage.setItem(KEY + ':step', key); } catch(e) {}
+    }
     if (typeof updateNext === 'function') updateNext();
   }
 
@@ -605,6 +608,17 @@
   });
 
   function goProfile(){ clearInterval(timer); show(profileStart(), true); }
+  $('logoutBtn').addEventListener('click', () => {
+    clearInterval(timer);
+    account = null;
+    try { localStorage.removeItem(KEY + ':account'); } catch(e) {}
+    auEmail.value = '';
+    auPass.value = '';
+    updateAuth();
+    setMode('login');
+    show('auth', true);
+    setTimeout(() => !phone() && auEmail.focus({preventScroll: true}), 350);
+  });
   setMode('signup');
   if (current === 'verify' && account){ purpose = 'signup'; $('vrEmail').textContent = account.email; tick(); }
 
