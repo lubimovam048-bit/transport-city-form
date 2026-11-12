@@ -504,3 +504,19 @@
   .wf-panel.is-entering{animation:none}
   .form-layer.is-entering{animation:none}
 }
+
+/* 3D Krutya takes the picture's place: a half-length beaver whose cut-off bottom
+   hides behind the card (on phones, behind the ledge); the canvas is a bit bigger than the picture
+   box so the head can turn without being clipped */
+.krutya3d{display:none}
+.wform.has-3d #guideImg{display:none}
+.wform.has-3d .wform__guide{z-index:auto}
+.wform.has-3d .wform__bubble{z-index:3}
+.wform.has-3d .wow-form{z-index:1}
+.wform.has-3d .wform__guide canvas.krutya3d{display:block;z-index:0;--kp:40px;--kb:70px;
+  left:calc(var(--bx,321px) - var(--kp));top:calc(var(--by,-226px) - var(--kp));
+  width:calc(var(--bw,218px) + 2 * var(--kp));height:calc(var(--bh,248px) + var(--kp) + var(--kb))}
+@media (max-width: 720px){
+  .wform.has-3d .wform__guide canvas.krutya3d{--kp:0px;--kb:0px;left:auto;top:auto;
+    width:calc(var(--bw,218px) * .72 + 40px);height:calc(var(--bh,248px) * .72)}
+}
