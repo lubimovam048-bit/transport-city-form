@@ -36,14 +36,7 @@ if (!new URLSearchParams(location.search).has('2d')) {
       w[i] = (1 - ss(1, 1 + HEAD.soft, d)) * ss(HEAD.neck[0], HEAD.neck[1], p.getY(i));
     }
     geo.setAttribute('headW', new THREE.BufferAttribute(w, 1));
-    /* the pencil and the paw holding it: drawn over the card's edge, like in the original pictures */
-    const f = new Float32Array(p.count);
-    for (let i = 0; i < p.count; i++) f[i] = p.getX(i) > 0.2 && p.getZ(i) > 0.2 && p.getY(i) < 0.6 ? 1 : 0;
-    geo.setAttribute('frontW', new THREE.BufferAttribute(f, 1));
   }
-  /* the beaver is drawn in front of the card; below the card's top edge (on phones, the ledge's)
-     everything except the pencil and paw is cut away, so the bust looks tucked behind it */
-  const uCut = { value: -1 };
   const uHead = { value: new THREE.Matrix3() };
   const body = new THREE.Group(); scene.add(body);
 
@@ -57,12 +50,10 @@ if (!new URLSearchParams(location.search).has('2d')) {
       mesh.material = new THREE.MeshBasicMaterial({ vertexColors: true });
     }
     mesh.material.onBeforeCompile = sh => {
-      Object.assign(sh.uniforms, { uHead, uPivot: { value: pivot }, uCut });
-      sh.fragmentShader = 'uniform float uCut; varying float vFront;\n' + sh.fragmentShader
-        .replace('void main() {', 'void main() {\n if (gl_FragCoord.y < uCut && vFront < 0.5) discard;');
-      sh.vertexShader = 'uniform mat3 uHead; uniform vec3 uPivot; attribute float headW; attribute float frontW; varying float vFront;\n' + sh.vertexShader
+      Object.assign(sh.uniforms, { uHead, uPivot: { value: pivot } });
+      sh.vertexShader = 'uniform mat3 uHead; uniform vec3 uPivot; attribute float headW;\n' + sh.vertexShader
         .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n float hw = headW;\n objectNormal = normalize(mix(objectNormal, uHead * objectNormal, hw));')
-        .replace('#include <begin_vertex>', '#include <begin_vertex>\n vFront = frontW;\n transformed = mix(transformed, uHead * (transformed - uPivot) + uPivot, headW);');
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\n transformed = mix(transformed, uHead * (transformed - uPivot) + uPivot, headW);');
     };
     body.add(gltf.scene);
     wform.classList.add('has-3d');
@@ -96,10 +87,6 @@ if (!new URLSearchParams(location.search).has('2d')) {
     requestAnimationFrame(tick);
     if (!canvas.offsetParent) return;                       /* hidden step / welcome screen */
     const r = canvas.getBoundingClientRect();
-    /* where the card's (or the ledge's) top edge crosses the canvas, in drawing-buffer px from the bottom */
-    const onLedge = matchMedia('(max-width: 720px)').matches && !wform.classList.contains('is-project');
-    const edge = onLedge ? canvas.parentElement.getBoundingClientRect().bottom - 30 : document.getElementById('profileForm').getBoundingClientRect().top;
-    uCut.value = (r.bottom - edge) / r.height * renderer.domElement.height;
     const hx = r.left + r.width / 2, hy = r.top + r.height * 0.3;   /* roughly where the eyes are */
     let yaw = 0, pitch = 0;
     if (aim.has){
