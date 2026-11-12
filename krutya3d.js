@@ -22,18 +22,38 @@ if (!new URLSearchParams(location.search).has('2d')) {
   const rim = new THREE.DirectionalLight(0xcfe4ff, 1.0); rim.position.set(1.5, 1.2, -1.5); scene.add(rim);
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -2000, 2000);   /* units = css px */
 
-  /* the head turns around the neck; the weight fades in over the neck so it bends, not snaps */
-  const NECK = { lo: 0.30, hi: 0.46, pivot: new THREE.Vector3(0, 0.36, -0.05) };
+  /* the head turns around the neck. Which vertices follow: an egg-shaped zone around the head
+     (full inside, fading to zero at its edge), above the neck line, so the pencil and the paw
+     holding it stay still. */
+  const HEAD = { c: new THREE.Vector3(0.02, 0.70, 0), r: new THREE.Vector3(0.30, 0.34, 0.30), soft: 0.35, neck: [0.34, 0.46] };
+  const pivot = new THREE.Vector3(0, 0.38, -0.05);
+  function headWeights(geo){
+    const p = geo.attributes.position, w = new Float32Array(p.count);
+    const ss = (a, b, x) => { const t = Math.min(Math.max((x - a) / (b - a), 0), 1); return t * t * (3 - 2 * t); };
+    for (let i = 0; i < p.count; i++){
+      const dx = (p.getX(i) - HEAD.c.x) / HEAD.r.x, dy = (p.getY(i) - HEAD.c.y) / HEAD.r.y, dz = (p.getZ(i) - HEAD.c.z) / HEAD.r.z;
+      const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      w[i] = (1 - ss(1, 1 + HEAD.soft, d)) * ss(HEAD.neck[0], HEAD.neck[1], p.getY(i));
+    }
+    geo.setAttribute('headW', new THREE.BufferAttribute(w, 1));
+  }
   const uHead = { value: new THREE.Matrix3() };
   const body = new THREE.Group(); scene.add(body);
 
   new GLTFLoader().load('assets/form/krutya.glb?v=1', gltf => {
     const mesh = gltf.scene.getObjectByProperty('type', 'Mesh');
+    headWeights(mesh.geometry);
+    if (new URLSearchParams(location.search).has('hw')){      /* debug: the head zone in red */
+      const w = mesh.geometry.attributes.headW.array, c = new Float32Array(w.length * 3);
+      w.forEach((v, i) => { c[i*3] = 0.2 + 0.8 * v; c[i*3+1] = c[i*3+2] = 0.2; });
+      mesh.geometry.setAttribute('color', new THREE.BufferAttribute(c, 3));
+      mesh.material = new THREE.MeshBasicMaterial({ vertexColors: true });
+    }
     mesh.material.onBeforeCompile = sh => {
-      Object.assign(sh.uniforms, { uHead, uPivot: { value: NECK.pivot }, uNeck: { value: new THREE.Vector2(NECK.lo, NECK.hi) } });
-      sh.vertexShader = 'uniform mat3 uHead; uniform vec3 uPivot; uniform vec2 uNeck;\n' + sh.vertexShader
-        .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n float hw = smoothstep(uNeck.x, uNeck.y, position.y);\n objectNormal = normalize(mix(objectNormal, uHead * objectNormal, hw));')
-        .replace('#include <begin_vertex>', '#include <begin_vertex>\n transformed = mix(transformed, uHead * (transformed - uPivot) + uPivot, hw);');
+      Object.assign(sh.uniforms, { uHead, uPivot: { value: pivot } });
+      sh.vertexShader = 'uniform mat3 uHead; uniform vec3 uPivot; attribute float headW;\n' + sh.vertexShader
+        .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n float hw = headW;\n objectNormal = normalize(mix(objectNormal, uHead * objectNormal, hw));')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\n transformed = mix(transformed, uHead * (transformed - uPivot) + uPivot, headW);');
     };
     body.add(gltf.scene);
     wform.classList.add('has-3d');
