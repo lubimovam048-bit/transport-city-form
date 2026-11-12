@@ -520,3 +520,10 @@
   .wform.has-3d .wform__guide canvas.krutya3d{--kp:0px;--kb:0px;left:auto;top:auto;
     width:calc(var(--bw,218px) * .72 + 40px);height:calc(var(--bh,248px) * .72)}
 }
+/* «Создайте проект»: the picture box reaches far into the card, so the canvas ends a little
+   below the card's top edge instead, otherwise Krutya would sink behind the card */
+.wform.has-3d.is-project .wform__guide canvas.krutya3d{height:calc(var(--kp) - var(--by,-236px) + var(--kb))}
+@media (max-width: 720px){
+  .wform.has-3d.is-project .wform__guide canvas.krutya3d{--kp:0px;left:auto;right:-14px;top:-151px;
+    width:calc(var(--bw,310px) * .64 + 40px);height:181px}
+}
