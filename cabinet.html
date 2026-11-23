@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="cabinet.css?v=19">
+<link rel="stylesheet" href="cabinet.css?v=20">
 </head>
 <body>
 <svg class="sprite" aria-hidden="true">
@@ -157,6 +157,7 @@
     var current = requested === '2' ? '2' : '1';
     function show(variant) {
       document.querySelector('.roadmap').classList.toggle('roadmap--outside', variant === '2');
+      document.body.classList.toggle('variant-2', variant === '2');
       document.querySelectorAll('[data-variant]').forEach(function (block) {
         block.hidden = block.dataset.variant !== variant;
       });
