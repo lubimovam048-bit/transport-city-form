@@ -168,6 +168,20 @@ img{display:block}
   box-shadow:0 6px 16px rgba(31,74,150,.12),inset 0 1px 0 #fff}
 .topbar__pill:active,.topbar__round:active{transform:translateY(1px);background:rgba(255,255,255,.56);box-shadow:0 1px 4px rgba(31,74,150,.1),inset 0 1px 2px rgba(31,74,150,.08)}
 .topbar .icon{width:21px;height:21px}
+.topbar__idbox{position:relative;gap:0;padding:0 8px 0 0}
+.topbar__idbox:hover{color:var(--topbar-ink);background:rgba(255,255,255,.56);box-shadow:0 4px 12px rgba(31,74,150,.09),inset 0 1px 0 #fff}
+.topbar__idbox:active{transform:none;background:rgba(255,255,255,.56)}
+.topbar__id{display:inline-flex;align-items:center;gap:6px;height:100%;padding:0 8px 0 14px;border-radius:var(--radius-pill);color:inherit;font-weight:inherit;transition:color .15s ease}
+.topbar__id:hover{color:var(--text-brand)}
+.topbar__id:active{transform:translateY(1px)}
+.topbar__help{position:relative;display:grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;background:rgba(69,96,128,.13);color:inherit;font-size:13px;line-height:1;font-weight:600;transition:background-color .15s ease,color .15s ease}
+.topbar__help::after{content:"";position:absolute;inset:-8px}
+.topbar__help:hover,.topbar__help.is-open{background:var(--text-brand);color:#fff}
+.topbar__tip{position:absolute;z-index:30;top:calc(100% + 10px);right:0;width:272px;padding:12px 14px;border-radius:var(--radius-control);background:#fff;color:var(--text-secondary);font-size:14px;line-height:20px;font-weight:400;text-align:left;
+  box-shadow:0 12px 28px rgba(31,74,150,.18),0 2px 6px rgba(31,74,150,.08);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .15s ease,transform .15s ease,visibility .15s}
+.topbar__tip b{display:block;margin-bottom:2px;color:var(--text-primary);font-weight:500}
+.topbar__tip::before{content:"";position:absolute;top:-5px;right:16px;width:10px;height:10px;background:#fff;transform:rotate(45deg)}
+.topbar__help:hover + .topbar__tip,.topbar__help:focus-visible + .topbar__tip,.topbar__tip.is-open{opacity:1;visibility:visible;transform:none}
 .topbar__messages{gap:5px}
 .topbar__dot{width:6px;height:6px;margin-left:1px;border-radius:50%;background:#5b93ee}
 .topbar__line{width:1px;height:24px;margin:0 2px;background:rgba(69,96,128,.2)}
@@ -244,6 +258,10 @@ body.variant-2{background:linear-gradient(180deg,#eef4ff,#f7f9fe);background-att
   .topbar__pill,.topbar__round{font-size:14px}
   .topbar__pill{gap:6px;padding:0 12px}
   .topbar .icon{width:20px;height:20px}
+  .topbar__idbox{gap:0;padding:0 6px 0 0}
+  .topbar__id{padding:0 5px 0 12px}
+  .topbar__tip{right:auto;left:0;width:min(280px,calc(100vw - 32px))}
+  .topbar__tip::before{display:none}
   .card{grid-template-columns:minmax(0,1fr);padding:20px}
   .card__line{width:100%;height:1px}
   .tile{padding:16px}

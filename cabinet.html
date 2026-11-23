@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="cabinet.css?v=28">
+<link rel="stylesheet" href="cabinet.css?v=29">
 </head>
 <body>
 <svg class="sprite" aria-hidden="true">
@@ -43,12 +43,16 @@
 
 <main class="cabinet">
   <header class="topbar" aria-label="Панель участника">
+    <div class="topbar__pill topbar__idbox">
+      <button class="topbar__id" type="button" data-copy="TF-0482" aria-label="Скопировать ID TF-0482">
+        <span>ID TF-0482</span><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>
+      </button>
+      <button class="topbar__help" type="button" aria-label="Зачем нужен ID" aria-expanded="false" aria-describedby="idHint">?</button>
+      <div class="topbar__tip" id="idHint" role="tooltip"><b>Ваш личный идентификатор</b>Передайте его капитану команды, чтобы вас пригласили в проект.</div>
+    </div>
+    <span class="topbar__line" aria-hidden="true"></span>
     <button class="topbar__pill topbar__messages" type="button" aria-label="Сообщения, 2 новых">
       <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg><span class="topbar__dot" aria-hidden="true"></span><span class="topbar__count" aria-hidden="true">2</span>
-    </button>
-    <span class="topbar__line" aria-hidden="true"></span>
-    <button class="topbar__pill topbar__id" type="button" data-copy="TF-0482" aria-label="Скопировать ID TF-0482">
-      <span>ID TF-0482</span><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>
     </button>
     <span class="topbar__status" role="status"></span>
     <button class="topbar__round topbar__bell" type="button" aria-label="Уведомления, есть новые">
@@ -217,6 +221,23 @@
       };
       if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(copyButton.dataset.copy).then(done, fallback);
       else fallback();
+    });
+    var helpButton = document.querySelector('.topbar__help');
+    var helpTip = document.getElementById('idHint');
+    var setHelp = function (open) {
+      helpTip.classList.toggle('is-open', open);
+      helpButton.classList.toggle('is-open', open);
+      helpButton.setAttribute('aria-expanded', String(open));
+    };
+    helpButton.addEventListener('click', function (event) {
+      event.stopPropagation();
+      setHelp(!helpTip.classList.contains('is-open'));
+    });
+    document.addEventListener('click', function (event) {
+      if (!helpTip.contains(event.target)) setHelp(false);
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') setHelp(false);
     });
     show(current);
   })();
