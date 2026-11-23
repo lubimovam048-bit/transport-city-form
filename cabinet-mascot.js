@@ -35,8 +35,8 @@ async function init() {
 
   /* model units after baking: the bust stands from y = -0.478 to y = 0.478, facing +z */
   const FRAME = { bottom: -0.478, top: 0.478, centerX: 0 };
-  const CARD_EDGE = -0.41;                      /* the card's bottom edge crosses the model here: only the paws go below it */
-  const OVER_TOP = 28;                          /* how far the canvas rises above the card, px */
+  const CARD_EDGE = -0.44;                      /* the card's bottom edge crosses the model here: only the paws go below it */
+  const OVER_TOP = 28, SIZE = 0.85;             /* base height over the card (px) and the mascot's scale */
   const NECK = { from: -0.2, to: 0.02 };
   const pivot = new THREE.Vector3(-0.05, -0.12, 0);
   const EYES = [
@@ -136,7 +136,8 @@ async function init() {
     const host = slot.offsetParent;
     if (!host) return;
     /* the part above the edge fills the card, the paws hang over it */
-    const above = host.clientHeight + OVER_TOP, unit = above / (FRAME.top - CARD_EDGE);
+    const unit = (host.clientHeight + OVER_TOP) / 0.888 * SIZE, above = (FRAME.top - CARD_EDGE) * unit;
+    slot.style.top = `${host.clientHeight - above}px`;
     slot.style.bottom = `${-(CARD_EDGE - FRAME.bottom) * unit}px`;
     slot.style.setProperty('--s', `${unit}px`);
     const cw = canvas.clientWidth, ch = canvas.clientHeight;
