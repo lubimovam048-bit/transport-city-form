@@ -95,7 +95,7 @@
           <span class="chip">Черновик</span>
           <p class="tile__meta">Материалы: <b>1 из 3</b></p>
           <div class="tile__bar" role="progressbar" aria-label="Загружено материалов" aria-valuemin="0" aria-valuemax="3" aria-valuenow="1"><span style="width:33.333%"></span></div>
-          <a class="tile__link" href="#individual" aria-label="Заполнить: индивидуальный проект">Заполнить<svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg></a>
+          <a class="tile__link" href="project.html" aria-label="Заполнить: индивидуальный проект">Заполнить<svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg></a>
         </div>
         <img class="tile__art" src="assets/cabinet/project-solo.png?v=5" width="556" height="364" alt="">
       </article>
@@ -190,58 +190,10 @@
         history.replaceState(null, '', '?v=' + link.dataset.variantLink);
       });
     });
-    var copyButton = document.querySelector('[data-copy]');
-    var copyStatus = document.querySelector('.topbar__status');
-    var copyTimer;
-    copyButton.addEventListener('click', function () {
-      var use = copyButton.querySelector('use');
-      var done = function () {
-        use.setAttribute('href', '#i-check');
-        copyButton.classList.add('is-copied');
-        copyStatus.textContent = 'ID скопирован';
-        clearTimeout(copyTimer);
-        copyTimer = setTimeout(function () {
-          use.setAttribute('href', '#i-copy');
-          copyButton.classList.remove('is-copied');
-          copyStatus.textContent = '';
-        }, 1600);
-      };
-      var fallback = function () {
-        var area = document.createElement('textarea');
-        area.value = copyButton.dataset.copy;
-        area.setAttribute('readonly', '');
-        area.style.cssText = 'position:fixed;opacity:0';
-        document.body.appendChild(area);
-        area.select();
-        var ok = false;
-        try { ok = document.execCommand('copy'); } catch (e) {}
-        area.remove();
-        copyButton.focus();
-        if (ok) done();
-      };
-      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(copyButton.dataset.copy).then(done, fallback);
-      else fallback();
-    });
-    var helpButton = document.querySelector('.topbar__help');
-    var helpTip = document.getElementById('idHint');
-    var setHelp = function (open) {
-      helpTip.classList.toggle('is-open', open);
-      helpButton.classList.toggle('is-open', open);
-      helpButton.setAttribute('aria-expanded', String(open));
-    };
-    helpButton.addEventListener('click', function (event) {
-      event.stopPropagation();
-      setHelp(!helpTip.classList.contains('is-open'));
-    });
-    document.addEventListener('click', function (event) {
-      if (!helpTip.contains(event.target)) setHelp(false);
-    });
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') setHelp(false);
-    });
     show(current);
   })();
 </script>
+<script src="cabinet-topbar.js?v=1"></script>
 <script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.min.js"}}</script>
 <script type="module" src="cabinet-mascot.js?v=5"></script>
 </body>
