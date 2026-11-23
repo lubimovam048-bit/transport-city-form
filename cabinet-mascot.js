@@ -28,9 +28,9 @@ async function init() {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xa9bdd8, 2.15));
-  const key = new THREE.DirectionalLight(0xffffff, 1.45); key.position.set(-1.2, 2, 2.6); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xcfe4ff, 0.9); rim.position.set(1.6, 1.3, -1.4); scene.add(rim);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xe2d8cf, 2.45));
+  const key = new THREE.DirectionalLight(0xffffff, 1.05); key.position.set(-1.2, 2, 2.6); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffffff, 0.35); rim.position.set(1.6, 1.3, -1.4); scene.add(rim);
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -2000, 2000);   /* units = css px */
 
   /* model units after baking: the bust stands from y = -0.478 to y = 0.478, facing +z */
@@ -74,6 +74,8 @@ async function init() {
   for (let i = 0; i < p.count; i++) w[i] = smooth(NECK.from, NECK.to, p.getY(i));
   geo.setAttribute('headW', new THREE.BufferAttribute(w, 1));
 
+  /* matte material: specular highlights were washing the colours out */
+  mesh.material = new THREE.MeshLambertMaterial({ map: mesh.material.map, normalMap: mesh.material.normalMap });
   mesh.material.onBeforeCompile = sh => {
     Object.assign(sh.uniforms, {
       uHead, uGaze, uIris: { value: iris }, uIrisR: { value: IRIS_R }, uPivot: { value: pivot },
@@ -87,6 +89,12 @@ async function init() {
     sh.fragmentShader = `uniform sampler2D uIris; uniform float uIrisR; uniform vec2 uGaze;
       uniform vec2 uEyeC[2]; uniform vec2 uEyeR[2]; uniform vec2 uEyeRest[2]; varying vec3 vRest;
       float gEyeMask = 0.0;
+      vec3 brandGrade(vec3 c) {            /* brings the texture to the mascot's brand colours */
+        float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
+        vec3 g = max(mix(vec3(l), c, 1.5), vec3(0.0));
+        float blue = smoothstep(0.015, 0.11, c.b - c.r);
+        return g * mix(vec3(1.0), vec3(0.2, 1.3, 1.95), blue);
+      }
       vec3 drawEye(vec3 base, vec2 q, vec2 c, vec2 r, vec2 rest) {
         vec2 d = abs(q - c) / r;
         float rho = pow(d.x * d.x * d.x + d.y * d.y * d.y, 1.0 / 3.0);
@@ -107,10 +115,12 @@ async function init() {
       }\n` + sh.fragmentShader
       .replace('#include <map_fragment>', `
         vec4 bakedColor = texture2D(map, vMapUv);
+        vec3 gradedColor = brandGrade(bakedColor.rgb);
         if (vRest.z > 0.12) {
           bakedColor.rgb = drawEye(bakedColor.rgb, vRest.xy, uEyeC[0], uEyeR[0], uEyeRest[0]);
           bakedColor.rgb = drawEye(bakedColor.rgb, vRest.xy, uEyeC[1], uEyeR[1], uEyeRest[1]);
         }
+        bakedColor.rgb = mix(gradedColor, bakedColor.rgb, gEyeMask);
         diffuseColor *= bakedColor;`)
       .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n normal = normalize(mix(normal, nonPerturbedNormal, gEyeMask));');
   };
