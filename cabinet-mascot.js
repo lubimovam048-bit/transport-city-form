@@ -1,6 +1,6 @@
-/* 3D beaver in «Карта проекта»: stands behind the bottom edge of the card, the head follows the cursor.
-   Loads only on screens wide enough to show it. Without WebGL the slot simply stays empty.
-   ?hw in the address paints the part of the model that turns with the head. */
+/* 3D beaver in «Карта проекта»: leans on the bottom edge of the card and watches the cursor.
+   The irises do most of the work, the head only follows a little.
+   Loads only on screens wide enough to show it. Without WebGL the slot simply stays empty. */
 const slot = document.querySelector('.roadmap__mascot');
 const wide = matchMedia('(min-width: 1241px)');
 let started = false;
@@ -33,19 +33,32 @@ async function init() {
   const rim = new THREE.DirectionalLight(0xcfe4ff, 0.9); rim.position.set(1.6, 1.3, -1.4); scene.add(rim);
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -2000, 2000);   /* units = css px */
 
-  /* model units: feet at y = 0, top of the hair at y ≈ 1.04 */
-  const FRAME = { crop: 0.40, top: 1.045, centerX: -0.035 };
-  const NECK = { from: 0.60, to: 0.70 };
-  const pivot = new THREE.Vector3(-0.035, 0.62, 0);
+  /* model units after baking: the bust stands from y = -0.478 to y = 0.478, facing +z */
+  const FRAME = { bottom: -0.478, top: 0.478, centerX: 0 };
+  const NECK = { from: -0.2, to: 0.02 };
+  const pivot = new THREE.Vector3(-0.05, -0.12, 0);
+  const EYES = [
+    { c: new THREE.Vector2(-0.167, 0.146), r: new THREE.Vector2(0.056, 0.052), rest: new THREE.Vector2(-0.158, 0.138) },
+    { c: new THREE.Vector2(0.067, 0.1455), r: new THREE.Vector2(0.056, 0.052), rest: new THREE.Vector2(0.058, 0.1375) }
+  ];
+  const IRIS_R = 0.0395;
+  const LOOK = { x: 0.022, y: 0.015 };          /* how far the irises travel, in model units */
   const uHead = { value: new THREE.Matrix3() };
+  const uGaze = { value: new THREE.Vector2() };
   const body = new THREE.Group();
   scene.add(body);
 
-  const gltf = await new GLTFLoader().loadAsync('assets/cabinet/beaver.glb?v=1');
+  const [gltf, iris] = await Promise.all([
+    new GLTFLoader().loadAsync('assets/cabinet/beaver.glb?v=2'),
+    new THREE.TextureLoader().loadAsync('assets/cabinet/iris.jpg?v=1')
+  ]);
+  iris.colorSpace = THREE.SRGBColorSpace;
+  iris.anisotropy = 4;
   const mesh = gltf.scene.getObjectByProperty('type', 'Mesh');
+  mesh.frustumCulled = false;
   const geo = mesh.geometry;
 
-  /* the file stores compact integers; bake the node transform so y is up and in model units */
+  /* the file stores compact integers: bake the node transform and turn the beaver to the viewer */
   mesh.updateWorldMatrix(true, false);
   for (const name of ['position', 'normal']) {
     const a = geo.attributes[name], f = new Float32Array(a.count * 3);
@@ -53,6 +66,7 @@ async function init() {
     geo.setAttribute(name, new THREE.BufferAttribute(f, 3));
   }
   geo.applyMatrix4(mesh.matrixWorld);
+  geo.rotateY(-Math.PI / 2);
   mesh.position.set(0, 0, 0); mesh.quaternion.identity(); mesh.scale.set(1, 1, 1);
 
   const p = geo.attributes.position, w = new Float32Array(p.count);
@@ -60,29 +74,55 @@ async function init() {
   for (let i = 0; i < p.count; i++) w[i] = smooth(NECK.from, NECK.to, p.getY(i));
   geo.setAttribute('headW', new THREE.BufferAttribute(w, 1));
 
-  if (new URLSearchParams(location.search).has('hw')) {
-    const c = new Float32Array(w.length * 3);
-    w.forEach((v, i) => { c[i * 3] = 0.2 + 0.8 * v; c[i * 3 + 1] = c[i * 3 + 2] = 0.2; });
-    geo.setAttribute('color', new THREE.BufferAttribute(c, 3));
-    mesh.material = new THREE.MeshBasicMaterial({ vertexColors: true });
-  }
   mesh.material.onBeforeCompile = sh => {
-    Object.assign(sh.uniforms, { uHead, uPivot: { value: pivot } });
-    sh.vertexShader = 'uniform mat3 uHead; uniform vec3 uPivot; attribute float headW;\n' + sh.vertexShader
+    Object.assign(sh.uniforms, {
+      uHead, uGaze, uIris: { value: iris }, uIrisR: { value: IRIS_R }, uPivot: { value: pivot },
+      uEyeC: { value: EYES.map(e => e.c) }, uEyeR: { value: EYES.map(e => e.r) }, uEyeRest: { value: EYES.map(e => e.rest) }
+    });
+    sh.vertexShader = 'uniform mat3 uHead; uniform vec3 uPivot; attribute float headW; varying vec3 vRest;\n' + sh.vertexShader
       .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n objectNormal = normalize(mix(objectNormal, uHead * objectNormal, headW));')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\n transformed = mix(transformed, uHead * (transformed - uPivot) + uPivot, headW);');
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\n vRest = position;\n transformed = mix(transformed, uHead * (transformed - uPivot) + uPivot, headW);');
+    /* inside each eye opening: a clean white, the iris on top of it, a highlight that barely moves.
+       Skin and lids outside the opening keep the original texture. */
+    sh.fragmentShader = `uniform sampler2D uIris; uniform float uIrisR; uniform vec2 uGaze;
+      uniform vec2 uEyeC[2]; uniform vec2 uEyeR[2]; uniform vec2 uEyeRest[2]; varying vec3 vRest;
+      float gEyeMask = 0.0;
+      vec3 drawEye(vec3 base, vec2 q, vec2 c, vec2 r, vec2 rest) {
+        vec2 d = abs(q - c) / r;
+        float rho = pow(d.x * d.x * d.x + d.y * d.y * d.y, 1.0 / 3.0);
+        if (rho >= 1.0) return base;
+        float t = (q.y - c.y) / r.y;
+        float shade = mix(0.76, 1.0, smoothstep(0.95, 0.35, t)) * mix(1.0, 0.92, smoothstep(0.62, 1.0, rho));
+        vec2 ic = rest + uGaze;
+        float rr = length(q - ic) / uIrisR;
+        vec3 col = vec3(0.93, 0.92, 0.91);
+        col = mix(col, texture2D(uIris, (q - ic) / (2.0 * uIrisR) + 0.5).rgb, 1.0 - smoothstep(0.96, 1.0, rr));
+        col *= shade;
+        vec2 glint = rest + uGaze * 0.8 + vec2(0.011, 0.015);
+        col = mix(col, vec3(1.0), 1.0 - smoothstep(0.0085, 0.0108, length(q - glint)));
+        float skin = smoothstep(0.305, 0.485, base.r) * (1.0 - smoothstep(0.305, 0.485, base.b));
+        float mask = (1.0 - smoothstep(0.955, 1.0, rho)) * (1.0 - skin);
+        gEyeMask = max(gEyeMask, mask);
+        return mix(base, col, mask);
+      }\n` + sh.fragmentShader
+      .replace('#include <map_fragment>', `
+        vec4 bakedColor = texture2D(map, vMapUv);
+        if (vRest.z > 0.12) {
+          bakedColor.rgb = drawEye(bakedColor.rgb, vRest.xy, uEyeC[0], uEyeR[0], uEyeRest[0]);
+          bakedColor.rgb = drawEye(bakedColor.rgb, vRest.xy, uEyeC[1], uEyeR[1], uEyeRest[1]);
+        }
+        diffuseColor *= bakedColor;`)
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n normal = normalize(mix(normal, nonPerturbedNormal, gEyeMask));');
   };
   body.add(gltf.scene);
 
-  let scale = 1, baseY = 0;
   function resize() {
     const cw = canvas.clientWidth, ch = canvas.clientHeight;
     if (!cw || !ch) return;
     renderer.setSize(cw, ch, false);
-    scale = ch / (FRAME.top - FRAME.crop);
+    const scale = ch / (FRAME.top - FRAME.bottom);
     body.scale.setScalar(scale);
-    body.position.x = -FRAME.centerX * scale;
-    baseY = -FRAME.crop * scale;
+    body.position.set(-FRAME.centerX * scale, -FRAME.bottom * scale, 0);
     camera.left = -cw / 2; camera.right = cw / 2; camera.top = ch; camera.bottom = 0;
     camera.updateProjectionMatrix();
   }
@@ -96,28 +136,27 @@ async function init() {
   let visible = true;
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(canvas);
 
-  const cur = { yaw: 0, pitch: 0 }, euler = new THREE.Euler(), m4 = new THREE.Matrix4();
+  const eye = { x: 0, y: 0 }, head = { yaw: 0, pitch: 0 }, euler = new THREE.Euler(), m4 = new THREE.Matrix4();
   const still = matchMedia('(prefers-reduced-motion: reduce)');
 
-  function tick(t = 0) {
+  function tick() {
     requestAnimationFrame(tick);
     if (!visible || document.hidden || !canvas.offsetParent) return;
     const r = canvas.getBoundingClientRect();
-    let yaw = 0, pitch = 0;
+    let nx = 0, ny = 0;
     if (aim.has) {
-      const hx = r.left + r.width / 2, hy = r.top + r.height * 0.36, depth = 460;
-      yaw = Math.atan2(aim.x - hx, depth);
-      pitch = Math.atan2(aim.y - hy, depth);
+      const dx = aim.x - (r.left + r.width / 2), dy = aim.y - (r.top + r.height * 0.34), depth = 320;
+      const len = Math.hypot(dx, dy, depth);
+      nx = dx / len; ny = dy / len;
     }
-    yaw = THREE.MathUtils.clamp(yaw, -0.62, 0.62);
-    pitch = THREE.MathUtils.clamp(pitch, -0.24, 0.3);
-    const k = still.matches ? 1 : 0.1;
-    cur.yaw += (yaw - cur.yaw) * k;
-    cur.pitch += (pitch - cur.pitch) * k;
-    euler.set(cur.pitch * 0.85, cur.yaw * 0.85, -cur.yaw * 0.05, 'YXZ');
+    const fast = still.matches ? 1 : 0.2, slow = still.matches ? 1 : 0.05;
+    eye.x += (nx - eye.x) * fast;
+    eye.y += (ny - eye.y) * fast;
+    head.yaw += (THREE.MathUtils.clamp(nx * 0.14, -0.11, 0.11) - head.yaw) * slow;
+    head.pitch += (THREE.MathUtils.clamp(ny * 0.07, -0.045, 0.055) - head.pitch) * slow;
+    uGaze.value.set(eye.x * LOOK.x, -eye.y * LOOK.y);
+    euler.set(head.pitch, head.yaw, 0, 'YXZ');
     uHead.value.setFromMatrix4(m4.makeRotationFromEuler(euler));
-    body.rotation.y = cur.yaw * 0.14;
-    body.position.y = baseY + (still.matches ? 0 : Math.sin(t / 900) * 1.2);
     renderer.render(scene, camera);
   }
   tick();
