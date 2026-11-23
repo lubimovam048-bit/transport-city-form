@@ -182,6 +182,13 @@ body.variant-2{background:linear-gradient(180deg,#eef4ff,#f7f9fe);background-att
 .variant-2 .stage__date,.variant-2 .card__meta,.variant-2 .card__label{color:var(--text-tertiary)}
 .variant-2 .card__line{background:var(--border-subtle)}
 
+@media (max-width:1360px){
+  .stage__name{font-size:16px}
+  .stage__body{gap:8px;padding-right:4px}
+  .stage__body .icon{width:40px;height:40px;padding:8px}
+  .stage::before{left:12px}
+  .stage:not(:last-child)::after{left:44px;right:-12px}
+}
 @media (max-width:1320px){
   .detail__grid{grid-template-columns:minmax(0,1fr)}
   .tile__art{right:10px;bottom:8px;width:176px;height:132px}
