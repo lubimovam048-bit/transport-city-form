@@ -162,6 +162,13 @@ img{display:block}
 .messages .icon{width:24px;height:24px;color:var(--text-brand)}
 .messages__count{position:absolute;top:-6px;right:4px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#ef4444;color:#fff;font-size:13px;line-height:16px;font-weight:600}
 
+/* Variant 1: the current stage is marked by the blue dot and a dark title, the others step back */
+body:not(.variant-2) .stage--current .stage__body{background:none;box-shadow:none}
+body:not(.variant-2) .stage--current .stage__body .icon{background:var(--surface-inner);box-shadow:var(--shadow-inner-s)}
+body:not(.variant-2) .stage:not(.stage--current) .stage__body .icon{opacity:.62}
+body:not(.variant-2) .stage:not(.stage--current) .stage__name{color:var(--text-secondary);font-weight:400}
+body:not(.variant-2) .stage:not(.stage--current) .stage__date{color:var(--text-tertiary)}
+
 /* Variant 2 keeps its original colours; the frosted glass applies to variant 1 only */
 body.variant-2{background:linear-gradient(180deg,#eef4ff,#f7f9fe);background-attachment:scroll}
 .variant-2 .roadmap__panel{border-color:rgba(255,255,255,.95);background:linear-gradient(104deg,rgba(251,253,255,.98) 0%,#f0f6ff 52%,#dce9ff 100%);
