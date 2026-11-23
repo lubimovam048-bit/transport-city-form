@@ -5,7 +5,7 @@
   --text-primary:#1f2937; --text-secondary:#4b5563; --text-tertiary:#6b7280; --text-brand:#1768f2;
   --border-default:#b9d6ff; --border-subtle:#e5e7eb; --bg-surface:#fff; --bg-brand-subtle:#dcebff; --bg-soft:#eef6ff;
   --success-bg:#f0fdf4; --success-text:#15803d; --warning-bg:#fff7ed; --warning-text:#b45309;
-  --radius-control:12px; --radius-card:36px; --radius-pill:999px;
+  --radius-control:12px; --radius-card:24px; --radius-pill:999px;
   --shadow-card:0 8px 40px rgba(23,104,242,.24),0 0 12px rgba(65,184,255,.48);
   --shadow-control:0 0 12px rgba(65,184,255,.24),0 8px 18px rgba(23,104,242,.12),inset 0 1px 1px rgba(255,255,255,.85);
   --glass:linear-gradient(101.28deg,rgba(248,252,255,.96) 0%,rgba(238,246,255,.93) 58%,rgba(221,235,255,.9) 100%);
@@ -170,7 +170,6 @@ img{display:block}
 @media (max-width:860px){
   .cabinet{padding:72px 16px 96px}
   .roadmap,.roadmap--outside .roadmap__panel{padding:20px}
-  .roadmap,.roadmap--outside .roadmap__panel,.summary,.card{border-radius:24px}
   .roadmap__title{font-size:24px;line-height:32px}
   .roadmap--outside .roadmap__title{font-size:26px;line-height:32px}
   .detail__title{font-size:26px;line-height:32px}
