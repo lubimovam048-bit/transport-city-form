@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="cabinet.css?v=4">
+<link rel="stylesheet" href="cabinet.css?v=5">
 </head>
 <body>
 <svg class="sprite" aria-hidden="true">
@@ -45,6 +45,7 @@
     <h1 class="roadmap__title" id="roadmapTitle">Карта проекта</h1>
   </div>
 
+  <div class="roadmap__panel">
   <ol class="stages" aria-label="Этапы конкурса">
     <li class="stage stage--current" aria-current="step"><div class="stage__body"><svg class="icon" aria-hidden="true"><use href="#i-stage-1"/></svg><span><span class="stage__name">Подача проекта</span><span class="stage__date">до 12 декабря</span></span></div></li>
     <li class="stage"><div class="stage__body"><svg class="icon" aria-hidden="true"><use href="#i-stage-2"/></svg><span><span class="stage__name">Экспертиза</span><span class="stage__date">до 12 декабря</span></span></div></li>
@@ -54,6 +55,7 @@
 
   <!-- Reserved for the mascot -->
   <div class="roadmap__mascot" aria-hidden="true"></div>
+  </div>
   </section>
 
   <!-- Variant 1: projects in general, title and status only -->
@@ -152,6 +154,7 @@
     var requested = new URLSearchParams(location.search).get('v');
     var current = requested === '2' ? '2' : '1';
     function show(variant) {
+      document.querySelector('.roadmap').classList.toggle('roadmap--outside', variant === '2');
       document.querySelectorAll('[data-variant]').forEach(function (block) {
         block.hidden = block.dataset.variant !== variant;
       });
