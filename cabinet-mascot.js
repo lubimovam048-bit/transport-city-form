@@ -35,6 +35,8 @@ async function init() {
 
   /* model units after baking: the bust stands from y = -0.478 to y = 0.478, facing +z */
   const FRAME = { bottom: -0.478, top: 0.478, centerX: 0 };
+  const CARD_EDGE = -0.41;                      /* the card's bottom edge crosses the model here: only the paws go below it */
+  const OVER_TOP = 28;                          /* how far the canvas rises above the card, px */
   const NECK = { from: -0.2, to: 0.02 };
   const pivot = new THREE.Vector3(-0.05, -0.12, 0);
   const EYES = [
@@ -78,7 +80,7 @@ async function init() {
   mesh.material = new THREE.MeshLambertMaterial({ map: mesh.material.map, normalMap: mesh.material.normalMap });
   mesh.material.onBeforeCompile = sh => {
     Object.assign(sh.uniforms, {
-      uHead, uGaze, uIris: { value: iris }, uIrisR: { value: IRIS_R }, uPivot: { value: pivot },
+      uHead, uGaze, uIris: { value: iris }, uIrisR: { value: IRIS_R }, uPivot: { value: pivot }, uEdge: { value: CARD_EDGE },
       uEyeC: { value: EYES.map(e => e.c) }, uEyeR: { value: EYES.map(e => e.r) }, uEyeRest: { value: EYES.map(e => e.rest) }
     });
     sh.vertexShader = 'uniform mat3 uHead; uniform vec3 uPivot; attribute float headW; varying vec3 vRest;\n' + sh.vertexShader
@@ -86,7 +88,7 @@ async function init() {
       .replace('#include <begin_vertex>', '#include <begin_vertex>\n vRest = position;\n transformed = mix(transformed, uHead * (transformed - uPivot) + uPivot, headW);');
     /* inside each eye opening: a clean white, the iris on top of it, a highlight that barely moves.
        Skin and lids outside the opening keep the original texture. */
-    sh.fragmentShader = `uniform sampler2D uIris; uniform float uIrisR; uniform vec2 uGaze;
+    sh.fragmentShader = `uniform sampler2D uIris; uniform float uIrisR; uniform float uEdge; uniform vec2 uGaze;
       uniform vec2 uEyeC[2]; uniform vec2 uEyeR[2]; uniform vec2 uEyeRest[2]; varying vec3 vRest;
       float gEyeMask = 0.0;
       vec3 brandGrade(vec3 c) {            /* brings the texture to the mascot's brand colours */
@@ -115,6 +117,10 @@ async function init() {
       }\n` + sh.fragmentShader
       .replace('#include <map_fragment>', `
         vec4 bakedColor = texture2D(map, vMapUv);
+        if (vRest.y < uEdge) {             /* below the card edge only the paws remain */
+          bool pawZone = (vRest.x > -0.355 && vRest.x < -0.115) || (vRest.x > 0.018 && vRest.x < 0.252);
+          if (!pawZone || bakedColor.r < 0.1 || bakedColor.r - bakedColor.b < 0.035) discard;
+        }
         vec3 gradedColor = brandGrade(bakedColor.rgb);
         if (vRest.z > 0.12) {
           bakedColor.rgb = drawEye(bakedColor.rgb, vRest.xy, uEyeC[0], uEyeR[0], uEyeRest[0]);
@@ -127,6 +133,12 @@ async function init() {
   body.add(gltf.scene);
 
   function resize() {
+    const host = slot.offsetParent;
+    if (!host) return;
+    /* the part above the edge fills the card, the paws hang over it */
+    const above = host.clientHeight + OVER_TOP, unit = above / (FRAME.top - CARD_EDGE);
+    slot.style.bottom = `${-(CARD_EDGE - FRAME.bottom) * unit}px`;
+    slot.style.setProperty('--s', `${unit}px`);
     const cw = canvas.clientWidth, ch = canvas.clientHeight;
     if (!cw || !ch) return;
     renderer.setSize(cw, ch, false);
@@ -136,7 +148,8 @@ async function init() {
     camera.left = -cw / 2; camera.right = cw / 2; camera.top = ch; camera.bottom = 0;
     camera.updateProjectionMatrix();
   }
-  new ResizeObserver(resize).observe(canvas);
+  const watch = new ResizeObserver(resize);
+  [canvas, slot.parentElement, slot.closest('.roadmap')].forEach(el => watch.observe(el));
   resize();
 
   const aim = { x: 0, y: 0, has: false };
@@ -171,4 +184,5 @@ async function init() {
   }
   tick();
   canvas.classList.add('is-ready');
+  slot.classList.add('is-ready');
 }
