@@ -101,8 +101,9 @@ img{display:block}
 .tile__meta b{color:var(--text-primary);font-weight:500}
 .tile__meta-icon{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:var(--radius-control);background:var(--bg-surface);color:var(--text-brand);
   box-shadow:0 4px 10px rgba(23,104,242,.1)}
-.tile__art{position:absolute;right:52px;bottom:16px;width:192px;height:158px;object-fit:contain;pointer-events:none}
-.tile__art--team{right:36px;width:240px;height:160px}
+/* The team image has wider transparent margins, so its box is larger: both figures render at the same visible height, on one axis */
+.tile__art{position:absolute;right:75px;bottom:36px;width:155px;height:127px;object-fit:contain;pointer-events:none}
+.tile__art--team{right:20px;bottom:17px;width:257px;height:172px}
 .tile__go{position:absolute;z-index:1;top:12px;right:12px;display:grid;place-items:center;width:40px;height:40px;border-radius:var(--radius-control);color:var(--text-brand);
   background:linear-gradient(90deg,rgba(255,255,255,.98),rgba(234,243,255,.96));box-shadow:var(--shadow-control);pointer-events:none}
 
@@ -159,8 +160,8 @@ img{display:block}
 
 @media (max-width:1320px){
   .detail__grid{grid-template-columns:minmax(0,1fr)}
-  .tile__art{right:12px;bottom:12px;width:136px;height:112px}
-  .tile__art--team{right:8px;width:168px;height:112px}
+  .tile__art{right:33px;bottom:40px;width:115px;height:94px}
+  .tile__art--team{right:-8px;bottom:26px;width:191px;height:127px}
   .tile__copy{width:min(calc(100% - 150px),300px)}
 }
 @media (max-width:1240px){
@@ -198,8 +199,8 @@ img{display:block}
   .tile{padding:16px}
   .tile__copy{width:100%}
   .tile__title{padding-right:44px;font-size:18px;line-height:24px}
-  .tile__art{top:48px;right:12px;bottom:auto;width:84px;height:68px}
-  .tile__art--team{right:8px;width:102px;height:68px}
+  .tile__art{top:55px;right:26px;bottom:auto;width:70px;height:57px}
+  .tile__art--team{top:43px;right:1px;width:116px;height:78px}
   .tile__bar{margin-top:40px}
   .detail__head{flex-wrap:wrap;gap:8px 12px}
   .messages{right:16px;bottom:16px}
