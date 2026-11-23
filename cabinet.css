@@ -27,7 +27,7 @@ img{display:block}
 .icon{display:block;flex:none;width:20px;height:20px;fill:currentColor}
 .sprite{position:absolute;width:0;height:0;overflow:hidden}
 
-.cabinet{position:relative;width:100%;max-width:1440px;margin:0 auto;padding:72px 40px 112px}
+.cabinet{position:relative;width:100%;max-width:1440px;margin:0 auto;padding:72px 40px 40px}
 
 /* Comparison switch: only for reviewing the two layouts */
 .compare{position:fixed;z-index:20;top:16px;left:40px;display:flex;gap:4px;padding:4px;border:1px solid var(--border-default);
@@ -155,12 +155,6 @@ img{display:block}
 .row--member .row__name{color:var(--text-primary)}
 .avatar{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:50%;background:var(--bg-brand-subtle);color:var(--text-brand)}
 
-/* Messages */
-.messages{position:fixed;z-index:15;right:20px;bottom:20px;display:inline-flex;align-items:center;gap:12px;height:56px;padding:0 24px 0 20px;border-radius:var(--radius-pill);
-  background:linear-gradient(90deg,#fff,#eaf3ff);font-size:18px;line-height:26px;font-weight:500;box-shadow:var(--shadow-control);transition:transform .15s ease}
-.messages:hover{transform:translateY(-1px)}
-.messages .icon{width:24px;height:24px;color:var(--text-brand)}
-.messages__count{position:absolute;top:-6px;right:4px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#ef4444;color:#fff;font-size:13px;line-height:16px;font-weight:600}
 
 /* Top bar: messages, participant ID, notifications, profile */
 .topbar{position:absolute;z-index:10;top:12px;right:40px;display:flex;align-items:center;gap:12px}
@@ -225,7 +219,7 @@ body.variant-2{background:linear-gradient(180deg,#eef4ff,#f7f9fe);background-att
   .summary__grid{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:860px){
-  .cabinet{padding:124px 16px 96px}
+  .cabinet{padding:124px 16px 32px}
   .topbar{top:64px;right:16px;left:16px;justify-content:flex-end}
   .roadmap,.roadmap--outside .roadmap__panel,.summary{padding:20px}
   .roadmap__title,.summary__title{font-size:24px;line-height:32px}
@@ -255,7 +249,6 @@ body.variant-2{background:linear-gradient(180deg,#eef4ff,#f7f9fe);background-att
   .tile__title{font-size:18px;line-height:24px}
   .tile__art{right:8px;bottom:8px;width:122px;height:92px}
   .detail__head{flex-wrap:wrap;gap:8px 12px}
-  .messages{right:16px;bottom:16px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition:none!important}
