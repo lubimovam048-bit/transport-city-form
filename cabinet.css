@@ -111,9 +111,7 @@ img{display:block}
 .tile__link:focus-visible::after{outline:3px solid #8ed8ff;outline-offset:2px}
 .tile__meta-icon{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:var(--radius-control);background:var(--bg-surface);color:var(--text-brand);
   box-shadow:0 4px 10px rgba(23,104,242,.1)}
-/* The team image has wider transparent margins, so its box is larger: both figures render at the same visible height, on one axis */
-.tile__art{position:absolute;right:75px;bottom:44px;width:155px;height:127px;object-fit:contain;pointer-events:none}
-.tile__art--team{right:20px;bottom:25px;width:257px;height:172px}
+.tile__art{position:absolute;right:52px;bottom:32px;width:207px;height:150px;object-fit:contain;object-position:center bottom;pointer-events:none}
 
 /* Status pills */
 .status{display:inline-flex;align-items:center;gap:4px;min-height:28px;padding:4px;border-radius:var(--radius-pill);font-weight:500;white-space:nowrap}
@@ -163,8 +161,7 @@ img{display:block}
 
 @media (max-width:1320px){
   .detail__grid{grid-template-columns:minmax(0,1fr)}
-  .tile__art{right:33px;bottom:60px;width:115px;height:94px}
-  .tile__art--team{right:-8px;bottom:46px;width:191px;height:127px}
+  .tile__art{right:12px;bottom:56px;width:140px;height:102px}
   .tile__copy{width:min(calc(100% - 150px),300px)}
 }
 @media (max-width:1240px){
@@ -201,8 +198,7 @@ img{display:block}
   .tile{padding:16px}
   .tile__copy{width:100%}
   .tile__title{font-size:18px;line-height:24px}
-  .tile__art{top:55px;right:26px;bottom:auto;width:70px;height:57px}
-  .tile__art--team{top:43px;right:1px;width:116px;height:78px}
+  .tile__art{top:42px;right:12px;bottom:auto;width:96px;height:70px}
   .tile__bar{margin-top:40px}
   .detail__head{flex-wrap:wrap;gap:8px 12px}
   .messages{right:16px;bottom:16px}
