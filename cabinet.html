@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="cabinet.css?v=37">
+<link rel="stylesheet" href="cabinet.css?v=38">
 </head>
 <body>
 <svg class="sprite" aria-hidden="true">
@@ -39,7 +39,7 @@
   <symbol id="i-stack" viewBox="0 0 34 34"><path d="M28.4513 14.8747L30.1542 15.8965C30.4896 16.0978 30.5984 16.5329 30.3972 16.8684C30.3373 16.9681 30.2538 17.0515 30.1542 17.1113L16.9998 25.0038L3.84548 17.1113C3.51002 16.91 3.40124 16.4749 3.60252 16.1395C3.66233 16.0397 3.74577 15.9563 3.84548 15.8965L5.54844 14.8747L16.9998 21.7455L28.4513 14.8747ZM28.4513 21.533L30.1542 22.5549C30.4896 22.7562 30.5984 23.1912 30.3972 23.5267C30.3373 23.6264 30.2538 23.7099 30.1542 23.7696L17.7287 31.2249C17.28 31.4942 16.7196 31.4942 16.2709 31.2249L3.84548 23.7696C3.51002 23.5683 3.40124 23.1333 3.60252 22.7978C3.66233 22.6981 3.74577 22.6146 3.84548 22.5549L5.54844 21.533L16.9998 28.4038L28.4513 21.533ZM17.7287 1.85373L30.1542 9.30902C30.4896 9.51029 30.5984 9.94539 30.3972 10.2808C30.3373 10.3805 30.2538 10.464 30.1542 10.5238L16.9998 18.4163L3.84548 10.5238C3.51002 10.3225 3.40124 9.88743 3.60252 9.55198C3.66233 9.45228 3.74577 9.36885 3.84548 9.30902L16.2709 1.85373C16.7196 1.58456 17.28 1.58456 17.7287 1.85373Z"/></symbol>
 </svg>
 
-<nav class="compare" aria-label="Вариант блока проектов">
+<nav class="compare" aria-label="Вариант блока проектов" hidden>
   <a href="?v=1" data-variant-link="1">Вариант 1</a>
   <a href="?v=2" data-variant-link="2">Вариант 2</a>
 </nav>
@@ -208,8 +208,7 @@
 
 <script>
   (function () {
-    var requested = new URLSearchParams(location.search).get('v');
-    var current = requested === '2' ? '2' : '1';
+    var current = '1';
     function show(variant) {
       document.querySelector('.roadmap').classList.toggle('roadmap--outside', variant === '2');
       document.body.classList.toggle('variant-2', variant === '2');
