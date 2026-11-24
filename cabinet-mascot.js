@@ -44,7 +44,7 @@ async function init() {
     { c: new THREE.Vector2(0.067, 0.1455), r: new THREE.Vector2(0.056, 0.052), rest: new THREE.Vector2(0.058, 0.1375) }
   ];
   const IRIS_R = 0.0395;
-  const LOOK = { x: 0.022, y: 0.015 };          /* how far the irises travel, in model units */
+  const LOOK = { x: 0.022, y: 0.015, up: 0.028 }; /* how far the irises travel, in model units */
   const uHead = { value: new THREE.Matrix3() };
   const uGaze = { value: new THREE.Vector2() };
   const body = new THREE.Group();
@@ -172,13 +172,19 @@ async function init() {
       const dx = aim.x - (r.left + r.width / 2), dy = aim.y - (r.top + r.height * 0.34), depth = 320;
       const len = Math.hypot(dx, dy, depth);
       nx = dx / len; ny = dy / len;
+      if (dy < 0) {                             /* little page above the eyes: the top edge counts as a full look up */
+        const room = Math.max(r.top + r.height * 0.34, 140);
+        const up = Math.pow(Math.min(-dy / room, 1), 0.8);
+        ny = -up;
+        nx *= 1 - up * 0.25;
+      }
     }
     const fast = still.matches ? 1 : 0.2, slow = still.matches ? 1 : 0.05;
     eye.x += (nx - eye.x) * fast;
     eye.y += (ny - eye.y) * fast;
     head.yaw += (THREE.MathUtils.clamp(nx * 0.14, -0.11, 0.11) - head.yaw) * slow;
-    head.pitch += (THREE.MathUtils.clamp(ny * 0.07, -0.045, 0.055) - head.pitch) * slow;
-    uGaze.value.set(eye.x * LOOK.x, -eye.y * LOOK.y);
+    head.pitch += (THREE.MathUtils.clamp(ny * (ny < 0 ? 0.1 : 0.07), -0.1, 0.055) - head.pitch) * slow;
+    uGaze.value.set(eye.x * LOOK.x, -eye.y * (eye.y < 0 ? LOOK.up : LOOK.y));
     euler.set(head.pitch, head.yaw, 0, 'YXZ');
     uHead.value.setFromMatrix4(m4.makeRotationFromEuler(euler));
     renderer.render(scene, camera);
