@@ -184,7 +184,6 @@ img{display:block}
 .topbar__help:hover + .topbar__tip,.topbar__help:focus-visible + .topbar__tip,.topbar__tip.is-open{opacity:1;visibility:visible;transform:none}
 .topbar__messages{gap:5px}
 .topbar__dot{width:6px;height:6px;margin-left:1px;border-radius:50%;background:#5b93ee}
-.topbar__line{width:1px;height:24px;margin:0 2px;background:rgba(100,131,166,.2)}
 .topbar__id.is-copied .icon{color:var(--success-text)}
 .topbar__status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 .topbar__badge{position:absolute;top:9px;right:10px;width:8px;height:8px;border-radius:50%;background:#5b93ee;box-shadow:0 0 0 2px rgba(255,255,255,.8)}
@@ -254,7 +253,6 @@ body.variant-2{background:linear-gradient(180deg,#eef4ff,#f7f9fe);background-att
 }
 @media (max-width:620px){
   .topbar{gap:4px}
-  .topbar__line{display:none}
   .topbar__pill,.topbar__round{font-size:14px}
   .topbar__pill{gap:6px;padding:0 12px}
   .topbar .icon{width:20px;height:20px}
