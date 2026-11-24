@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="cabinet.css?v=44">
+<link rel="stylesheet" href="cabinet.css?v=45">
 </head>
 <body>
 <svg class="sprite" aria-hidden="true">
@@ -62,8 +62,10 @@
     </button>
     <button class="topbar__round topbar__avatar" type="button" aria-label="Профиль участника">МЛ</button>
   </header>
-  <nav class="quick" data-variant="1" aria-label="Профиль и чаты">
-    <article class="quick__card">
+  <div class="quick" data-variant="1">
+    <div class="quick__lead">
+    <h1 class="cabinet__title">Личный кабинет</h1>
+    <article class="quick__card quick__card--profile">
       <span class="quick__mark"><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg></span>
       <div class="quick__body">
         <h2 class="quick__title">Личные данные</h2>
@@ -71,6 +73,7 @@
       </div>
       <a class="quick__link" href="#profile" aria-label="Перейти к личным данным">Перейти<svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg></a>
     </article>
+    </div>
     <article class="quick__card">
       <span class="quick__mark"><svg class="icon" aria-hidden="true"><use href="#i-chats"/></svg><b class="quick__badge" aria-hidden="true">2</b></span>
       <div class="quick__body">
@@ -79,11 +82,11 @@
       </div>
       <a class="quick__link" href="#chats" aria-label="Перейти в чаты, 2 новых сообщения">Перейти<svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg></a>
     </article>
-  </nav>
+  </div>
   <section class="roadmap" aria-labelledby="roadmapTitle">
   <div class="roadmap__head">
     <span class="roadmap__mark"><svg class="icon" aria-hidden="true"><use href="#i-guide"/></svg></span>
-    <h1 class="roadmap__title" id="roadmapTitle">Карта проекта</h1>
+    <h2 class="roadmap__title" id="roadmapTitle">Карта проекта</h2>
   </div>
 
   <div class="roadmap__panel">
