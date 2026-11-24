@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="cabinet.css?v=43">
+<link rel="stylesheet" href="cabinet.css?v=44">
 </head>
 <body>
 <svg class="sprite" aria-hidden="true">
@@ -137,15 +137,41 @@
       <span class="quick__mark"><svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg></span>
       <div class="quick__body">
         <h2 class="quick__title" id="finalTitle">Финал и итоги</h2>
-        <p class="quick__meta"><span class="quick__name">Даты уточняются</span></p>
+        <p class="quick__meta"><span class="quick__name" id="finalSub">Результаты появятся здесь</span></p>
       </div>
     </div>
-    <ol class="final__list">
-      <li class="final__row"><span class="final__dot" aria-hidden="true"></span><b>Итоги отбора</b><small>конец марта 2027</small></li>
-      <li class="final__row"><span class="final__dot" aria-hidden="true"></span><b>Финальная защита</b><small>апрель 2027</small></li>
-      <li class="final__row"><span class="final__dot" aria-hidden="true"></span><b>Публикация итогов</b><small>после финала</small></li>
-    </ol>
-    <a class="quick__link final__link" href="#final" aria-label="Подробнее о финале и итогах">Подробнее<svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg></a>
+    <div class="final__state" data-final="1" data-sub="Результаты появятся здесь">
+      <dl class="final__facts">
+        <div class="final__fact"><dt>Индивидуальный проект</dt><dd><span class="final__chip">Ждёт итогов</span></dd></div>
+        <div class="final__fact"><dt>Командный проект</dt><dd><span class="final__chip">Ждёт итогов</span></dd></div>
+      </dl>
+      <a class="quick__link final__link" href="#selection" aria-label="Как проходит отбор">Как проходит отбор<svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg></a>
+    </div>
+    <div class="final__state" data-final="2" data-sub="Индивидуальный проект в финале" hidden>
+      <dl class="final__facts">
+        <div class="final__fact"><dt>Защита</dt><dd>апрель 2027</dd></div>
+        <div class="final__fact"><dt>Время</dt><dd>уточняется</dd></div>
+        <div class="final__fact"><dt>Формат и место</dt><dd>уточняются</dd></div>
+        <div class="final__fact"><dt>Контакт</dt><dd>в чатах</dd></div>
+      </dl>
+      <a class="quick__link final__link" href="#final" aria-label="Подробнее о финальной защите">Подробнее<svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg></a>
+    </div>
+    <div class="final__state" data-final="3" data-sub="Итоги отбора опубликованы" hidden>
+      <dl class="final__facts">
+        <div class="final__fact"><dt>Индивидуальный проект</dt><dd><span class="final__chip final__chip--ok">В финале</span></dd></div>
+        <div class="final__fact"><dt>Командный проект</dt><dd><span class="final__chip final__chip--warn">Не прошёл</span></dd></div>
+        <div class="final__fact"><dt>Апелляция</dt><dd>срок уточняется</dd></div>
+      </dl>
+      <a class="quick__link final__link" href="#appeal" aria-label="Подать апелляцию по командному проекту">Подать апелляцию<svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg></a>
+    </div>
+    <div class="final__state" data-final="4" data-sub="Итоги конкурса опубликованы" hidden>
+      <dl class="final__facts">
+        <div class="final__fact"><dt>Индивидуальный проект</dt><dd><span class="final__chip final__chip--ok">Призёр</span></dd></div>
+        <div class="final__fact"><dt>Командный проект</dt><dd><span class="final__chip">Участник</span></dd></div>
+        <div class="final__fact"><dt>Документы</dt><dd>диплом, сертификат</dd></div>
+      </dl>
+      <a class="quick__link final__link" href="#documents" aria-label="Скачать документы">Скачать документы<svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg></a>
+    </div>
   </section>
   </div>
 
@@ -228,6 +254,15 @@
       });
     });
     show(current);
+  })();
+</script>
+<script>
+  (function () {
+    var state = new URLSearchParams(location.search).get('final') || '1';
+    var block = document.querySelector('.final__state[data-final="' + state + '"]');
+    if (!block) return;
+    document.querySelectorAll('.final__state').forEach(function (item) { item.hidden = item !== block; });
+    document.getElementById('finalSub').textContent = block.dataset.sub;
   })();
 </script>
 <script src="cabinet-topbar.js?v=1"></script>

@@ -302,16 +302,19 @@ body.variant-2{background:linear-gradient(180deg,#eef4ff,#f7f9fe);background-att
 .final:hover{background-color:rgba(255,255,255,.34)}
 .final:hover .quick__link{color:#155ae8}
 .final__head{display:flex;align-items:center;gap:14px;min-width:0;margin-bottom:24px}
-.final__list{position:relative;display:flex;flex-direction:column;gap:18px;margin:auto 0}
-.final__list::before{content:"";position:absolute;top:11px;bottom:11px;left:4px;width:2px;border-radius:var(--radius-pill);background:var(--border-default)}
-.final__row{position:relative;display:flex;align-items:center;gap:14px;min-width:0;min-height:22px}
-.final__dot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--text-brand)}
-.final__row b{flex:1;min-width:0;color:var(--text-primary);font-size:15px;line-height:22px;font-weight:500;white-space:nowrap}
-.final__row small{flex:none;color:var(--text-tertiary);font-size:14px;line-height:22px;font-weight:400;text-align:right;white-space:nowrap}
+.final__state{display:flex;flex:1;flex-direction:column;min-height:0}
+.final__state[hidden]{display:none}
+.final__facts{display:flex;flex-direction:column;gap:16px;margin:auto 0}
+.final__fact{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;min-height:28px}
+.final__fact dt{min-width:0;color:var(--text-primary);font-size:15px;line-height:22px;font-weight:500}
+.final__fact dd{flex:none;color:var(--text-tertiary);font-size:14px;line-height:22px;text-align:right}
+.final__chip{display:inline-flex;align-items:center;min-height:28px;padding:3px 12px;border-radius:var(--radius-pill);background:var(--bg-soft);color:var(--text-secondary);font-size:14px;line-height:22px;font-weight:500}
+.final__chip--ok{background:var(--success-bg);color:var(--success-text)}
+.final__chip--warn{background:var(--warning-bg);color:var(--warning-text)}
 .final__link{align-self:flex-start;margin-top:24px}
 @media (min-width:1241px){
   .overview .tile__title{white-space:nowrap}
-  .final__list{gap:28px}
+  .final__facts{gap:18px}
   .overview .tile__art{right:14px;bottom:10px;width:195px;height:147px}
   .overview .tile__copy{width:calc(100% - 197px)}
 }
